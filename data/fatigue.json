@@ -1,0 +1,18 @@
+{
+  "marchPerKm": { "value": 0.05, "unit": "fatigue per km", "source": "assumption", "confidence": "assumption", "note": "Infantry and guns moving in formation over open ground. Fatigue runs from 0 (fresh) to 1 (spent). A kilometre's advance costs little; an afternoon of manoeuvre adds up." },
+  "trotPerKm": { "value": 0.08, "unit": "fatigue per km", "source": "assumption", "confidence": "assumption", "note": "Cavalry at the trot." },
+  "gallopPerKm": { "value": 0.6, "unit": "fatigue per km", "source": "assumption", "confidence": "assumption", "note": "Cavalry at the gallop: a 200 m charge costs 0.12, so a squadron has perhaps four or five good charges in it." },
+  "roughFactor": { "value": 1.5, "unit": "multiplier", "source": "assumption", "confidence": "assumption", "note": "Movement on a slope or through a wood or farm costs this much more." },
+  "perVolley": { "value": 0.004, "unit": "fatigue per volley", "source": "assumption", "confidence": "assumption", "note": "Loading and firing. Sixty rounds cost about a quarter of a unit's endurance." },
+  "perSalvo": { "value": 0.003, "unit": "fatigue per salvo", "source": "assumption", "confidence": "assumption", "note": "Serving the guns." },
+  "meleePerSecond": { "value": 0.003, "unit": "fatigue per s", "source": "assumption", "confidence": "assumption", "note": "Hand-to-hand fighting exhausts men within minutes." },
+  "formationChange": { "value": 0.02, "unit": "fatigue", "source": "assumption", "confidence": "assumption", "note": "Each change of formation." },
+  "restPerSecond": { "value": 0.0004, "unit": "fatigue per s", "source": "assumption", "confidence": "assumption", "note": "Recovered while halted, not in melee and not firing: about 0.25 in ten minutes." },
+  "restAfterFire": { "value": 45, "unit": "s", "source": "assumption", "confidence": "assumption", "note": "A unit that has fired within this time is not resting." },
+  "speedLoss": { "value": 0.4, "unit": "fraction at full fatigue", "source": "assumption", "confidence": "assumption", "note": "Speed is multiplied by 1 - this x fatigue." },
+  "reloadSlowdown": { "value": 0.5, "unit": "fraction at full fatigue", "source": "assumption", "confidence": "assumption", "note": "Reload time is multiplied by 1 + this x fatigue." },
+  "meleeLoss": { "value": 0.4, "unit": "fraction at full fatigue", "source": "assumption", "confidence": "assumption", "note": "Melee power is multiplied by 1 - this x fatigue." },
+  "recoveryLoss": { "value": 0.5, "unit": "fraction at full fatigue", "source": "assumption", "confidence": "assumption", "note": "Morale recovery is multiplied by 1 - this x fatigue." },
+  "shockGain": { "value": 0.3, "unit": "fraction at full fatigue", "source": "assumption", "confidence": "assumption", "note": "Morale lost per casualty is multiplied by 1 + this x fatigue: tired men break sooner." },
+  "noChargeAbove": { "value": 0.8, "unit": "fatigue", "source": "assumption", "confidence": "assumption", "note": "Cavalry more tired than this cannot raise a gallop." }
+}

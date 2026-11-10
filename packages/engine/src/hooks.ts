@@ -4,48 +4,66 @@
 import type { ExpandedUnit } from './scenario.ts';
 import type { Sim, SimInput, Unit } from './types.ts';
 import * as command from './features/command.ts';
+import * as endurance from './features/endurance.ts';
 
 export const hooks = {
   init(sim: Sim, expanded: ExpandedUnit[]): void {
+    if (sim.features.fatigue || sim.features.ammunition) endurance.init(sim);
     if (sim.features.commandControl) command.init(sim, expanded);
   },
   preTick(sim: Sim): void {
     if (sim.features.commandControl) command.update(sim);
   },
   preFire(_sim: Sim): void {},
-  postTick(_sim: Sim): void {},
+  postTick(sim: Sim): void {
+    if (sim.features.fatigue || sim.features.ammunition) endurance.postTick(sim);
+  },
   onCommandInput(sim: Sim, input: SimInput): void {
     if (sim.features.commandControl) command.onCommandInput(sim, input);
   },
   onRout(_sim: Sim, _u: Unit): void {},
   onRemove(_sim: Sim, _u: Unit): void {},
-  onMoved(_sim: Sim, _u: Unit, _metres: number): void {},
-  onFired(_sim: Sim, _u: Unit, _kind: 'musket' | 'roundshot' | 'canister', _shots: number, _range: number): void {},
+  onMoved(sim: Sim, u: Unit, metres: number): void {
+    if (sim.features.fatigue) endurance.onMoved(sim, u, metres);
+  },
+  onFormationChange(sim: Sim, u: Unit): void {
+    if (sim.features.fatigue) endurance.onFormationChange(sim, u);
+  },
+  onFired(sim: Sim, u: Unit, kind: 'musket' | 'roundshot' | 'canister', shots: number, _range: number): void {
+    if (sim.features.fatigue || sim.features.ammunition) endurance.onFired(sim, u, kind, shots);
+  },
 
   canSee(_sim: Sim, _a: Unit, _b: Unit): boolean {
     return true;
   },
-  canFire(_sim: Sim, _u: Unit): boolean {
-    return true;
+  canFire(sim: Sim, u: Unit): boolean {
+    return endurance.canFire(sim, u);
   },
-  hasCanister(_sim: Sim, _u: Unit): boolean {
-    return true;
+  hasCanister(sim: Sim, u: Unit): boolean {
+    return endurance.hasCanister(sim, u);
   },
-  hasRoundshot(_sim: Sim, _u: Unit): boolean {
-    return true;
+  hasRoundshot(sim: Sim, u: Unit): boolean {
+    return endurance.hasRoundshot(sim, u);
+  },
+  /** Infantry that cannot fire closes with the bayonet instead of standing in a firefight. */
+  mustCharge(sim: Sim, u: Unit): boolean {
+    return endurance.outOfAmmo(sim, u);
+  },
+  mayGallop(sim: Sim, u: Unit): boolean {
+    return !endurance.tooTiredToCharge(sim, u);
   },
 
-  speedFactor(_sim: Sim, _u: Unit, _heading: number): number {
-    return 1;
+  speedFactor(sim: Sim, u: Unit, _heading: number): number {
+    return endurance.speedFactor(sim, u);
   },
   drillTimeFactor(_sim: Sim, _u: Unit): number {
     return 1;
   },
-  reloadFactor(_sim: Sim, _u: Unit): number {
-    return 1;
+  reloadFactor(sim: Sim, u: Unit): number {
+    return endurance.reloadFactor(sim, u);
   },
-  musketFactor(_sim: Sim, _u: Unit, _t: Unit, _range: number): number {
-    return 1;
+  musketFactor(sim: Sim, u: Unit, _t: Unit, _range: number): number {
+    return endurance.musketFactor(sim, u);
   },
   musketRangeFactor(_sim: Sim, _u: Unit): number {
     return 1;
@@ -56,11 +74,11 @@ export const hooks = {
   gunRangeFactor(_sim: Sim, _u: Unit): number {
     return 1;
   },
-  meleeFactor(_sim: Sim, _a: Unit, _b: Unit): number {
-    return 1;
+  meleeFactor(sim: Sim, a: Unit, _b: Unit): number {
+    return endurance.meleeFactor(sim, a);
   },
-  casualtyShockFactor(_sim: Sim, _u: Unit): number {
-    return 1;
+  casualtyShockFactor(sim: Sim, u: Unit): number {
+    return endurance.shockFactor(sim, u);
   },
   rippleFactor(_sim: Sim, _u: Unit): number {
     return 1;
@@ -69,7 +87,7 @@ export const hooks = {
     return 1;
   },
   recoveryFactor(sim: Sim, u: Unit): number {
-    let f = 1;
+    let f = endurance.recoveryFactor(sim, u);
     if (sim.features.commandControl) f *= command.recoveryFactor(sim, u);
     return f;
   },

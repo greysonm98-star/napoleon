@@ -572,3 +572,62 @@ Implausible or weak points:
   (French total loss 54%), because ammunition is unlimited until the next feature.
 - Commanders know the state of their units exactly and at once.
 - Initiative has only the three behaviours in the table.
+
+### 12.2 Fatigue (`fatigue`) and ammunition (`ammunition`)
+
+Two separate toggles. Parameters: `data/fatigue.json`, `data/ammunition.json`. The
+ammunition loads have sources of a kind; every rate and effect is an assumption.
+
+**Fatigue** runs from 0 (fresh) to 1 (spent).
+
+| Gained from | Amount |
+|---|---|
+| Marching (infantry, guns) | 0.05 per km |
+| Cavalry at the trot, at the gallop | 0.08, 0.6 per km |
+| Slope, wood or farm | × 1.5 |
+| Each volley, each salvo | 0.004, 0.003 |
+| Melee | 0.003 per second |
+| Each change of formation | 0.02 |
+
+A unit that is halted, not in melee and has not fired for 45 s recovers 0.0004 per
+second (0.24 in ten minutes).
+
+Effects, each linear in fatigue: speed × (1 − 0.4 f); reload time × (1 + 0.5 f);
+melee power × (1 − 0.4 f); morale recovery × (1 − 0.5 f); morale lost per casualty
+× (1 + 0.3 f). Cavalry above 0.8 cannot gallop, so it gets neither charge speed nor
+the charge bonus.
+
+**Ammunition.**
+
+- Infantry carry `cartridges` rounds a man (French 50, British 60). A volley costs
+  each man who fired one round, averaged over the battalion: a British line spends
+  1 round a man per volley, a French line 0.67 (its third rank does not fire), a
+  column about 0.2. Below half a round the battalion cannot fire, and one attacking
+  in line goes in with the bayonet instead of halting to shoot.
+- The first volley of the day hits 1.5 times as hard (`firstVolleyBonus`).
+- Fouling builds over 25 volleys. Fully fouled, reload time is × 1.5 and hits × 0.8.
+- A battalion with no formed enemy within 400 m for 600 s is brought back up to half
+  a load from its reserve, once, and its barrels count as clean again.
+- A battery has roundshot and canister per gun (field gun 80 and 20; 12-pdr 57 and
+  20). A salvo costs one round per gun in action. With canister gone it fires
+  roundshot at close range; with roundshot gone it can fire only inside canister
+  range. Guns are not resupplied.
+
+**Effect** (200 runs each, same seeds):
+
+| Scenario | Neither | Ammunition | Fatigue | Both |
+|---|---|---|---|---|
+| Pitched battle: duration, French K/W | 15.4 min, 17% | 15.4 min, 17% | 15.8 min, 17% | 15.9 min, 17% |
+| Grand battery: French win | 99% | 92% | 96% | 95% |
+| Written orders: duration, Allied loss | 120 min, 39% | 76 min, 37% | 120 min, 39% | 77 min, 34% |
+
+Both features matter little in actions that are over in a quarter of an hour, which
+is itself plausible: battalions rarely emptied their pouches in one attack.
+Ammunition ends the two-hour mutual bombardment noted in 12.1 (the guns fall silent
+after about 75 minutes) and takes some of the edge off the grand battery.
+
+Implausible or weak points:
+- Canister is still not the limit it should be in short actions: twenty rounds a gun
+  last eight minutes of continuous fire, longer than most assaults.
+- No battery is ever resupplied or relieved, and no caisson can be hit.
+- Fatigue has no effect on the willingness to advance, only on performance.

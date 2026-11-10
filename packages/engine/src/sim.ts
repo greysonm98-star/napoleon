@@ -89,6 +89,7 @@ export function setFormation(sim: Sim, u: Unit, form: Formation): void {
   const from = u.form;
   u.form = form;
   u.formT = time;
+  hooks.onFormationChange(sim, u);
   setDims(u);
   refreshGeom(u);
   if (sim.eventLevel === 'full') emit(sim, { type: 'formation', unit: u.id, side: u.side, from, to: form, time: Math.round(time) });
@@ -570,7 +571,7 @@ function movementPhase(sim: Sim): void {
           let stop: number;
           if (u.arm === 'cav') {
             stop = -12;
-            u.charging = g < u.ut.chargeStartRange! && u.blown <= 0;
+            u.charging = g < u.ut.chargeStartRange! && u.blown <= 0 && hooks.mayGallop(sim, u);
           } else if (u.arm === 'art') stop = u.gun!.roundshotEffectiveRange * A.artAdvanceFraction;
           else stop = o.charge || t.status === 'rout' ? -12 : A.engageRange;
           if (g > stop) {

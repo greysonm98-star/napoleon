@@ -69,7 +69,7 @@ export function think(sim: Sim, u: Unit): void {
       u.order = makeOrder('attack', t.idx, 0, 0, true);
     } else {
       want = td > A.deployRange * (u.form === 'line' ? A.redeployFactor : 1) ? 'column' : 'line';
-      u.order = makeOrder('attack', t.idx, 0, 0, t.arm === 'art' || t.morale < A.chargeMoraleAbsolute || t.morale < u.morale - A.chargeMoraleAdvantage);
+      u.order = makeOrder('attack', t.idx, 0, 0, t.arm === 'art' || t.morale < A.chargeMoraleAbsolute || t.morale < u.morale - A.chargeMoraleAdvantage || hooks.mustCharge(sim, u));
     }
     if (want !== u.form && u.formT <= 0 && !u.melee) setFormation(sim, u, want);
     return;
