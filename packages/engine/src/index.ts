@@ -7,3 +7,4 @@ export * from './sim.ts';
 export * from './result.ts';
 export * from './record.ts';
 export { hooks } from './hooks.ts';
+export * as command from './features/command.ts';

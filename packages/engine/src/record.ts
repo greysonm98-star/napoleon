@@ -92,7 +92,7 @@ export function createRecorder(sim: Sim, sampleInterval = 5): Recorder {
     if (fat) tracks[u.id].fatigue = [];
     if (amm) tracks[u.id].ammo = [];
   }
-  const extra = (sim.ext.recorder as { sample?: (sim: Sim) => void; finish?: (r: Replay) => void } | undefined) ?? {};
+  const extras = (sim.ext.recorders as { sample?: (sim: Sim) => void; finish?: (r: Replay) => void }[] | undefined) ?? [];
   const sample = (s: Sim) => {
     times.push(s.t);
     for (const u of s.units) {
@@ -110,7 +110,7 @@ export function createRecorder(sim: Sim, sampleInterval = 5): Recorder {
       if (t.fatigue) t.fatigue.push(Math.round(u.fatigue * 100) / 100);
       if (t.ammo) t.ammo.push(Math.round(u.arm === 'art' ? u.gunRounds + u.gunCanister : u.ammo));
     }
-    extra.sample?.(s);
+    for (const x of extras) x.sample?.(s);
   };
   sample(sim);
   return {
@@ -133,7 +133,7 @@ export function createRecorder(sim: Sim, sampleInterval = 5): Recorder {
         events: s.events,
         result: summarise(s),
       };
-      extra.finish?.(rep);
+      for (const x of extras) x.finish?.(rep);
       return rep;
     },
   };

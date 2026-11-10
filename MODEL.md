@@ -459,4 +459,116 @@ headless (`tools/prototype-baseline.mjs`, 200 runs). "none" is no decision in tw
 
 ## 12. Deeper-model features
 
-None yet. Each will be documented here as it is added, with its toggle.
+Each feature is switched on in the scenario's `features` block, or for a batch with
+`--set scenario:features.<name>=true`. With a feature off, none of its code runs and
+results are identical to the baseline; a pinned state hash in the tests guards this.
+To compare, sweep the toggle: `--param scenario:features.<name>=false,true` runs
+both on the same seeds.
+
+### 12.1 Command and control (`commandControl`)
+
+Parameters: `data/command.json`. All are assumptions; no quantitative source was found.
+
+**Hierarchy.** Each side has a tree of formations (army or corps, division, brigade),
+each with a commander who has a position, a command radius, an initiative rating and
+a staff delay. Units belong to a formation. If the scenario gives no tree, one is
+made: a headquarters 300 m behind the army, infantry brigades of four battalions,
+one cavalry brigade per wing, and guns attached to the nearest brigade.
+
+A brigadier rides 80 m behind the centre of his formed units; a higher commander
+200 m behind the centre of his subordinates; the top commander stays where the
+scenario puts him.
+
+**Orders.** `attack`, `defend`, `hold`, `support`, `move`, `withdraw`, `reserve`,
+with an optional objective point, a formation (line or column) for attacks, and a
+target formation for support. A scenario's written orders each have a time (`at`) or
+a trigger (`when`: a unit has routed, half a formation has broken, enemy within a
+distance of a formation). With no written orders, the side's posture becomes one
+standing order to the whole army.
+
+Orders dated 0 are the orders of the day: every unit has them when the action
+opens. Any later order goes through the chain:
+
+1. The top commander's staff writes it: `staffDelay` for his level, ±25%.
+2. A courier rides to the recipient at `courierSpeed` (5 m/s). With probability
+   `courierLossChance` (5%) he is lost on the way; the order is sent again
+   `resendTime` (300 s) later.
+3. The recipient's staff delay passes, then the order takes effect at his formation.
+4. He sends couriers to his subordinate commanders, who repeat steps 3 and 4.
+5. A unit adopts its formation's order when it is inside the command radius of a
+   living commander in its chain. Until then it keeps its previous order.
+
+Default staff delays: army and corps 240 s, division 150 s, brigade 60 s. Default
+radii: 1,500, 1,200, 800 and 400 m.
+
+**What an order does to a unit.** It sets the unit's posture (attack in line or in
+column for `attack`, defend for everything else) and may give it a place to go: the
+objective, shifted by the unit's offset from its formation's centre when the order
+took effect, so formations keep their shape.
+
+- `attack` with an objective: march on it in column until formed enemy is within
+  `engageRadius` (500 m), then fight as the posture says.
+- `move`, `defend` with an objective, `support`, `withdraw`: march to the place in
+  column, then stand. A supporting formation keeps 250 m behind the one it supports.
+  Infantry and guns stop and fight if formed enemy comes within 335 m, except when withdrawing.
+- `reserve`: stand in column; fight only if the enemy closes.
+- `hold`, `defend` without an objective: stand.
+- Cavalry that is not ordered to attack or defend looks for targets only within 0.3
+  of its usual distance.
+
+The per-unit reactions of section 9 (forming square, returning fire, cavalry
+choosing targets) still apply inside whatever the order allows.
+
+**Initiative.** Every `initiativeInterval` (60 s) each subordinate commander reviews
+his formation. If a reason to act exists he acts with probability equal to his
+initiative; the new order takes half his staff delay and goes to his units and
+subordinates in the usual way.
+
+| Situation | What he may do |
+|---|---|
+| Half his units have routed or gone | Withdraw 400 m |
+| Attacking, and over half his formed units are below morale 45 | Halt for 300 s, then resume |
+| Not ordered to attack, and a vulnerable enemy (morale below 55, changing formation, or in melee) is within 150 m of his infantry or 500 m of his cavalry | Attack it for 480 s, then return to his orders |
+
+**Out of command.** A formed unit outside every radius in its chain recovers morale
+at half rate. A routed unit inside one recovers at double rate.
+
+**Commander casualties.** While formed enemy is within 200 m of a commander he has a
+0.02% chance per second of being hit. His formed units within his radius lose 6 × q.
+A successor takes over after 180 s, with 0.7 of the initiative and 0.8 of the
+radius. In between, the formation has no commander: no orders pass, and its units
+are out of command unless a higher commander's radius covers them.
+
+**Player orders** go to a formation through the same chain from the top commander,
+unless marked direct.
+
+**Deciding undecided battles.** A scenario may name an objective and its defender.
+If neither army has broken when the run ends, the attacker wins if he has more
+formed men within the objective's radius than the defender; otherwise the defender
+wins. Results record which rule decided (`decidedBy`).
+
+**Effect** (200 runs each, same seeds):
+
+| Scenario | Off | On |
+|---|---|---|
+| Pitched battle, no written orders | Allied win 100%, 15 min, French K/W 17% | Allied win 100% (89% by breaking the French, the rest on the objective), 20 min, French K/W 25% |
+| Column against line | Allied 100%, French loss 12% | Allied 100%, French loss 13% |
+| Allied counterattack | French 100% | French 99% |
+
+With orders dated 0 and no written plan the feature changes little: its effects come
+from commanders halting or pulling back beaten formations, which lengthens battles.
+
+`scenarios/pitched-orders.json` shows the rest: the French guns bombard for ten
+minutes, then the division is ordered to attack in column. In a typical run the
+order is issued at 10:00, leaves headquarters at 14:06, takes effect at the division
+at 16:24 and at the two brigades at 18:05 and 18:34. The attack is repulsed and the
+division commander pulls it back on his own initiative; the Allies win on the
+objective in 99% of runs and the French army itself breaks in only 1%. Sweeping the
+corps staff delay (30, 240, 900 s) and courier speed (2, 5 m/s) does not change who
+wins here, because the defenders have nothing to do but wait.
+
+Implausible or weak points:
+- After a repulse the guns of both sides go on firing for the rest of the two hours
+  (French total loss 54%), because ammunition is unlimited until the next feature.
+- Commanders know the state of their units exactly and at once.
+- Initiative has only the three behaviours in the table.

@@ -24,7 +24,7 @@ const pct = (v: number) => (v * 100).toFixed(1) + '%';
 
 export function printResult(r: RunResult): void {
   console.log(`${r.scenario}  seed ${r.seed}`);
-  console.log(`Result: ${r.winner === 'draw' ? 'no decision' : r.winner + ' win'} (${r.endReason}) after ${clock(r.duration)}`);
+  console.log(`Result: ${r.winner === 'draw' ? 'no decision' : r.winner + ' win'} (${r.endReason}${r.decidedBy === 'objective' ? ', decided by the objective' : ''}) after ${clock(r.duration)}`);
   for (const s of r.sides) {
     console.log(`  ${s.name.padEnd(8)} ${s.posture.padEnd(13)} ${String(s.startMen).padStart(6)} men  K/W ${String(s.casualties).padStart(5)} (${pct(s.casualtyFraction)})  prisoners ${String(s.captured).padStart(4)}  dispersed ${String(s.dispersed).padStart(5)}  units routed ${s.unitsEverRouted}/${s.units}${s.broke ? `  BROKE at ${clock(s.brokeAt!)} near (${s.breakX}, ${s.breakY})` : ''}`);
   }
@@ -63,6 +63,9 @@ function cmdRun(pos: string[], opt: Record<string, string[]>): void {
         else if (e.type === 'formation') what = `forms ${e.to} (${e.time}s)`;
         else if (e.type === 'gone') what = `gone (${e.reason})`;
         else if (e.type === 'army_broken') what = 'ARMY BREAKS';
+        else if (e.type === 'initiative') what = `${e.commander} acts on his own: ${e.action} (${e.why})`;
+        else if (e.type.startsWith('order_') || e.type === 'courier_lost') what = `${e.type.replace('_', ' ')}: ${e.order} -> ${e.formation}${e.own ? ' (own initiative)' : ''}`;
+        else if (e.type.startsWith('commander_')) what = `${e.commander} ${e.type === 'commander_down' ? 'is hit' : 'takes command'} (${e.formation})`;
         console.log(`${clock(e.t).padStart(7)}  ${String(who).padEnd(30)} ${what}`);
       }
     }

@@ -3,13 +3,20 @@
 
 import type { ExpandedUnit } from './scenario.ts';
 import type { Sim, SimInput, Unit } from './types.ts';
+import * as command from './features/command.ts';
 
 export const hooks = {
-  init(_sim: Sim, _expanded: ExpandedUnit[]): void {},
-  preTick(_sim: Sim): void {},
+  init(sim: Sim, expanded: ExpandedUnit[]): void {
+    if (sim.features.commandControl) command.init(sim, expanded);
+  },
+  preTick(sim: Sim): void {
+    if (sim.features.commandControl) command.update(sim);
+  },
   preFire(_sim: Sim): void {},
   postTick(_sim: Sim): void {},
-  onCommandInput(_sim: Sim, _input: SimInput): void {},
+  onCommandInput(sim: Sim, input: SimInput): void {
+    if (sim.features.commandControl) command.onCommandInput(sim, input);
+  },
   onRout(_sim: Sim, _u: Unit): void {},
   onRemove(_sim: Sim, _u: Unit): void {},
   onMoved(_sim: Sim, _u: Unit, _metres: number): void {},
@@ -61,20 +68,24 @@ export const hooks = {
   routThresholdFactor(_sim: Sim, _u: Unit): number {
     return 1;
   },
-  recoveryFactor(_sim: Sim, _u: Unit): number {
-    return 1;
+  recoveryFactor(sim: Sim, u: Unit): number {
+    let f = 1;
+    if (sim.features.commandControl) f *= command.recoveryFactor(sim, u);
+    return f;
   },
-  rallyFactor(_sim: Sim, _u: Unit): number {
-    return 1;
+  rallyFactor(sim: Sim, u: Unit): number {
+    let f = 1;
+    if (sim.features.commandControl) f *= command.rallyFactor(sim, u);
+    return f;
   },
   blownFactor(_sim: Sim, _u: Unit): number {
     return 1;
   },
-  cavLeashFactor(_sim: Sim, _u: Unit): number {
-    return 1;
+  cavLeashFactor(sim: Sim, u: Unit): number {
+    return sim.features.commandControl ? command.cavLeashFactor(sim, u) : 1;
   },
   /** Lets command and control replace the posture-driven choice. Return true if it set the unit's order. */
-  aiOverride(_sim: Sim, _u: Unit, _nearest: Unit | null, _dist: number): boolean {
-    return false;
+  aiOverride(sim: Sim, u: Unit, nearest: Unit | null, dist: number): boolean {
+    return sim.features.commandControl ? command.aiOverride(sim, u, nearest, dist) : false;
   },
 };

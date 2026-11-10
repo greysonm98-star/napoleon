@@ -149,6 +149,15 @@
     "weatherGround": false
   },
   "timeLimit": 7200,
+  "objective": {
+    "at": [
+      600,
+      1300
+    ],
+    "radius": 350,
+    "defender": "french",
+    "name": "the French position"
+  },
   "sides": [
     {
       "id": "french",

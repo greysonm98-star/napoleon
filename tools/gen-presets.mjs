@@ -37,6 +37,7 @@ for (const [key, [name, description, f, a]] of Object.entries(presets)) {
     weather: { sky: 'clear', ground: 'firm', windFrom: 270, windSpeed: 3 },
     features: { commandControl: false, fatigue: false, ammunition: false, skirmishers: false, quality: false, elevationLos: false, smoke: false, weatherGround: false },
     timeLimit: 7200,
+    objective: key === 'counter' ? { at: [600, 1300], radius: 350, defender: 'french', name: 'the French position' } : { at: [600, 400], radius: 350, defender: 'allied', name: 'the ridge' },
     sides: [
       side('french', 'French', 'blue', f[0], [0, 1], [600, 1300], 'french', f[1], f[2], f[3]),
       side('allied', 'Allied', 'red', a[0], [0, -1], [600, 400], 'allied', a[1], a[2], a[3]),
@@ -44,4 +45,50 @@ for (const [key, [name, description, f, a]] of Object.entries(presets)) {
   };
   writeFileSync(new URL(`../scenarios/${key}.json`, import.meta.url), JSON.stringify(sc, null, 2) + '\n');
 }
-console.log('wrote', Object.keys(presets).join(', '));
+// The pitched battle again, but run from written orders through a chain of command.
+{
+  const f = side('french', 'French', 'blue', 'attack_column', [0, 1], [600, 1300], 'french', 6, 4, 2);
+  f.command = {
+    id: 'fr-corps', level: 'corps', commander: { name: 'Général de corps', at: [600, 1560], initiative: 0.5 },
+    children: [
+      { id: 'fr-div', level: 'division', commander: { name: 'Général de division', initiative: 0.5 }, children: [
+        { id: 'fr-bde-1', level: 'brigade', commander: { name: 'Brigade A', initiative: 0.6 }, units: ['french-inf-1', 'french-inf-2', 'french-inf-3'] },
+        { id: 'fr-bde-2', level: 'brigade', commander: { name: 'Brigade B', initiative: 0.4 }, units: ['french-inf-4', 'french-inf-5', 'french-inf-6'] },
+      ] },
+      { id: 'fr-cav', level: 'brigade', commander: { name: 'Cavalerie', initiative: 0.7 }, units: ['french-cav-1', 'french-cav-2', 'french-cav-3', 'french-cav-4'] },
+      { id: 'fr-guns', level: 'brigade', commander: { name: 'Artillerie', initiative: 0.3 }, units: ['french-art-1', 'french-art-2'] },
+    ],
+  };
+  f.orders = [
+    { at: 0, to: 'fr-div', type: 'hold' },
+    { at: 0, to: 'fr-cav', type: 'reserve' },
+    { at: 0, to: 'fr-guns', type: 'attack' },
+    { at: 600, to: 'fr-div', type: 'attack', formation: 'column', objective: [600, 420] },
+    { when: { formationBroken: 'al-bde-1' }, to: 'fr-cav', type: 'attack' },
+  ];
+  const a = side('allied', 'Allied', 'red', 'defend', [0, -1], [600, 400], 'allied', 7, 4, 2);
+  a.command = {
+    id: 'al-hq', level: 'corps', commander: { name: 'Lieutenant-General', at: [600, 150], initiative: 0.5 },
+    children: [
+      { id: 'al-bde-1', level: 'brigade', commander: { name: 'First Brigade', initiative: 0.6 }, units: ['allied-inf-1', 'allied-inf-2', 'allied-inf-3', 'allied-art-1'] },
+      { id: 'al-bde-2', level: 'brigade', commander: { name: 'Second Brigade', initiative: 0.5 }, units: ['allied-inf-4', 'allied-inf-5', 'allied-art-2'] },
+      { id: 'al-bde-3', level: 'brigade', commander: { name: 'Reserve Brigade', initiative: 0.5 }, units: ['allied-inf-6', 'allied-inf-7'] },
+      { id: 'al-cav', level: 'brigade', commander: { name: 'Cavalry', initiative: 0.8 }, units: ['allied-cav-1', 'allied-cav-2', 'allied-cav-3', 'allied-cav-4'] },
+    ],
+  };
+  a.orders = [
+    { at: 0, to: 'al-hq', type: 'defend' },
+    { at: 0, to: 'al-cav', type: 'reserve' },
+    { at: 0, to: 'al-bde-3', type: 'reserve' },
+    { when: { formationBroken: 'al-bde-1' }, to: 'al-bde-3', type: 'attack', formation: 'line', objective: [420, 420] },
+  ];
+  const sc = {
+    format: 'napsim-scenario', version: 1, name: 'Pitched battle from written orders',
+    description: 'The pitched battle run through a chain of command. The French guns bombard for ten minutes, then the infantry division is ordered to attack in column; the cavalry is held until the Allied first brigade breaks. The Allies defend with a brigade and their cavalry in reserve.',
+    map: map(), weather: { sky: 'clear', ground: 'firm', windFrom: 270, windSpeed: 3 },
+    features: { commandControl: true, fatigue: false, ammunition: false, skirmishers: false, quality: false, elevationLos: false, smoke: false, weatherGround: false },
+    timeLimit: 7200, objective: { at: [600, 400], radius: 350, defender: 'allied', name: 'the ridge' }, sides: [f, a],
+  };
+  writeFileSync(new URL('../scenarios/pitched-orders.json', import.meta.url), JSON.stringify(sc, null, 2) + '\n');
+}
+console.log('wrote', Object.keys(presets).join(', '), 'and pitched-orders');

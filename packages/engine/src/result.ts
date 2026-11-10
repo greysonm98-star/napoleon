@@ -51,6 +51,8 @@ export interface RunResult {
   /** Side id of the winner, or 'draw'. */
   winner: string;
   endReason: EndReason;
+  /** What settled the winner: an army breaking, possession of the objective, or nothing. */
+  decidedBy: 'army_broken' | 'objective' | 'none';
   duration: number;
   sides: SideResult[];
   routs: RoutRow[];
@@ -94,12 +96,31 @@ export function summarise(sim: Sim): RunResult {
     };
   });
   let winner = 'draw';
-  if (sim.over && sim.over.losers.length === 1) winner = sim.sides[1 - sim.over.losers[0]].id;
+  let decidedBy: RunResult['decidedBy'] = 'none';
+  if (sim.over && sim.over.losers.length === 1) {
+    winner = sim.sides[1 - sim.over.losers[0]].id;
+    decidedBy = 'army_broken';
+  } else if (!sim.over && sim.scenario.objective) {
+    const ob = sim.scenario.objective;
+    const def = sim.sides.findIndex((s) => s.id === ob.defender);
+    if (def >= 0) {
+      const held = [0, 0];
+      for (const u of sim.units) {
+        if (u.status !== 'ok') continue;
+        const dx = u.x - ob.at[0];
+        const dy = u.y - ob.at[1];
+        if (dx * dx + dy * dy <= ob.radius * ob.radius) held[u.side] += u.men;
+      }
+      winner = sim.sides[held[1 - def] > held[def] ? 1 - def : def].id;
+      decidedBy = 'objective';
+    }
+  }
   return {
     scenario: sim.scenario.name,
     seed: sim.seed,
     winner,
     endReason: sim.endReason,
+    decidedBy,
     duration: sim.t,
     sides,
     routs: sim.routs.map((r) => ({ t: r.t, side: sim.sides[r.side].id, unit: sim.units[r.unit].id, name: sim.units[r.unit].name, x: r1(r.x), y: r1(r.y), kind: r.kind, topCause: r.topCause, trigger: r.trigger, rootCause: r.rootCause, rootUnit: r.rootUnit })),

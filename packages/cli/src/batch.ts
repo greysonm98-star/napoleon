@@ -49,6 +49,7 @@ export interface PointSummary {
   runs: number;
   wins: Record<string, { n: number; rate: number; lo: number; hi: number }>;
   endReasons: Record<string, number>;
+  decidedBy: Record<string, number>;
   durationMin: Dist;
   sides: Record<
     string,
@@ -80,6 +81,8 @@ function summarisePoint(point: number, params: Record<string, unknown>, rs: RunR
   }
   const endReasons: Record<string, number> = {};
   for (const r of rs) endReasons[r.endReason] = (endReasons[r.endReason] ?? 0) + 1;
+  const decidedBy: Record<string, number> = {};
+  for (const r of rs) decidedBy[r.decidedBy] = (decidedBy[r.decidedBy] ?? 0) + 1;
   const sides: PointSummary['sides'] = {};
   ids.forEach((id, i) => {
     const ss = rs.map((r) => r.sides[i]);
@@ -106,7 +109,7 @@ function summarisePoint(point: number, params: Record<string, unknown>, rs: RunR
       firstToBreak: count(firsts),
     };
   });
-  return { point, params, runs: n, wins, endReasons, durationMin: dist(rs.map((r) => r.duration / 60)), sides };
+  return { point, params, runs: n, wins, endReasons, decidedBy, durationMin: dist(rs.map((r) => r.duration / 60)), sides };
 }
 
 const pct = (v: number) => (v === v ? (v * 100).toFixed(0) + '%' : '-');
@@ -128,13 +131,13 @@ function writeOutputs(outDir: string, scenarioPath: string, scenario: Scenario, 
   const ids = scenario.sides.map((s) => s.id);
   const axisCols = axes.map((a) => `${a.scope}:${a.path}`);
   const sideCols = ['men_start', 'killed_wounded', 'prisoners', 'dispersed', 'loss_fraction', 'kw_fraction', 'units', 'units_routed', 'units_gone', 'units_formed_end', 'rallies', 'broke', 'broke_at_s', 'break_x', 'break_y', 'break_centroid_x', 'break_centroid_y', 'tip_unit'];
-  const runRows: unknown[][] = [['point', ...axisCols, 'seed', 'winner', 'end_reason', 'duration_s', ...ids.flatMap((id) => sideCols.map((c) => `${id}_${c}`)), 'first_rout_s', 'first_rout_unit', 'first_rout_cause', 'state_hash']];
+  const runRows: unknown[][] = [['point', ...axisCols, 'seed', 'winner', 'decided_by', 'end_reason', 'duration_s', ...ids.flatMap((id) => sideCols.map((c) => `${id}_${c}`)), 'first_rout_s', 'first_rout_unit', 'first_rout_cause', 'state_hash']];
   const routRows: unknown[][] = [['point', ...axisCols, 'seed', 't_s', 'side', 'unit', 'name', 'x', 'y', 'kind', 'top_cause', 'trigger', 'root_cause', 'root_unit']];
   results.forEach((rs, p) => {
     const vals = points[p].map((o) => o.value);
     for (const r of rs) {
       const first = r.routs.find((x) => x.kind !== 'army_broken');
-      runRows.push([p, ...vals, r.seed, r.winner, r.endReason, r.duration, ...r.sides.flatMap((s) => [s.startMen, s.casualties, s.captured, s.dispersed, s.lossFraction, s.casualtyFraction, s.units, s.unitsEverRouted, s.unitsGone, s.unitsFormedAtEnd, s.rallies, s.broke ? 1 : 0, s.brokeAt, s.breakX, s.breakY, s.breakCentroidX, s.breakCentroidY, s.tipUnit]), first?.t, first?.unit, first?.rootCause, r.stateHash]);
+      runRows.push([p, ...vals, r.seed, r.winner, r.decidedBy, r.endReason, r.duration, ...r.sides.flatMap((s) => [s.startMen, s.casualties, s.captured, s.dispersed, s.lossFraction, s.casualtyFraction, s.units, s.unitsEverRouted, s.unitsGone, s.unitsFormedAtEnd, s.rallies, s.broke ? 1 : 0, s.brokeAt, s.breakX, s.breakY, s.breakCentroidX, s.breakCentroidY, s.tipUnit]), first?.t, first?.unit, first?.rootCause, r.stateHash]);
       for (const x of r.routs) routRows.push([p, ...vals, r.seed, x.t, x.side, x.unit, x.name, x.x, x.y, x.kind, x.topCause, x.trigger, x.rootCause, x.rootUnit]);
     }
   });
@@ -197,7 +200,7 @@ async function cmdBatch(pos: string[], opt: Opt, sweep: boolean): Promise<void> 
       if (d.topRootCauses.length) console.log(`    ${id} routs by root cause: ${d.topRootCauses.map(([c, n]) => `${c} ${n}`).join(', ')}`);
       if (d.firstToBreak.length) console.log(`    ${id} first to break: ${d.firstToBreak.map(([c, n]) => `${c} ${n}`).join(', ')}`);
     }
-    console.log('    end reasons: ' + Object.entries(s.endReasons).map(([k, v]) => `${k} ${v}`).join(', '));
+    console.log('    end reasons: ' + Object.entries(s.endReasons).map(([k, v]) => `${k} ${v}`).join(', ') + '; decided by: ' + Object.entries(s.decidedBy).map(([k, v]) => `${k} ${v}`).join(', '));
   }
   if (violations.length) {
     console.error(`CONSERVATION VIOLATED in ${violations.length} runs, e.g. ${violations[0]}`);

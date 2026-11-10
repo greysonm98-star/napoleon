@@ -74,6 +74,8 @@ export interface CommandNode {
   name?: string;
   level: 'army' | 'corps' | 'division' | 'brigade';
   commander: CommanderSpec;
+  /** Ids of units commanded directly. An alternative to giving each unit a `parent`. */
+  units?: string[];
   children?: CommandNode[];
 }
 export interface OrderSpec {
@@ -142,6 +144,11 @@ export interface Scenario {
   weather?: Weather;
   features?: Partial<Features>;
   timeLimit: number;
+  /**
+   * Ground the attacker must take. If neither army has broken when the run ends, the attacker wins if he has
+   * more formed men within `radius` of the point than the defender, and the defender wins otherwise.
+   */
+  objective?: { at: [number, number]; radius: number; defender: string; name?: string };
   /** End the run early if nothing has moved or been hit for this long (seconds). */
   stallLimit?: number;
   sides: ScenarioSide[];

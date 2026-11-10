@@ -149,6 +149,15 @@
     "weatherGround": false
   },
   "timeLimit": 7200,
+  "objective": {
+    "at": [
+      600,
+      400
+    ],
+    "radius": 350,
+    "defender": "allied",
+    "name": "the ridge"
+  },
   "sides": [
     {
       "id": "french",
