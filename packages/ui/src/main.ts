@@ -8,8 +8,10 @@ import { EventIndex, frameFromReplay, frameFromSim, upperBound } from './model.t
 import type { Frame, FrameUnit } from './model.ts';
 import { draw, pickDist } from './render.ts';
 import type { Camera, Detail } from './render.ts';
-import { BIG, desnake, sentence } from './text.ts';
+import { BIG, ROUTINE, desnake, sentence } from './text.ts';
 import { $, clock, download, el, fmt } from './util.ts';
+import { Editor } from './editor.ts';
+import { EditorPanel } from './editor-panel.ts';
 
 // ------------------------------------------------------------------ data and scenarios
 
@@ -83,7 +85,7 @@ const now = (): number => (liveActive() ? live!.sim.t : time[slot()]);
 
 // ------------------------------------------------------------------ map view
 
-function setView(scenario: Scenario): void {
+function setView(scenario: Scenario, keepCam = false): void {
   const key = JSON.stringify(scenario.map);
   if (view && view.key === key) {
     view.scenario = scenario;
@@ -91,8 +93,10 @@ function setView(scenario: Scenario): void {
   }
   const map = buildMap(scenario.map, data);
   const ppm = Math.min(2.4, 3400 / Math.max(map.width, map.height));
+  const sameSize = !!view && view.map.width === map.width && view.map.height === map.height;
   view = { key, scenario, map, ground: paintGround(scenario, map, ppm), ppm };
   detail = null;
+  if (keepCam && sameSize) return;
   layout();
   fit();
 }
@@ -178,7 +182,21 @@ mapbox.addEventListener('drop', async (e) => {
   e.preventDefault();
   mapbox.classList.remove('drop');
   const f = e.dataTransfer?.files?.[0];
-  if (f) await loadReplayText(await f.text(), f.name);
+  if (!f) return;
+  const text = await f.text();
+  if (mode === 'editor') {
+    try {
+      const o = JSON.parse(text);
+      const sc: Scenario | undefined = o?.format === 'napsim-replay' ? o.scenario : o;
+      if (sc && sc.format === 'napsim-scenario' && sc.map) {
+        editor.load(sc, `Opened ${f.name}.`);
+        return;
+      }
+    } catch {
+      /* fall through to the replay loader's message */
+    }
+  }
+  await loadReplayText(text, f.name);
 });
 
 $('rec-go').addEventListener('click', () => {
@@ -305,10 +323,15 @@ function setMode(m: Mode): void {
     $('tab-' + k).setAttribute('aria-selected', String(k === m));
     $('panel-' + k).hidden = k !== m;
   }
+  document.body.classList.toggle('mode-editor', m === 'editor');
+  cv.style.cursor = '';
+  if (m === 'editor') editor.activate();
+  else editor.deactivate();
   if (m === 'live') {
     if (!live) prepareLive();
     else setView(live.scenario);
   } else if (m === 'replay' && fileRep) setView(fileRep.scenario);
+  if (m !== 'editor') $('hint').textContent = '';
   syncUi(true);
 }
 for (const k of ['replay', 'live', 'editor'] as Mode[]) $('tab-' + k).addEventListener('click', () => setMode(k));
@@ -372,19 +395,38 @@ const local = (e: PointerEvent | WheelEvent) => {
   const r = cv.getBoundingClientRect();
   return { x: e.clientX - r.left, y: e.clientY - r.top };
 };
+const world = (p: { x: number; y: number }) => ({ x: (p.x - cam.ox) / cam.scale, y: (p.y - cam.oy) / cam.scale });
+let edDrag = false;
 
 cv.addEventListener('pointerdown', (e) => {
   cv.setPointerCapture(e.pointerId);
   const p = local(e);
   pointers.set(e.pointerId, p);
-  if (pointers.size === 1) dragStart = { x: p.x, y: p.y, ox: cam.ox, oy: cam.oy, moved: false };
-  else if (pointers.size === 2) {
+  if (pointers.size === 1) {
+    if (mode === 'editor') {
+      const w = world(p);
+      if (editor.pointerDown(w.x, w.y, e)) {
+        edDrag = true;
+        dragStart = null;
+        return;
+      }
+    }
+    dragStart = { x: p.x, y: p.y, ox: cam.ox, oy: cam.oy, moved: false };
+  } else if (pointers.size === 2) {
     const [a, b] = [...pointers.values()];
     pinch = { d: Math.hypot(a.x - b.x, a.y - b.y) };
     if (dragStart) dragStart.moved = true;
   }
 });
 cv.addEventListener('pointermove', (e) => {
+  if (mode === 'editor') {
+    const w = world(local(e));
+    if (edDrag) {
+      editor.pointerMove(w.x, w.y, e);
+      return;
+    }
+    editor.setHover(w.x, w.y);
+  }
   if (!pointers.has(e.pointerId)) return;
   const p = local(e);
   pointers.set(e.pointerId, p);
@@ -408,10 +450,22 @@ cv.addEventListener('pointermove', (e) => {
   }
 });
 const pointerEnd = (e: PointerEvent) => {
+  if (edDrag) {
+    pointers.delete(e.pointerId);
+    edDrag = false;
+    const w = world(local(e));
+    editor.pointerUp(w.x, w.y);
+    return;
+  }
   const had = pointers.delete(e.pointerId);
   if (pointers.size < 2) pinch = null;
   if (had && pointers.size === 0 && dragStart) {
-    if (!dragStart.moved && e.type === 'pointerup') click(dragStart.x, dragStart.y, e.shiftKey);
+    if (!dragStart.moved && e.type === 'pointerup') {
+      if (mode === 'editor') {
+        const w = world(dragStart);
+        editor.click(w.x, w.y, e);
+      } else click(dragStart.x, dragStart.y, e.shiftKey);
+    }
     dragStart = null;
     cv.classList.remove('dragging');
   }
@@ -471,6 +525,13 @@ window.addEventListener('keydown', (e) => {
   const tag = (e.target as HTMLElement).tagName;
   if (tag === 'INPUT' && (e.target as HTMLInputElement).type !== 'range' && (e.target as HTMLInputElement).type !== 'checkbox') return;
   if (tag === 'SELECT' || tag === 'TEXTAREA') return;
+  if (mode === 'editor') {
+    if (editor.key(e)) {
+      e.preventDefault();
+      return;
+    }
+    if (e.key === ' ' || e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'Escape') return; // the transport keys mean nothing here
+  }
   if (e.key === ' ' && tag !== 'BUTTON' && tag !== 'LABEL') {
     e.preventDefault();
     togglePlay();
@@ -518,7 +579,7 @@ function updateLog(r: Replay | null, t: number): void {
   for (let i = n - 1; i >= 0 && shown < 60; i--) {
     const e = r.events[i];
     if (only && e.unit !== sel && e.target !== sel && e.from !== sel) continue;
-    if (!only && e.type === 'formation') continue; // routine evolutions crowd out the news
+    if (!only && ROUTINE.has(e.type)) continue; // routine evolutions crowd out the news
     const s = sentence(e, nm);
     if (!s) continue;
     const li = el('li', { class: BIG.has(e.type) ? 'big' : '' }, el('time', {}, clock(e.t)), el('b', { class: e.side === 0 ? 's0' : e.side === 1 ? 's1' : 'sn' }), el('span', {}, s));
@@ -580,7 +641,10 @@ function syncUi(force: boolean): void {
   const ts = performance.now();
   if (!force && ts - lastUi < 120) return;
   lastUi = ts;
-  const r = cur();
+  if (mode === 'editor') {
+    $('empty').hidden = true;
+    return;
+  }
   const t = now();
   const active = liveActive();
   if (active && live) liveRep = live.rec.finish(live.sim); // a live view of the recording so far
@@ -676,6 +740,19 @@ function syncUi(force: boolean): void {
   updateLog(rr, t);
 }
 
+// ------------------------------------------------------------------ editor
+
+const NONE = new Set<string>();
+const editor = new Editor({
+  data,
+  scenarios,
+  cam,
+  showScenario: (sc, keepCam) => setView(sc, keepCam),
+  loadReplay: (r, label) => loadReplay(r, label),
+  replayScenario: () => fileRep?.scenario ?? liveRep?.scenario ?? null,
+});
+new EditorPanel($('panel-editor'), editor);
+
 // ------------------------------------------------------------------ frame loop
 
 let lastTs = 0;
@@ -698,15 +775,17 @@ function frameLoop(ts: number): void {
       syncUi(true);
     }
   }
+  const inEditor = mode === 'editor';
   const rr = cur();
   const t = now();
   let frame: Frame | null = null;
-  if (liveActive() && live) frame = frameFromSim(live.sim, liveRep);
+  if (inEditor) frame = editor.frame();
+  else if (liveActive() && live) frame = frameFromSim(live.sim, liveRep);
   else if (rr && rr.times.length) frame = frameFromReplay(rr, t);
   lastFrame = frame;
   let fx: SimEvent[] = [];
   let routMarks: SimEvent[] = [];
-  const events = liveActive() && live ? live.sim.events : rr?.events;
+  const events = inEditor ? undefined : liveActive() && live ? live.sim.events : rr?.events;
   if (events && frame) {
     for (let i = upperBound(events, t) - 1; i >= 0 && events[i].t > t - 6; i--) if (events[i].type === 'fire') fx.push(events[i]);
     if (fx.length > 160) fx = fx.slice(0, 160);
@@ -727,7 +806,13 @@ function frameLoop(ts: number): void {
     paintInto(g, view.scenario, view.map);
     detail = { canvas: c, scale: cam.scale, ox: cam.ox, oy: cam.oy };
   }
-  draw(ctx, cssW, cssH, dpr, cam, view?.ground ?? null, view?.map.width ?? 1, view?.map.height ?? 1, frame, { selected: sel, highlight, fx, routMarks, showOrders: liveActive() }, detail);
+  if (inEditor) {
+    draw(ctx, cssW, cssH, dpr, cam, view?.ground ?? null, view?.map.width ?? 1, view?.map.height ?? 1, frame, { selected: editor.selectedUnit(), highlight: NONE, fx, routMarks, showOrders: false }, detail);
+    editor.drawOverlay(ctx, cam, dpr, cssW);
+    cv.style.cursor = editor.cursor();
+    const h = editor.hint();
+    if ($('hint').textContent !== h) $('hint').textContent = h;
+  } else draw(ctx, cssW, cssH, dpr, cam, view?.ground ?? null, view?.map.width ?? 1, view?.map.height ?? 1, frame, { selected: sel, highlight, fx, routMarks, showOrders: liveActive() }, detail);
   syncUi(false);
   requestAnimationFrame(frameLoop);
 }
@@ -781,5 +866,6 @@ if (url) {
     .catch((e) => ($('replay-info').textContent = `Could not load ${url}: ${e instanceof Error ? e.message : e}`));
 }
 if (q.get('mode') === 'live') setMode('live');
+if (q.get('mode') === 'editor') setMode('editor');
 syncUi(true);
 requestAnimationFrame(frameLoop);

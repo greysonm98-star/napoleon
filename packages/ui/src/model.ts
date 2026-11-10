@@ -21,6 +21,8 @@ export interface FrameUnit {
   blown: boolean;
   moving: boolean;
   manual: boolean;
+  /** Skirmishers out in front of the battalion, if any. */
+  skirm?: number;
   /** Where its current order points, if known (live runs only). */
   orderX?: number;
   orderY?: number;
@@ -123,6 +125,7 @@ export function frameFromReplay(rep: Replay, t: number): Frame {
       blown: (flags & 4) !== 0,
       moving: (flags & 8) !== 0,
       manual: false,
+      skirm: (tr as unknown as { skirm?: number[] }).skirm?.[i] ?? 0,
     };
     units.push(u);
     byId.set(u.id, u);
@@ -149,7 +152,7 @@ export function frameFromSim(sim: Sim, view: Replay | null): Frame {
         oy = s.order.y;
       }
     }
-    const u: FrameUnit = { id: s.id, name: s.name, side: s.side, arm: s.arm, x: s.x, y: s.y, f: s.f, w: s.w, d: s.d, men: s.men, startMen: s.startMen, morale: s.morale, form: s.form, status: s.status, forming: s.formT > 0, melee: s.melee, blown: s.blown > 0, moving: s.moving, manual: s.manual, orderX: ox, orderY: oy };
+    const u: FrameUnit = { id: s.id, name: s.name, side: s.side, arm: s.arm, x: s.x, y: s.y, f: s.f, w: s.w, d: s.d, men: s.men, startMen: s.startMen, morale: s.morale, form: s.form, status: s.status, forming: s.formT > 0, melee: s.melee, blown: s.blown > 0, moving: s.moving, manual: s.manual, skirm: s.skirmishers, orderX: ox, orderY: oy };
     units.push(u);
     byId.set(u.id, u);
   }

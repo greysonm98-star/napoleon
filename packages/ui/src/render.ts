@@ -56,10 +56,11 @@ function drawSmoke(ctx: CanvasRenderingContext2D, f: NonNullable<Frame['smoke']>
     const img = g.createImageData(f.cols, f.rows);
     for (let i = 0; i < f.cols * f.rows; i++) {
       const v = f.frame.charCodeAt(i) - 48;
-      img.data[i * 4] = 244;
-      img.data[i * 4 + 1] = 244;
-      img.data[i * 4 + 2] = 236;
-      img.data[i * 4 + 3] = v > 0 ? Math.min(200, 26 + v * 21) : 0;
+      // a grey wash: white smoke would not show against the paper
+      img.data[i * 4] = 104;
+      img.data[i * 4 + 1] = 110;
+      img.data[i * 4 + 2] = 108;
+      img.data[i * 4 + 3] = v > 0 ? Math.min(185, 34 + v * 19) : 0;
     }
     g.putImageData(img, 0, 0);
     smokeKey = key;
@@ -358,7 +359,9 @@ export function draw(ctx: CanvasRenderingContext2D, cssW: number, cssH: number, 
       for (const c of frame.commanders) {
         const col = C.side[c.side] ?? C.ink;
         if (c.alive && c.radius > 0) {
-          ctx.strokeStyle = c.side === 0 ? 'rgba(31,63,140,0.28)' : 'rgba(168,38,43,0.28)';
+          // brigade radii matter most on the field; the wider circles of higher commanders are kept faint
+          const a = c.level === 'brigade' ? 0.3 : 0.13;
+          ctx.strokeStyle = c.side === 0 ? `rgba(31,63,140,${a})` : `rgba(168,38,43,${a})`;
           ctx.lineWidth = 1 * px;
           ctx.setLineDash([6 * px, 5 * px]);
           ctx.beginPath();
@@ -406,6 +409,25 @@ export function draw(ctx: CanvasRenderingContext2D, cssW: number, cssH: number, 
       ctx.strokeStyle = C.paper;
       ctx.lineWidth = 0.8 * px;
       ctx.stroke();
+    }
+    // skirmish screens: a thin row of dots about 150 m ahead of the parent battalion
+    for (const u of frame.units) {
+      if (u.status !== 'ok' || !u.skirm) continue;
+      const c = Math.cos(u.f);
+      const s = Math.sin(u.f);
+      const n = Math.max(4, Math.min(16, Math.round(u.skirm / 10)));
+      const span = Math.max(u.w * 1.25, 60);
+      ctx.fillStyle = C.side[u.side] ?? C.ink;
+      ctx.globalAlpha = 0.85;
+      const h = strHash(u.id);
+      for (let i = 0; i < n; i++) {
+        const lat = (i / (n - 1) - 0.5) * span;
+        const fwd = 150 + (((h >> (i % 16)) & 3) - 1.5) * 7; // an irregular line, as skirmishers keep
+        ctx.beginPath();
+        ctx.arc(u.x + c * fwd - s * lat, u.y + s * fwd + c * lat, Math.max(1.3 * px, 1.6), 0, TAU);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
     }
     for (const u of frame.units) if (u.status !== 'ok') drawUnit(ctx, u, cam, u.id === opt.selected, opt.highlight.has(u.id), frame.t);
     for (const u of frame.units) if (u.status === 'ok') drawUnit(ctx, u, cam, u.id === opt.selected, opt.highlight.has(u.id), frame.t);

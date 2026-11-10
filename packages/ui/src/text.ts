@@ -92,6 +92,26 @@ export function sentence(e: SimEvent, n: Named): string | null {
     case 'input':
       if (e.kind === 'posture') return `Order to the ${n.sideName(e.side ?? 0)}: ${desnake(String(e.posture))}`;
       return `Order to ${who}: ${e.kind === 'unit_release' ? 'handed back to staff' : e.kind === 'unit_formation' ? `form ${e.detail}` : orderWords(e.detail, n)}`;
+    case 'order_issued':
+      return `${e.from} issues an order to ${e.commander}: ${e.order}`;
+    case 'order_sent':
+      return `A courier leaves ${e.from} for ${e.commander}: ${e.order}`;
+    case 'order_received':
+      return `${e.commander} receives the order: ${e.order}`;
+    case 'order_active':
+      return e.own ? `${e.commander} gives his own order: ${e.order}` : `${e.commander} puts the order into effect: ${e.order}${e.direct ? ' (direct)' : ''}`;
+    case 'courier_lost':
+      return `A courier to ${e.formation} is lost on the way (${e.order})`;
+    case 'initiative':
+      return `${e.commander} acts on his own: ${e.action} (${e.why})`;
+    case 'commander_down':
+      return `${e.commander} is hit; ${e.formation} is without a commander`;
+    case 'commander_replaced':
+      return `${e.commander} takes command of ${e.formation}`;
+    case 'ammunition':
+      return `${who}: ${e.state}`;
+    case 'skirmishers':
+      return e.state === 'out' ? `${who} throws out ${e.men ?? ''} skirmishers`.replace('  ', ' ') : `${who} calls in its skirmishers (${e.why})`;
     case 'end':
       return `The action ends (${desnake(String(e.reason))})`;
     default: {
@@ -112,3 +132,5 @@ function orderWords(d: unknown, n: Named): string {
 }
 
 export const BIG = new Set(['army_broken', 'end']);
+/** Routine events shown only when the log is filtered to one unit. */
+export const ROUTINE = new Set(['formation', 'skirmishers', 'order_sent']);
