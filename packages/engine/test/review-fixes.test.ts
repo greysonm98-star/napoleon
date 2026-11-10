@@ -1,4 +1,5 @@
-// Regression tests for defects found in review. Each failed before its fix.
+// Regression tests for defects found in review. All but the lost-courier test (which closes a gap in an
+// older test rather than a defect) were run against the code as it stood before the fixes and failed there.
 import { describe, expect, it } from 'vitest';
 import * as engine from '../src/index.ts';
 import type { Scenario } from '../src/index.ts';
@@ -48,7 +49,7 @@ describe('orders', () => {
     const d = freshData();
     (d.command as Record<string, number>).courierLossChance = 0;
     // marching north under orders of the day when a new destination is sent after them
-    const sim = createSim(brigade([{ at: 0, to: 'hq', type: 'move', objective: [1000, 600] }, { at: 30, to: 'bde', type: 'move', objective: [1500, 1300] }]), d, 2);
+    const sim = createSim(brigade([{ at: 0, to: 'hq', type: 'move', objective: [1000, 600] }, { at: 30, to: 'hq', type: 'move', objective: [1500, 1300] }]), d, 2); // via headquarters: it takes effect there first, then is passed down
     hold(sim, 'r1');
     run(sim, 2400);
     const cx = (unit(sim, 'b1').x + unit(sim, 'b2').x) / 2;
@@ -126,7 +127,7 @@ describe('baseline rules', () => {
   it('a battalion in melee does not start changing formation', () => {
     const changed = rate(20, (seed) => {
       // red line locked in melee with a blue column; blue cavalry then comes within square-forming distance
-      const sim = createSim(field({ units: [{ type: INF, at: [1000, 1030], formation: 'column' }, { type: 'cavalry_squadron', at: [1250, 1150] }] }, { units: [{ type: BR, at: [1000, 1000], formation: 'line' }] }), freshData(), seed, { events: 'full' });
+      const sim = createSim(field({ units: [{ type: INF, at: [1000, 1026], formation: 'column' }, { type: 'cavalry_squadron', at: [1150, 1085] }] }, { units: [{ type: BR, at: [1000, 1000], formation: 'line' }] }), freshData(), seed, { events: 'full' }); // cavalry inside the 140 m at which infantry forms square
       sim.data.morale.routThreshold = -1e9;
       attack(sim, 'b1', 'r1');
       hold(sim, 'b2');
