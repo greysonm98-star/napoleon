@@ -44,8 +44,11 @@ export interface ReplayCommander {
   name: string;
   side: number;
   level: string;
+  radius: number;
+  parent: string | null;
   x: number[];
   y: number[];
+  /** One character per sample: a alive, d down. */
   alive: string;
 }
 
@@ -58,12 +61,16 @@ export interface Replay {
   scenario: Scenario;
   inputs: SimInput[];
   sampleInterval: number;
+  /** Simulation time of each sample, seconds. Every per-sample array below is aligned with this. */
   times: number[];
   units: ReplayUnit[];
   tracks: Record<string, ReplayTrack>;
+  /** Present when command and control is on. */
   commanders?: ReplayCommander[];
-  couriers?: { t: number; pts: number[] }[];
-  smoke?: { cell: number; cols: number; rows: number; frames: (number[] | null)[] };
+  /** Per sample: flat list of x, y, side for each courier on the road. */
+  couriers?: number[][];
+  /** Present when smoke is on. One frame every `every` samples; each frame is rows x cols digits 0-9 (density x 9), row by row. */
+  smoke?: { cell: number; cols: number; rows: number; every: number; frames: string[] };
   events: SimEvent[];
   result: RunResult;
 }

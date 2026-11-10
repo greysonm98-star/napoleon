@@ -137,9 +137,9 @@ describe('artillery', () => {
 
   it('guns are helpless once infantry reaches them', () => {
     const lost = rate(SEEDS, (seed) => {
-      const sim = createSim(field({ units: [{ type: INF_FR, at: [1000, 1060], formation: 'column' }] }, { units: [{ type: GUNS, at: [1000, 1000] }] }), freshData(), seed);
+      const sim = createSim(field({ units: [{ type: INF_FR, at: [1000, 1030], formation: 'column' }] }, { units: [{ type: GUNS, at: [1000, 1000] }] }), freshData(), seed);
       attack(sim, 'b1', 'r1');
-      run(sim, 200);
+      run(sim, 60);
       return unit(sim, 'r1').status === 'gone';
     });
     expect(lost).toBe(1);
@@ -255,15 +255,15 @@ describe('morale', () => {
 
   it('a routed unit rallies when unpursued, but not when weak or pressed', () => {
     const mk = (men: number, pursuer: boolean) => {
-      const sim = createSim(field({ units: [{ type: INF_FR, at: [1000, 1000], men: 600 }, { type: INF_FR, at: [100, 1900] }, { type: INF_FR, at: [1900, 1900] }] }, { units: pursuer ? [{ type: INF_BR, at: [1000, 800] }, { type: CAV, at: [1000, 960] }] : [{ type: INF_BR, at: [1000, 300] }] }), freshData(), 1);
+      const sim = createSim(field({ units: [{ type: INF_FR, at: [1000, 600], men: 600 }, { type: INF_FR, at: [100, 1900] }, { type: INF_FR, at: [1900, 1900] }] }, { units: pursuer ? [{ type: INF_BR, at: [1000, 400] }, { type: CAV, at: [1000, 560] }] : [{ type: INF_BR, at: [1000, 250] }] }), freshData(), 1);
       for (const u of sim.units) hold(sim, u.id).reload = 1e9;
       const b = unit(sim, 'b1');
       b.casualties = 600 - men;
       b.men = men;
-      b.morale = 10;
+      b.morale = 19;
       if (pursuer) attack(sim, 'r2', 'b1');
       let rallied = false;
-      run(sim, 400, () => {
+      run(sim, 900, () => {
         if (b.status === 'ok' && b.everRouted) rallied = true;
       });
       return rallied;
