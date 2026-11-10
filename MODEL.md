@@ -101,7 +101,8 @@ divisional column, which had no room to do either; it is used by the d'Erlon sce
 is complete the unit cannot move or fire and is treated as "forming" in melee and
 when charged.
 
-**Distance between units** is the gap between their rectangles (zero if they overlap).
+**Distance between units** is the exact gap between their rectangles (zero if they
+overlap).
 
 **Flank and rear.** An attacker within `frontArc` (60°) of the target's facing is in
 front; out to `flankArc` (132°) is the flank; beyond is the rear. A square has no flank.
@@ -159,8 +160,9 @@ of that phase. Fractions of a man are carried forward per unit, so men stay whol
 ### 5.1 Musketry
 
 A formed battalion that is halted, loaded, not in melee and not changing formation
-fires at the nearest formed enemy within `openFireRange` (135 m) and within 40° of its
-front (a square fires in any direction). A battery counts as 40 m farther when
+picks the nearest formed enemy within `openFireRange` (135 m). It fires if that
+enemy is within 40° of its front (a square fires in any direction); otherwise it
+holds its fire and wheels toward it. A battery counts as 40 m farther when
 choosing. Units already in melee are not fired on.
 
 ```
@@ -282,7 +284,7 @@ attacked by cavalry, and it still cuts down routed troops it is touching.
 **Loss from casualties:**
 
 ```
-Δmorale = −(men lost / starting men × 100) × casualtyShock (1) × cause factor × q
+Δmorale = −(men lost / starting men × 100) × casualtyShock (3) × cause factor × q
           × 0.5 for gun crews
 cause factor: musketry in front 1.0; musketry in flank or rear 1.6;
               musketry on a column within 75 m 2.15; roundshot 1.2; canister 1.4; melee 1.5
@@ -291,16 +293,24 @@ cause factor: musketry in front 1.0; musketry in flank or rear 1.6;
 **Rout.** At or below 20 a formed unit routs. A battery is abandoned and removed. A
 routed battalion counts as a column-sized mob. When a unit routs or is destroyed,
 every formed friend within `rippleRadius` (250 m) loses 7 × its q, and every formed
-enemy within it gains 4.
+enemy within it gains 4. A routed unit that is later scattered (below 12% strength)
+shakes its neighbours a second time; that shock is recorded as caused by its
+original rout.
 
 **Flight and rally.** A routed unit runs toward its rear. While no formed enemy is
-within 350 m it recovers 0.86 morale/s up to 60. It rallies on reaching 48 if it
-still has 30% of its starting men, has rallied fewer than twice, and its army has not
-broken. A rallied battalion re-forms in line in 20 s. A routed unit that leaves the
+within 350 m it recovers 0.05 morale/s up to 60. It rallies on reaching 48 if it
+still has 30% of its starting men and has rallied fewer than twice. No unit of either
+side rallies once an army has broken. A rallied battalion re-forms in line in 20 s. A routed unit that leaves the
 map or falls below 12% strength is gone and its men are counted as dispersed.
 
 **Recovery.** A formed unit not in melee and not hit for 35 s recovers 0.19 morale/s,
 up to `100 × (0.5 + 0.5 × men / starting men)`.
+
+**Deciding undecided battles.** A scenario may name an objective and its defender.
+If neither army has broken when the run ends, the attacker wins if he has more
+formed men within the objective's radius than the defender; otherwise the defender
+wins. Results record which rule decided (`decidedBy`). This applies whatever
+features are on, and every bundled scenario names an objective.
 
 **Army break.** When the formed units of an army fall to 40% of its starting number
 (`armyBreakFraction` 0.6 broken), it breaks: every remaining unit routs. If both
@@ -323,7 +333,10 @@ Following those links gives the chain across units. Each rout also carries:
   of that friend's rout, followed back to the first unit in the chain.
 
 Event types: `morale`, `rout`, `destroyed`, `guns_abandoned`, `gone`, `rally`,
-`contact`, `formation`, `fire`, `blown`, `army_broken`, `input`, `end`. Batch runs
+`contact`, `formation`, `fire`, `blown`, `army_broken`, `input`, `end`; and from the
+features: `order_issued`, `order_sent`, `order_received`, `order_active`,
+`order_stale`, `courier_lost`, `initiative`, `commander_down`, `commander_replaced`,
+`ammunition`, `skirmishers`. Batch runs
 keep only the summary events; recorded runs keep all of them.
 
 ## 9. Unit behaviour
@@ -378,6 +391,9 @@ everything can see everything; line of sight comes with the elevation feature.
 
 ## 11. Plausibility: corrections made and problems still open
 
+All figures in this section and the next were re-run after the review fixes of
+section 11.5, with 200 runs per point on the same seeds unless stated.
+
 ### 11.1 Corrections made
 
 Two coefficients ported from the prototype gave results well outside the historical
@@ -395,82 +411,113 @@ by 7, rallied a broken battalion in about 35 seconds and sent it back into the
 attack; battalions routed, rallied and re-attacked three times in half an hour.
 Regaining the 28 points needed to rally now takes about nine minutes.
 
-Effect on the pitched-battle preset (200 runs; French attack a ridge in line):
+Effect on the pitched-battle preset (French attack a ridge in line):
 
 | | Prototype values | A only | A and B |
 |---|---|---|---|
-| Allied win | 100% | 100% | 100% |
-| Median duration | 28 min | 33 min | 15 min |
-| French killed and wounded | 61% | 49% | 17% |
-| French total loss | 81% | 72% | 29% |
-| Allied killed and wounded | 12% | 9% | 3% |
+| Allied win | 98% | 73% | 94% |
+| Median duration | 30 min | 31 min | 16 min |
+| French killed and wounded | 71% | 48% | 23% |
+| French total loss | 87% | 68% | 38% |
+| Allied killed and wounded | 19% | 14% | 5% |
 
-Column against line (200 runs), with A and B: the columns are repulsed every time,
-losing 12% against 2%, and the cause recorded for nearly every rout is close musketry
-on the column. That is the Peninsular pattern.
+Column against line, with A and B: the columns are repulsed every time, losing 13%
+against 2%, and the cause recorded for nearly every rout is close musketry on the
+column. That is the Peninsular pattern.
 
 ### 11.2 Still open
 
-1. **Attackers do worse than in the prototype.** See the table below. At real scale
-   a battalion spends about eight times as long inside canister range and twice as
-   long inside musket range as the prototype's did, because the prototype's units
-   moved several times too fast for its weapon ranges. The direction is plausible:
-   an unprepared frontal attack on a ridge with guns should usually fail.
+1. **Attackers do worse than in the prototype.** See 11.3. At real scale a battalion
+   spends about eight times as long inside canister range and twice as long inside
+   musket range as the prototype's did, because the prototype's units moved several
+   times too fast for its weapon ranges. The direction is plausible: an unprepared
+   frontal attack on a ridge with guns should usually fail.
 2. **Numbers do not help a column attack.** Twelve battalions attacking four in
-   column lose as surely as four do. They arrive in waves of four, each column
-   meets a fresh line alone, breaks within ten seconds of contact, and the army
-   gives up when two waves have gone. A 3:1 attack that never succeeds is doubtful.
+   column lose as surely as four do. Each column meets a fresh line alone and breaks
+   within seconds of contact, and the army gives up when enough have gone. A 3:1
+   attack that never succeeds is doubtful.
 3. **Unlimited canister.** With no ammunition limit a battery fires canister for as
-   long as a target stands in range. Canister is the leading cause of French routs
-   in the pitched battle, and its trial-to-battle factor is the most influential
-   single coefficient found so far (sweep below). The ammunition feature limits it.
+   long as a target stands in range. The ammunition feature limits it.
 4. **Melee losses.** Smaller than before change A but still several percent per
    side in a few seconds. Period evidence is that bayonet fights were rare, short
    and caused few casualties.
 5. **Melee has no randomness.** Its outcome is fixed by the state at contact, so
    infantry-only scenarios vary very little between seeds (duration p10 to p90 of
-   the column preset: 18.4 to 18.5 min).
+   the column preset: 15.5 to 15.6 min).
 6. **Infantry fire passes through friends.** No masking by friendly units.
 7. **A battalion knows when cavalry has picked it as a target.** Kept from the prototype.
 8. **Attack in line deploys inside canister range.** `deployRange` (300 m) was
    outside canister range in the prototype and is inside it at real ranges.
-
-9. **Canister is probably about twice too effective, and too concentrated.** The
-   historical check in `CALIBRATION.md` shows two batteries breaking eleven
-   battalions on the slope at Waterloo, where the guns hurt the columns but did not
-   stop them. At half the canister factor the action resembles the record. The
+9. **Canister is probably too effective, and too concentrated.** The historical
+   check in `CALIBRATION.md` shows two batteries breaking eleven battalions on the
+   slope at Waterloo, where the guns hurt the columns but did not stop them. The
    factor has not been changed on the strength of one action.
 10. **Roundshot stops at the first unit it hits.** A deep mass of several battalions
     is no worse a target than one.
 11. **Cavalry prefers guns and charges them frontally**, then stands blown in front
     of them.
+12. **Some numbers remain in code.** Review found coefficients outside the data
+    files; the model-bearing ones were moved (11.5). What remains is numerical:
+    arrival tolerances (7 m for a march, 10 m for a courier), the 5-second cadence of
+    several checks, minimum drawn footprints, the half-round threshold for "out of
+    ammunition", and the default 1,200 s stalemate limit, which a scenario can set.
 
 ### 11.3 Port against prototype
 
 Share of runs won by the French. The prototype column is its own simulation run
-headless (`tools/prototype-baseline.mjs`, 200 runs). "none" is no decision in two hours.
+headless (`tools/prototype-baseline.mjs`, 200 runs).
 
 | Preset | Prototype | Port, prototype values | Port, with A and B |
 |---|---|---|---|
-| Pitched battle (French attack in line) | 34% | 0% | 0% |
+| Pitched battle (French attack in line) | 34% | 2% | 6% |
 | Column against line | 8% | 0% | 0% |
-| Cavalry against squares (with two batteries) | 97% | 100% | 99% |
-| The grand battery | 64% | 61%, none 25% | 99% |
+| Cavalry against squares (with two batteries) | 97% | 100% | 100% |
+| The grand battery | 64% | 77% | 97% |
 | Allied counterattack (French defend) | 60% | 100% | 100% |
 
-### 11.4 Sensitivity (Phase 2 sweeps, 150-200 runs per point, same seeds at every point)
+In the grand-battery column with prototype values, 12% of runs reach the two-hour
+limit with neither army broken and are awarded on the objective (to the defender).
+
+### 11.4 Sensitivity
 
 | Coefficient | Scenario | Values | Effect |
 |---|---|---|---|
-| Canister battlefield factor | Pitched | 0.025, 0.05, 0.1, 0.2 | French win 21%, 2%, 0%, 0% (prototype morale values) |
-| Musket battlefield factor, both sides | Pitched | 0.02, 0.04, 0.08 | None: the attack is decided by canister before musketry matters |
-| Musket battlefield factor, defender | Column | 0.01, 0.02, 0.04, 0.08 | French win 3%, 0%, 0%, 0%; Allied loss 10%, 6%, 2%, 0% |
-| `casualtyShock` | Pitched | 1, 2, 3, 4, 6 | French killed and wounded 61%, 56%, 49%, 42%, 30%; winner unchanged |
-| `rippleFriend` | Pitched | 0, 7, 14, 21 | No visible effect on the winner |
-| `blownTime` | Pitched | 60, 300, 900 s | No visible effect on the winner |
-| French batteries | Pitched | 0, 2, 4, 6 | French win 0%, 0%, 0%, 3%; battle lasts 14, 15, 19, 22 min |
+| Canister battlefield factor | Pitched | 0.025, 0.05, 0.1, 0.2 | French win 17%, 10%, 6%, 0%; battle lasts 22, 21, 16, 14 min |
+| Musket battlefield factor, defender | Pitched | 0.02, 0.04, 0.08 | French win 9%, 6%, 3% |
+| Musket battlefield factor, defender | Column | 0.01, 0.02, 0.04, 0.08 | French win 17%, 0%, 0%, 0%; Allied loss 12%, 7%, 2%, 0% |
+| `casualtyShock` | Pitched | 1, 2, 3, 4, 6 | French killed and wounded 51%, 32%, 23%, 19%, 14%; French win 0%, 2%, 6%, 0%, 0% |
+| `rippleFriend` | Pitched | 0, 7, 14, 21 | French win 9%, 6%, 3%, 1%; battle lasts 17.9, 16.4, 15.7, 15.1 min |
+| `blownTime` | Pitched | 60, 300, 900 s | French win 6%, 6%, 3% |
+| French batteries | Pitched | 0, 2, 4, 6 | French win 0%, 6%, 7%, 12%; battle lasts 15, 16, 19, 19 min |
 | French battalions | Column | 4 to 12 | French win 0% throughout (item 2 above) |
-| French posture | Pitched | line, column | No difference in the winner or in losses |
+| French posture | Pitched | line, column | French win 6%, 0%; battle lasts 16.4, 14.7 min |
+
+With 200 runs a share near 5% has a 95% interval of roughly 3% to 10%, so
+differences of a few points between neighbouring rows are not established.
+
+### 11.5 Changes after review
+
+Three independent reviews of the finished code found defects that were then fixed.
+Those that changed results:
+
+- **Distances between units were underestimated beyond 320 m** for units not facing
+  each other squarely. This inflated long-range artillery (which reads its hit
+  chance from the distance) and distorted which enemy counted as nearest. Fixing it
+  moved most numbers: the grand battery now takes about 65 minutes to win, not 35.
+- **Units in melee could start changing formation** (a slip inherited from the
+  prototype, where it cost 3.5 s; here it cost up to 150 s as "forming").
+- **Orders could be overtaken by older ones**, formations drifted off their
+  objectives under delayed orders, and subordinates lost their own orders when a
+  superior's temporary order lapsed (12.1).
+- **Detached skirmishers were not counted in a battalion's strength**; skirmish fire
+  ignored rain, quality and sight.
+- **Infantry pursuers took every loss as a prisoner**, not 70%.
+- **The first-volley bonus was granted again after resupply.**
+
+Moved from code into the data files: gun reload jitter, the stagger of opening
+volleys, the delay on an initiative order, the "formation broken" share, the
+headquarters' distance behind an army with no command structure, the most of a
+battalion that may skirmish, and three smoke constants.
 
 ## 12. Deeper-model features
 
@@ -488,7 +535,9 @@ Parameters: `data/command.json`. All are assumptions; no quantitative source was
 each with a commander who has a position, a command radius, an initiative rating and
 a staff delay. Units belong to a formation. If the scenario gives no tree, one is
 made: a headquarters 300 m behind the army, infantry brigades of four battalions,
-one cavalry brigade per wing, and guns attached to the nearest brigade.
+one cavalry brigade per wing, and guns attached to the nearest brigade. Any unit a
+scenario leaves without a formation is attached the same way. A formation or order
+that names a unit or formation which does not exist is an error.
 
 A brigadier rides 80 m behind the centre of his formed units; a higher commander
 200 m behind the centre of his subordinates; the top commander stays where the
@@ -513,13 +562,19 @@ opens. Any later order goes through the chain:
 5. A unit adopts its formation's order when it is inside the command radius of a
    living commander in its chain. Until then it keeps its previous order.
 
+Orders are numbered as they are issued. A formation that has accepted an order
+from above discards any older one that reaches it later (a slow staff, or a lost
+courier's repeat), and anything its own commander was about to do on his initiative.
+
 Default staff delays: army and corps 240 s, division 150 s, brigade 60 s. Default
 radii: 1,500, 1,200, 800 and 400 m.
 
 **What an order does to a unit.** It sets the unit's posture (attack in line or in
 column for `attack`, defend for everything else) and may give it a place to go: the
-objective, shifted by the unit's offset from its formation's centre when the order
-took effect, so formations keep their shape.
+objective, shifted by the unit's offset from the centre of the addressed formation's
+formed units at the moment the order first took effect. The offsets are fixed then,
+so a formation keeps its shape and ends centred on the objective however late the
+order reaches its units and wherever they have marched meanwhile.
 
 - `attack` with an objective: march on it in column until formed enemy is within
   `engageRadius` (500 m), then fight as the posture says.
@@ -537,7 +592,12 @@ choosing targets) still apply inside whatever the order allows.
 **Initiative.** Every `initiativeInterval` (60 s) each subordinate commander reviews
 his formation. If a reason to act exists he acts with probability equal to his
 initiative; the new order takes half his staff delay and goes to his units and
-subordinates in the usual way.
+subordinates in the usual way. A temporary order (a halt, a counter-attack) lapses
+at a fixed time. When it does, every formation that received it goes back to what
+it was itself doing before, which need not be what its superior was doing.
+
+The ranges in the table are chosen once for the whole formation: the cavalry
+figure if more than half its formed units are cavalry, the infantry figure otherwise.
 
 | Situation | What he may do |
 |---|---|
@@ -560,36 +620,36 @@ radius. In between, the formation has no commander: no orders pass, and its unit
 are out of command unless a higher commander's radius covers them.
 
 **Player orders** go to a formation through the same chain from the top commander,
-unless marked direct.
+unless marked direct. Changing a side's posture from outside becomes an order to
+its whole army and travels the same way.
 
-**Deciding undecided battles.** A scenario may name an objective and its defender.
-If neither army has broken when the run ends, the attacker wins if he has more
-formed men within the objective's radius than the defender; otherwise the defender
-wins. Results record which rule decided (`decidedBy`).
+A quiet field is not called a stalemate while a timed order is still to come or an
+order is on its way.
 
-**Effect** (200 runs each, same seeds):
+**Effect**:
 
 | Scenario | Off | On |
 |---|---|---|
-| Pitched battle, no written orders | Allied win 100%, 15 min, French K/W 17% | Allied win 100% (89% by breaking the French, the rest on the objective), 20 min, French K/W 25% |
-| Column against line | Allied 100%, French loss 12% | Allied 100%, French loss 13% |
-| Allied counterattack | French 100% | French 99% |
+| Pitched battle, no written orders | Allied win 94%, 16.4 min, French K/W 23% | Allied win 99% (94% by breaking the French, the rest on the objective), 15.9 min, French K/W 23% |
+| Column against line | Allied 100%, French loss 13% | Allied 100%, French loss 13% |
+| Allied counterattack | French 100%, Allied loss 33% | French 100%, Allied loss 38% |
 
 With orders dated 0 and no written plan the feature changes little: its effects come
-from commanders halting or pulling back beaten formations, which lengthens battles.
+from commanders halting or pulling back beaten formations.
 
 `scenarios/pitched-orders.json` shows the rest: the French guns bombard for ten
 minutes, then the division is ordered to attack in column. In a typical run the
 order is issued at 10:00, leaves headquarters at 14:06, takes effect at the division
 at 16:24 and at the two brigades at 18:05 and 18:34. The attack is repulsed and the
-division commander pulls it back on his own initiative; the Allies win on the
-objective in 99% of runs and the French army itself breaks in only 1%. Sweeping the
-corps staff delay (30, 240, 900 s) and courier speed (2, 5 m/s) does not change who
-wins here, because the defenders have nothing to do but wait.
+division commander usually pulls it back on his own initiative. The Allies win every
+time: in 74% of runs on the objective at the two-hour limit, and in 26% because the
+French army breaks. French loss is 61% (34% killed and wounded). Sweeping the corps
+staff delay (30, 240, 900 s) and courier speed (2, 5 m/s) does not change who wins
+(98% to 100%), because the defenders have nothing to do but wait.
 
 Implausible or weak points:
 - After a repulse the guns of both sides go on firing for the rest of the two hours
-  (French total loss 54%), because ammunition is unlimited until the next feature.
+  (French total loss 61%), because ammunition is unlimited until the next feature.
 - Commanders know the state of their units exactly and at once.
 - Initiative has only the three behaviours in the table.
 
@@ -624,7 +684,8 @@ the charge bonus.
   1 round a man per volley, a French line 0.67 (its third rank does not fire), a
   column about 0.2. Below half a round the battalion cannot fire, and one attacking
   in line goes in with the bayonet instead of halting to shoot.
-- The first volley of the day hits 1.5 times as hard (`firstVolleyBonus`).
+- The first volley of the day hits 1.5 times as hard (`firstVolleyBonus`). It is
+  given once: not again after resupply.
 - Fouling builds over 25 volleys. Fully fouled, reload time is × 1.5 and hits × 0.8.
 - A battalion with no formed enemy within 400 m for 600 s is brought back up to half
   a load from its reserve, once, and its barrels count as clean again.
@@ -633,22 +694,27 @@ the charge bonus.
   roundshot at close range; with roundshot gone it can fire only inside canister
   range. Guns are not resupplied.
 
-**Effect** (200 runs each, same seeds):
+**Effect**:
 
 | Scenario | Neither | Ammunition | Fatigue | Both |
 |---|---|---|---|---|
-| Pitched battle: duration, French K/W | 15.4 min, 17% | 15.4 min, 17% | 15.8 min, 17% | 15.9 min, 17% |
-| Grand battery: French win | 99% | 92% | 96% | 95% |
-| Written orders: duration, Allied loss | 120 min, 39% | 76 min, 37% | 120 min, 39% | 77 min, 34% |
+| Pitched battle: French win, duration | 6%, 16.4 min | 7%, 16.4 min | 0%, 16.5 min | 0%, 16.3 min |
+| Grand battery: French win | 97% | 1% | 75% | 41% |
+| Written orders: duration, Allied loss | 120 min, 41% | 75 min, 24% | 120 min, 39% | 77 min, 18% |
 
-Both features matter little in actions that are over in a quarter of an hour, which
-is itself plausible: battalions rarely emptied their pouches in one attack.
-Ammunition ends the two-hour mutual bombardment noted in 12.1 (the guns fall silent
-after about 75 minutes) and takes some of the edge off the grand battery.
+Neither matters much in an action that is over in a quarter of an hour, which is
+itself plausible: battalions rarely emptied their pouches in one attack. In the slow
+grand-battery action ammunition decides the result: the guns need about an hour to
+break the defenders and carry roundshot for less, so with a limit they almost never
+win. (With both features on the French win 41%; fatigue weakens the defenders'
+recovery under fire.) Ammunition also ends the mutual bombardment noted in 12.1:
+the guns fall silent after about 75 minutes.
 
 Implausible or weak points:
 - Canister is still not the limit it should be in short actions: twenty rounds a gun
   last eight minutes of continuous fire, longer than most assaults.
+- Guns are never resupplied, so in a long action roundshot runs out after about 50
+  minutes; a real battery drew on caissons in rear.
 - No battery is ever resupplied or relieved, and no caisson can be hit.
 - Fatigue has no effect on the willingness to advance, only on performance.
 
@@ -662,35 +728,39 @@ companies are below this simulator's resolution.
 
 - **Strength.** A share of the battalion's men: French line 0.16 (one company in
   six), British line 0.10, French light 0.33, British rifles 0.5. A scenario may set
-  a number per unit. While out, those men are counted as detached: the formed body
-  is that much smaller, with a shorter front and fewer muskets.
+  a number per unit, up to `maxFraction` (0.6) of the battalion. While out, those
+  men are counted as detached: the formed body is that much smaller, with a shorter
+  front and fewer muskets. They still count toward the battalion's strength for
+  every other purpose (the 12% destruction line, the recovery ceiling, holding an
+  objective, side totals).
 - **Out and in.** The screen goes out when formed enemy is within 500 m, but not within 90 s of having come in. It comes in
   when formed enemy infantry is within 180 m of the battalion (the screen is driven
   in), when unblown enemy cavalry is within 350 m, when the battalion forms square,
   enters melee or routs, or when no enemy is near. The survivors rejoin the ranks.
 - **Fire.** The screen works 150 m ahead of the battalion. Every 30 s each
   skirmisher fires one aimed round at the nearest formed enemy within 160 m of the
-  screen: hit chance `trial curve × 0.05`, × 0.5 against gun crews, × the target's
-  cover. Casualties count as frontal musketry for morale.
+  screen that the battalion can see: hit chance `trial curve × 0.05`, × 0.5 against
+  gun crews, × the target's cover, × the weather's musketry factor and the unit's
+  quality when those features are on. Casualties count as frontal musketry for morale.
 - **Screen against screen.** If the target battalion has its own screen out, the two
   screens engage each other man for man, at a quarter of the hit chance (men in
   extended order are hard to hit). Only the surplus skirmishers fire at the formed
-  body. Equal screens cancel; the stronger one gets through in proportion.
+  body. Equal screens cancel; the stronger one gets through in proportion. Losses
+  between screens are applied together, like all other losses.
 
 A French battalion's 96 skirmishers, unopposed, cause roughly 4 casualties a minute.
 
-**Effect** (200 runs each, same seeds):
+**Effect**:
 
 | Scenario | Off | On |
 |---|---|---|
-| Pitched battle | Allied 100%, French K/W 17% | Allied 100%, French K/W 17% |
-| Column against line | Allied 100%, French loss 12% | Allied 100%, French loss 12% |
-| Grand battery | French 99%, 35 min | French 68%, 95 min |
+| Pitched battle | Allied 94%, French K/W 23% | Allied 96%, French K/W 23% |
+| Column against line | Allied loss 2% | Allied loss 3% |
+| Grand battery | French 97% in 65 min | French 100% in 51 min |
 
-In a quick assault the screens are out for only a few minutes and change nothing
-measurable. In the slow grand-battery action they matter: the Allied screens wear
-down the French infantry and gun crews in front of the ridge, and the French win far
-less often and far more slowly.
+In a quick assault the screens are out for only a few minutes and change little. In
+the slow grand-battery action the attackers' screens add steady losses to the
+bombardment, and the defenders break sooner.
 
 Implausible or weak points:
 - Skirmishers cannot be hurt by volleys or artillery, only by other skirmishers.
@@ -719,11 +789,11 @@ the class also scales five other things:
 Fire applies to musketry and gunnery. Drill time applies to every change of
 formation, and so to how early a battalion must start forming square (9.1).
 
-**Effect** (200 runs each, same seeds): no change in who wins the pitched battle or
-the column preset, whose rosters are mostly line troops with a few better and worse
-battalions on each side. In a stand-up firefight between a guard and a militia
-battalion the guard inflicts more than 1.4 times the casualties it takes with the
-toggle on, and the two are equal with it off (test `quality.test.ts`).
+**Effect**: in the pitched battle the French win 6% of runs with the toggle off and
+2% with it on (the Allied roster has more good battalions); the column preset does
+not change. In a stand-up firefight between a guard and a militia battalion the
+guard inflicts more than 1.4 times the casualties it takes with the toggle on, and
+the two are equal with it off (test `quality.test.ts`).
 
 Implausible or weak points:
 - Quality is fixed for the battle; units do not gain or lose it.
@@ -752,17 +822,18 @@ against cavalry as before. The army is assumed to know roughly where the enemy i
 line of march: speed loses 25% per 10% of uphill grade, up to 60%. Level and
 downhill movement is not slowed.
 
-**Effect** (200 runs each, same seeds):
+**Effect**:
 
 | Scenario | Off | On |
 |---|---|---|
-| Pitched battle (defenders on the crest) | Allied 100%; Allied loss 8%, K/W 3% | Allied 100%; Allied loss 4%, K/W 2% |
-| Reverse slope (infantry 130 m behind the crest, guns on it) | Allied 100%; Allied loss 12%, K/W 4%; 19 min | Allied 100%; Allied loss 5%, K/W 2%; 16 min |
-| Grand battery | French 99% in 35 min | French 94% in 71 min |
+| Pitched battle (defenders on the crest) | Allied loss 12%, K/W 5% | Allied loss 7%, K/W 4% |
+| Reverse slope (infantry 130 m behind the crest, guns on it) | Allied win 97%; Allied loss 21%, K/W 10%; 33 min | Allied win 100%; Allied loss 9%, K/W 4%; 40 min |
+| Grand battery | French win 97% in 65 min | French win 2%; most runs undecided at two hours and awarded to the defender |
 
 Drawing the infantry behind the crest more than halves its losses once sight lines
-are modelled, and does nothing without them. The grand battery takes twice as long
-to win, because its guns must find targets they can see.
+are modelled. The grand battery almost never wins when its guns must see their
+targets. I have not traced which sight lines are blocked; the ridge is the obvious
+candidate.
 
 Implausible or weak points:
 - Sight is from centre to centre: a long line partly behind a crest is all seen or all hidden.
@@ -786,19 +857,20 @@ the effect of fire through it.
   the weather feature is on), and exchanges 4% with each neighbour.
 - **Effect on fire.** Musketry and artillery are multiplied by
   `1 / (1 + optical depth)`, where optical depth is density summed along the line
-  from muzzle to target in units of one cell, plus half the density at the muzzle.
-- **Effect on sight.** At optical depth above 4 the target cannot be seen: no fire,
-  no cavalry charge, no initiative against it.
+  from muzzle to target in units of one cell (trapezoid rule), plus half the
+  density at the muzzle.
+- **Effect on sight.** At optical depth above 4 along the line between two units,
+  neither can see the other: no fire, no cavalry charge, no initiative against it.
 
-**Effect** (200 runs each, same seeds):
+**Effect**:
 
 | Scenario | Off | On, wind 3 m/s |
 |---|---|---|
-| Pitched battle | Allied 100%; French K/W 17% | Allied 100%; French K/W 16% |
-| Column against line: Allied loss | 2% | 3% |
+| Pitched battle | 16.4 min; French K/W 23% | 17.5 min; French K/W 23% |
+| Column against line: Allied loss | 2% | 4% |
 
-Column against line with smoke on, by wind speed: Allied loss 4% in still air, 3% at
-3 m/s, 2% at 8 m/s. In a ten-minute stand-up firefight at 80 m, fire in still air
+Column against line with smoke on, by wind speed: Allied loss 4% in still air, 4% at
+3 m/s, 3% at 8 m/s. In a ten-minute stand-up firefight at 80 m, fire in still air
 does under 70% of the damage it does with no smoke, and a stiff wind restores most
 of it (test `smoke-weather.test.ts`).
 
@@ -835,14 +907,14 @@ for the ball burying itself instead of bounding on; canister is unaffected. The
 limit of sight applies to fire, to cavalry choosing targets and to initiative,
 whether or not the elevation feature is on.
 
-**Effect** (200 runs each, same seeds, feature on):
+**Effect** (feature on):
 
 | Scenario | Condition | Result |
 |---|---|---|
-| Grand battery | firm, mud | French win 99%, 3% |
-| Pitched battle | firm, soft, mud | Allied 100% throughout; 15.4, 16.2, 18.6 min |
-| Column against line | clear, rain, heavy rain | French win 0%, 0%, 4%; Allied loss 2%, 5%, 10% |
-| Pitched battle | fog | Allied win on the objective in 47 min; French lose 6 of 12 units one at a time; Allied casualties nil |
+| Grand battery | firm, mud | French win 97%, 3% |
+| Pitched battle | firm, soft, mud | French win 6%, 0%, 0%; 16.4, 16.9, 18.8 min |
+| Column against line | clear, rain, heavy rain, fog | French win 0%, 0%, 17%, 0%; Allied loss 2%, 6%, 12%, 2% |
+| Pitched battle | fog | Allied win on the objective in 38 min in every run; French lose 6 of 12 units one at a time; Allied casualties nil |
 
 Mud all but cancels the grand battery, which is the Waterloo lesson. Heavy rain is
 the only condition found so far in which columns ever beat lines.

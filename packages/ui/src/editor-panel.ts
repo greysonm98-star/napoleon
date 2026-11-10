@@ -174,8 +174,7 @@ export class EditorPanel {
       try {
         const o = JSON.parse(await f.text());
         const sc: Scenario | undefined = o?.format === 'napsim-replay' ? o.scenario : o;
-        if (!sc || sc.format !== 'napsim-scenario' || !sc.map || !Array.isArray(sc.sides)) throw new Error('not a napsim scenario file');
-        ed.load(sc, `Opened ${f.name}.`);
+        ed.load(sc as Scenario, `Opened ${f.name}.`); // throws, with the reason, if it cannot be used
       } catch (e) {
         ed.status = `Could not open ${f.name}: ${e instanceof Error ? e.message : e}`;
         this.render();

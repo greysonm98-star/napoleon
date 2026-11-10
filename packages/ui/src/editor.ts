@@ -21,6 +21,18 @@ export type Sel =
 
 export type Tool = 'select' | 'unit' | 'elev' | 'poly' | 'hill' | 'road' | 'label' | 'objective';
 
+/** Why a parsed file cannot be edited as a scenario, or '' if it can. Guards every way a scenario gets in. */
+export function unusableScenario(sc: unknown): string {
+  const s = sc as Scenario | undefined;
+  if (!s || typeof s !== 'object' || s.format !== 'napsim-scenario') return 'not a napsim scenario file';
+  const m = s.map;
+  if (!m || !(m.width > 0) || !(m.height > 0) || !(m.cellSize > 0)) return 'its map needs a positive width, height and cell size';
+  if (m.width / m.cellSize > 2000 || m.height / m.cellSize > 2000) return 'its map grid is too fine to draw';
+  if (!Array.isArray(s.sides) || s.sides.length !== 2) return 'it needs exactly two sides';
+  for (const side of s.sides) if (!side || typeof side !== 'object' || !Array.isArray(side.rear)) return 'each side needs an id, a posture and a rear direction';
+  return '';
+}
+
 export interface EditorHost {
   data: Data;
   scenarios: { key: string; sc: Scenario }[];
@@ -113,7 +125,7 @@ export class Editor {
       const saved = localStorage.getItem(STORE);
       if (saved) {
         const o = JSON.parse(saved) as Scenario;
-        if (o && o.format === 'napsim-scenario' && o.map && Array.isArray(o.sides)) sc = o;
+        if (!unusableScenario(o)) sc = o; // a broken stored copy is ignored, not restored
       }
     } catch {
       /* storage unavailable: start from a bundled scenario */
@@ -143,6 +155,8 @@ export class Editor {
   }
 
   load(sc: Scenario, note: string): void {
+    const why = unusableScenario(sc);
+    if (why) throw new Error(why);
     this.pushUndo();
     this.sc = structuredClone(sc);
     this.sel = null;
@@ -177,6 +191,10 @@ export class Editor {
   private fixSelection(): void {
     const s = this.sel;
     if (!s) return;
+    if ((s.kind === 'unit' && !this.findUnit(s.id)) || (s.kind === 'commander' && !this.findNode(s.id))) {
+      this.sel = null;
+      return;
+    }
     const m = this.sc.map;
     if ((s.kind === 'feature' && !(m.features ?? [])[s.i]) || (s.kind === 'hill' && !(m.hills ?? [])[s.i]) || (s.kind === 'road' && !(m.roads ?? [])[s.i]) || (s.kind === 'label' && !(m.labels ?? [])[s.i]) || (s.kind === 'objective' && !this.sc.objective)) this.sel = null;
   }
@@ -329,7 +347,7 @@ export class Editor {
         s.units = ex
           .filter((u) => u.side === i)
           .map((u) => {
-            const o: ScenarioUnit = { id: u.id, name: u.name, type: u.type, at: [r0(u.x), r0(u.y)], facing: Math.round(radToBearing(u.facing)), men: u.men, quality: u.quality };
+            const o: ScenarioUnit = { id: u.id, name: u.name, type: u.type, at: [u.x, u.y], facing: Math.round(radToBearing(u.facing) * 1000) / 1000, men: u.men, quality: u.quality };
             if (u.formation) o.formation = u.formation;
             const parent = u.parent ?? listed.get(u.id);
             if (parent) o.parent = parent;

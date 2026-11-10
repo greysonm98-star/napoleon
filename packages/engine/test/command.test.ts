@@ -117,6 +117,8 @@ describe('command and control', () => {
     const a = runToEnd(createSim(sc, freshData(), 9));
     const b = runToEnd(createSim(sc, freshData(), 9));
     expect(a.stateHash).toBe(b.stateHash);
+    // pinned: the documented numbers for this scenario are stale if this moves (tools/rerun-documented-numbers.sh)
+    expect(a.stateHash).toMatchSnapshot();
     const off = loadScenario('pitched');
     const on = structuredClone(off);
     on.features = { ...on.features, commandControl: true };

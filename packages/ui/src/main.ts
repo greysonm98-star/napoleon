@@ -10,7 +10,7 @@ import { draw, pickDist } from './render.ts';
 import type { Camera, Detail } from './render.ts';
 import { BIG, ROUTINE, desnake, sentence } from './text.ts';
 import { $, clock, download, el, fmt } from './util.ts';
-import { Editor } from './editor.ts';
+import { Editor, unusableScenario } from './editor.ts';
 import { EditorPanel } from './editor-panel.ts';
 
 // ------------------------------------------------------------------ data and scenarios
@@ -48,6 +48,8 @@ interface Live {
 }
 
 let mode: Mode = 'replay';
+/** Bumped whenever a different recording or run is shown, so cached marks, logs and smoke are rebuilt. */
+let viewEpoch = 0;
 let fileRep: Replay | null = null;
 let liveRep: Replay | null = null;
 let live: Live | null = null;
@@ -144,17 +146,18 @@ function zoomAt(px: number, py: number, k: number): void {
 
 function isReplay(o: unknown): o is Replay {
   const r = o as Replay;
-  return !!r && r.format === 'napsim-replay' && Array.isArray(r.times) && !!r.tracks && !!r.scenario;
+  return !!r && r.format === 'napsim-replay' && Array.isArray(r.times) && !!r.tracks && !!r.scenario && Array.isArray(r.units) && Array.isArray(r.events) && !!r.result && Array.isArray(r.scenario.sides) && !!r.scenario.map;
 }
 
 function loadReplay(r: Replay, label: string): void {
+  setView(r.scenario); // throws on a scenario that cannot be drawn, before anything is replaced
   fileRep = r;
+  viewEpoch++;
   time.replay = 0;
   playing = false;
   sel = null;
   highlight = new Set();
   if (mode !== 'replay') setMode('replay');
-  setView(r.scenario);
   $('replay-info').textContent = `${label}: ${r.scenario.name}, seed ${r.seed}, ${r.times.length} samples, ${fmt(r.events.length)} events (engine ${r.engineVersion}, data ${r.dataHash}).`;
   syncUi(true);
 }
@@ -162,7 +165,7 @@ function loadReplay(r: Replay, label: string): void {
 async function loadReplayText(text: string, label: string): Promise<void> {
   try {
     const o = JSON.parse(text);
-    if (!isReplay(o)) throw new Error('not a napsim replay file');
+    if (!isReplay(o)) throw new Error('not a complete napsim replay file (it needs times, units, tracks, events, a scenario and a result)');
     loadReplay(o, label);
   } catch (e) {
     $('replay-info').textContent = `Could not open ${label}: ${e instanceof Error ? e.message : e}`;
@@ -188,13 +191,14 @@ mapbox.addEventListener('drop', async (e) => {
     try {
       const o = JSON.parse(text);
       const sc: Scenario | undefined = o?.format === 'napsim-replay' ? o.scenario : o;
-      if (sc && sc.format === 'napsim-scenario' && sc.map) {
-        editor.load(sc, `Opened ${f.name}.`);
-        return;
-      }
-    } catch {
-      /* fall through to the replay loader's message */
+      const why = unusableScenario(sc);
+      if (why) throw new Error(why);
+      editor.load(sc!, `Opened ${f.name}.`);
+    } catch (err) {
+      editor.status = `Could not open ${f.name}: ${err instanceof Error ? err.message : err}`;
+      editor.requestRender();
     }
+    return;
   }
   await loadReplayText(text, f.name);
 });
@@ -229,6 +233,7 @@ function liveScenario(): Scenario {
 
 /** Build a fresh sim from the Live panel's settings, drawn up and waiting. */
 function prepareLive(): void {
+  viewEpoch++;
   const sc = liveScenario();
   try {
     const sim = createSim(sc, data, Number($<HTMLInputElement>('live-seed').value) | 0, { events: 'full' });
@@ -294,12 +299,13 @@ $('live-save').addEventListener('click', () => {
 });
 for (const id of ['live-scenario', 'live-seed']) $(id).addEventListener('change', () => {
   if (id === 'live-scenario') syncLiveSettings();
+  if (live && live.done) return; // keep the finished run and its recording; the change applies on Restart
   prepareLive();
 });
 for (const i of [0, 1]) $('live-post' + i).addEventListener('change', (e) => {
   const p = (e.target as HTMLSelectElement).value as Posture;
   if (live && live.started && !live.done) applyInput(live.sim, { kind: 'posture', side: live.sim.sides[i].id, posture: p });
-  else prepareLive();
+  else if (!(live && live.done)) prepareLive();
 });
 
 function order(input: Parameters<typeof applyInput>[1]): void {
@@ -359,6 +365,14 @@ function stepBy(dir: number): void {
   }
   syncUi(true);
 }
+/** The first recorded moment at or after an event, so the view shows its result and not the instant before. */
+function afterEvent(t: number): number {
+  const r = cur();
+  if (!r) return t;
+  for (const s of r.times) if (s >= t) return s;
+  return t;
+}
+
 function seek(t: number): void {
   if (liveActive() || !cur()) return;
   time[slot()] = Math.max(0, Math.min(endTime(), t));
@@ -504,7 +518,7 @@ function pick(px: number, py: number): FrameUnit | null {
 function click(px: number, py: number, shift: boolean): void {
   const hit = pick(px, py);
   const selU = sel && lastFrame ? lastFrame.byId.get(sel) : undefined;
-  if (liveActive() && live!.started && selU && selU.status === 'ok' && !shift) {
+  if (liveActive() && live!.started && selU && selU.status === 'ok' && !shift && $<HTMLInputElement>('live-orders').checked) {
     if (hit && hit.side !== selU.side) {
       order({ kind: 'unit_order', unit: selU.id, order: { type: 'attack', target: hit.id } });
       return;
@@ -535,10 +549,10 @@ window.addEventListener('keydown', (e) => {
   if (e.key === ' ' && tag !== 'BUTTON' && tag !== 'LABEL') {
     e.preventDefault();
     togglePlay();
-  } else if (e.key === 'ArrowRight' && tag !== 'INPUT') {
+  } else if (e.key === 'ArrowRight' && tag !== 'INPUT' && tag !== 'BUTTON' && tag !== 'SELECT') {
     e.preventDefault();
     stepBy(1);
-  } else if (e.key === 'ArrowLeft' && tag !== 'INPUT') {
+  } else if (e.key === 'ArrowLeft' && tag !== 'INPUT' && tag !== 'BUTTON' && tag !== 'SELECT') {
     e.preventDefault();
     stepBy(-1);
   } else if (e.key === 'Escape') {
@@ -569,7 +583,7 @@ function updateLog(r: Replay | null, t: number): void {
   const ol = $('log');
   const only = $<HTMLInputElement>('log-filter').checked && sel;
   const n = r ? upperBound(r.events, t) : 0;
-  const sig = `${mode}|${n}|${only ? sel : ''}|${r ? r.seed + r.scenario.name : ''}`;
+  const sig = `${mode}|${n}|${only ? sel : ''}|${viewEpoch}`;
   if (sig === logSig) return;
   logSig = sig;
   ol.textContent = '';
@@ -587,7 +601,7 @@ function updateLog(r: Replay | null, t: number): void {
     const act = () => {
       if (e.unit) sel = e.unit;
       playing = false;
-      seek(e.t);
+      seek(afterEvent(e.t));
       syncUi(true);
     };
     li.addEventListener('click', act);
@@ -603,7 +617,7 @@ function updateLog(r: Replay | null, t: number): void {
 function drawMarks(r: Replay | null, end: number): void {
   const mc = $<HTMLCanvasElement>('marks');
   const w = Math.round(mc.getBoundingClientRect().width);
-  const sig = `${w}|${idx.marks.length}|${Math.round(end)}|${r ? r.seed : ''}`;
+  const sig = `${w}|${idx.marks.length}|${Math.round(end)}|${viewEpoch}`;
   if (sig === marksSig) return;
   marksSig = sig;
   const d = Math.min(2, window.devicePixelRatio || 1);
@@ -632,7 +646,9 @@ function drawMarks(r: Replay | null, end: number): void {
 function resultText(r: Replay): string {
   const res = r.result;
   const loser = res.sides.find((s) => s.broke && res.winner !== s.id);
-  const head = res.endReason === 'mutual_break' ? 'Both armies break' : loser ? `The ${loser.name} army breaks` : res.endReason === 'stalemate' ? 'Stalemate' : 'No decision';
+  const winner = res.sides.find((s) => s.id === res.winner);
+  const what = r.scenario.objective?.name ?? 'the objective';
+  const head = res.endReason === 'mutual_break' ? 'Both armies break' : loser ? `The ${loser.name} army breaks` : res.decidedBy === 'objective' && winner ? `The ${winner.name} army holds ${what}` : res.endReason === 'stalemate' ? 'Stalemate' : 'No decision';
   const sides = res.sides.map((s) => `${s.name}: ${fmt(s.casualties)} killed and wounded, ${fmt(s.captured)} prisoners, ${fmt(s.dispersed)} dispersed of ${fmt(s.startMen)}`).join('. ');
   return `${head}|${res.winner === 'draw' ? '' : `${res.sides.find((s) => s.id === res.winner)?.name} victory in ${clock(res.duration)}. `}${sides}.`;
 }
@@ -694,7 +710,7 @@ function syncUi(force: boolean): void {
   // live panel
   const running = !!live && live.started && !live.done;
   $('live-start').textContent = live && live.started ? 'Restart' : 'Start';
-  ($('live-save') as HTMLButtonElement).disabled = !(live && live.started);
+  ($('live-save') as HTMLButtonElement).disabled = !(live && live.done);
   for (const k of FEATURE_KEYS) $<HTMLInputElement>('feat-' + k).disabled = running;
   $<HTMLSelectElement>('live-scenario').disabled = running;
   $<HTMLInputElement>('live-seed').disabled = running;
@@ -725,7 +741,7 @@ function syncUi(force: boolean): void {
           sel = unit;
           if (tt !== undefined) {
             playing = false;
-            seek(tt);
+            seek(afterEvent(tt));
           }
           syncUi(true);
         },
@@ -756,7 +772,22 @@ new EditorPanel($('panel-editor'), editor);
 // ------------------------------------------------------------------ frame loop
 
 let lastTs = 0;
+let lastFrameError = '';
 function frameLoop(ts: number): void {
+  requestAnimationFrame(frameLoop);
+  try {
+    frameBody(ts);
+    lastFrameError = '';
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    if (msg !== lastFrameError) {
+      lastFrameError = msg;
+      console.error(e);
+      $('hint').textContent = `Could not draw this (${msg}). Load another file or scenario.`;
+    }
+  }
+}
+function frameBody(ts: number): void {
   const dt = Math.min(0.1, (ts - lastTs) / 1000 || 0);
   lastTs = ts;
   if (liveActive() && live) {
@@ -814,7 +845,6 @@ function frameLoop(ts: number): void {
     if ($('hint').textContent !== h) $('hint').textContent = h;
   } else draw(ctx, cssW, cssH, dpr, cam, view?.ground ?? null, view?.map.width ?? 1, view?.map.height ?? 1, frame, { selected: sel, highlight, fx, routMarks, showOrders: liveActive() }, detail);
   syncUi(false);
-  requestAnimationFrame(frameLoop);
 }
 
 // ------------------------------------------------------------------ start-up

@@ -33,7 +33,7 @@ function hachures(g: CanvasRenderingContext2D, map: GameMap, rnd: () => number):
     if (e < lo) lo = e;
     if (e > hi) hi = e;
   }
-  if (!(hi - lo > 2)) return;
+  if (!(hi - lo > 0.5)) return;
   const interval = niceInterval(hi - lo);
   const step = Math.max(6, Math.min(12, Math.min(W, H) / 110));
   const cols = Math.ceil(W / step);

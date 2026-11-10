@@ -104,7 +104,7 @@ export function frameFromReplay(rep: Replay, t: number): Frame {
     if (!tr || tr.x.length <= i) continue;
     const jj = Math.min(tr.x.length - 1, j);
     const status = STATUS[tr.status[i]] ?? 'ok';
-    const flags = tr.flags[i] ?? 0;
+    const flags = tr.flags?.[i] ?? 0; // absent in replays from before flags were recorded
     const u: FrameUnit = {
       id: m.id,
       name: m.name,

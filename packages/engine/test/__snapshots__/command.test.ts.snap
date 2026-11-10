@@ -1,3 +1,5 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`command and control > is deterministic, and with the toggle off the baseline is untouched 1`] = `"c3b58a60"`;
+exports[`command and control > is deterministic, and with the toggle off the baseline is untouched 1`] = `"61ded6aa"`;
+
+exports[`command and control > is deterministic, and with the toggle off the baseline is untouched 2`] = `"c3b58a60"`;
