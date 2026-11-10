@@ -41,9 +41,32 @@ export function strHash(s: string): number {
   return h >>> 0;
 }
 
+interface ArtifactDownloads {
+  save(req: { filename: string; data: string }): Promise<{ status: string }>;
+}
+/** Present when the page is open in the claude.ai artifact viewer, which blocks ordinary downloads. */
+const viewer = (window as unknown as { claude?: { use?: (name: string) => Promise<unknown> } }).claude;
+const viewerDownloads: Promise<ArtifactDownloads | null> | null = viewer?.use ? (viewer.use('downloads') as Promise<ArtifactDownloads | null>).catch(() => null) : null;
+
+/**
+ * Offer a text file to the viewer. In the artifact viewer this goes through its save prompt (the
+ * viewer may decline, which is not an error); everywhere else it is an ordinary browser download.
+ */
 export function download(name: string, text: string): void {
+  if (viewerDownloads) {
+    void viewerDownloads.then(async (dl) => {
+      if (!dl) return console.warn('Saving files is not available in this view.');
+      try {
+        await dl.save({ filename: name, data: text });
+      } catch (e) {
+        const code = (e as { code?: string })?.code;
+        if (code !== 'declined') console.warn(`Could not save ${name}: ${code ?? e}`);
+      }
+    });
+    return;
+  }
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+  a.href = URL.createObjectURL(new Blob([text], { type: name.endsWith('.csv') ? 'text/csv' : 'application/json' }));
   a.download = name;
   document.body.append(a);
   a.click();

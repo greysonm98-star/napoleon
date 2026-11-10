@@ -89,6 +89,8 @@ switched per scenario in its `features` block: `commandControl`, `fatigue`,
 `tools/gen-presets.mjs` and `tools/gen-derlon.mjs` regenerate the scenario files.
 `tools/prototype-baseline.mjs` runs the original prototype headless for comparison.
 `tools/derlon-report.mjs <out dir>` breaks a d'Erlon batch down by formation.
+`tools/build-artifact.mjs <dir>` packs the built interface into one page for publishing as
+a claude.ai artifact (`npx vite build packages/ui` first).
 `tools/rerun-documented-numbers.sh` re-runs every batch quoted in `MODEL.md` and
 `CALIBRATION.md`; run it after changing the engine or the data.
 
