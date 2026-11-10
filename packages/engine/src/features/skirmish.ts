@@ -13,11 +13,12 @@ const K = (sim: Sim): Record<string, number> => sim.data.skirmish as Record<stri
 interface SkState {
   next: Float64Array;
   want: Int32Array; // override count from the scenario, -1 for the type's default
+  inAt: Float64Array; // when the screen last came in
 }
 
 export function init(sim: Sim, expanded: ExpandedUnit[]): void {
   if (!sim.data.skirmish) throw new Error("skirmishers are on but data file 'skirmish.json' is missing");
-  const st: SkState = { next: new Float64Array(sim.n), want: new Int32Array(sim.n).fill(-1) };
+  const st: SkState = { next: new Float64Array(sim.n), want: new Int32Array(sim.n).fill(-1), inAt: new Float64Array(sim.n).fill(-1e9) };
   expanded.forEach((e, i) => {
     if (e.skirmishers !== null) st.want[i] = e.skirmishers;
     st.next[i] = (i * 7) % 30;
@@ -38,6 +39,7 @@ function recall(sim: Sim, u: Unit, why: string): void {
   u.detached -= u.skirmishers;
   u.skirmishers = 0;
   u.skirmishOut = false;
+  (sim.ext.skirmish as SkState).inAt[u.idx] = sim.t;
   setDims(u);
   refreshGeom(u);
   if (sim.eventLevel === 'full') emit(sim, { type: 'skirmishers', unit: u.id, side: u.side, state: 'in', why });
@@ -77,7 +79,7 @@ export function update(sim: Sim): void {
         } else if (e.arm === 'inf' && g < nearFoot) nearFoot = g;
       }
       const want = u.form !== 'square' && !u.melee && nearFormed < k.deployRange && nearFoot > k.recallGap && nearCav > k.cavalryRecallRange;
-      if (want && u.skirmishers === 0 && u.formT <= 0) {
+      if (want && u.skirmishers === 0 && u.formT <= 0 && sim.t - st.inAt[u.idx] >= k.redeployDelay) {
         const frac = u.ut.skirmishFraction ?? 0;
         let out = st.want[u.idx] >= 0 ? st.want[u.idx] : Math.round(u.men * frac);
         if (out > u.men - 50) out = Math.max(0, u.men - 50);

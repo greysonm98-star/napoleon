@@ -55,7 +55,7 @@ function cmdRun(pos: string[], opt: Record<string, string[]>): void {
     if (opt.log) {
       const name = (id: unknown) => (typeof id === 'string' ? sim.byId.get(id)?.name ?? id : '');
       for (const e of sim.events) {
-        if (e.type === 'fire' || e.type === 'morale') continue;
+        if (e.type === 'fire' || e.type === 'morale' || e.type === 'skirmishers') continue;
         const who = e.unit ? name(e.unit) : e.side !== undefined ? sim.sides[e.side].name : '';
         let what = e.type;
         if (e.type === 'rout') what = `ROUT (${e.topCause}${e.rootUnit && e.rootUnit !== e.unit ? `, root: ${e.rootCause} on ${name(e.rootUnit)}` : ''})`;
@@ -63,6 +63,7 @@ function cmdRun(pos: string[], opt: Record<string, string[]>): void {
         else if (e.type === 'formation') what = `forms ${e.to} (${e.time}s)`;
         else if (e.type === 'gone') what = `gone (${e.reason})`;
         else if (e.type === 'army_broken') what = 'ARMY BREAKS';
+        else if (e.type === 'ammunition') what = String(e.state);
         else if (e.type === 'initiative') what = `${e.commander} acts on his own: ${e.action} (${e.why})`;
         else if (e.type.startsWith('order_') || e.type === 'courier_lost') what = `${e.type.replace('_', ' ')}: ${e.order} -> ${e.formation}${e.own ? ' (own initiative)' : ''}`;
         else if (e.type.startsWith('commander_')) what = `${e.commander} ${e.type === 'commander_down' ? 'is hit' : 'takes command'} (${e.formation})`;

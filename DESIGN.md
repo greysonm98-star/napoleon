@@ -1,6 +1,6 @@
 # Napoleonic battalion-level battle simulator — design
 
-Status: **approved; in build.** This is the plan as agreed, amended where the
+Status: **built.** All five phases are done; see `README.md` to run it. This is the plan as agreed, amended where the
 prototype and the source check changed it (marked "Amended"). `MODEL.md` is the
 record of what the engine actually does; where the two differ, `MODEL.md` is right.
 

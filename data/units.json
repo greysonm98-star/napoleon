@@ -225,5 +225,25 @@
       "confidence": "assumption",
       "note": "Riflemen and light infantry fought largely in extended order. The rifle itself is not modelled; the unit fires as musket-armed."
     }
+  },
+  "fr_battalion_massed": {
+    "label": "French battalion in a massed divisional column",
+    "arm": "inf",
+    "doctrine": "french_massed",
+    "weapon": "charleville_1777",
+    "men": {
+      "value": 600,
+      "unit": "men",
+      "source": "prototype",
+      "confidence": "prototype",
+      "note": "Prototype battalion. A field-strength battalion of the period."
+    },
+    "skirmishFraction": {
+      "value": 0.16,
+      "unit": "fraction of men",
+      "source": "nafziger-bayonets",
+      "confidence": "recalled",
+      "note": "One voltigeur company in six. Used only when the skirmisher feature is on."
+    }
   }
 }

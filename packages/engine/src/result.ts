@@ -45,6 +45,22 @@ export interface RoutRow {
   rootUnit: string;
 }
 
+export interface UnitRow {
+  id: string;
+  name: string;
+  side: string;
+  formation: string | null;
+  arm: string;
+  startMen: number;
+  men: number;
+  casualties: number;
+  captured: number;
+  dispersed: number;
+  status: string;
+  everRouted: boolean;
+  rallies: number;
+}
+
 export interface RunResult {
   scenario: string;
   seed: number;
@@ -56,6 +72,7 @@ export interface RunResult {
   duration: number;
   sides: SideResult[];
   routs: RoutRow[];
+  units: UnitRow[];
   stateHash: string;
 }
 
@@ -124,6 +141,7 @@ export function summarise(sim: Sim): RunResult {
     duration: sim.t,
     sides,
     routs: sim.routs.map((r) => ({ t: r.t, side: sim.sides[r.side].id, unit: sim.units[r.unit].id, name: sim.units[r.unit].name, x: r1(r.x), y: r1(r.y), kind: r.kind, topCause: r.topCause, trigger: r.trigger, rootCause: r.rootCause, rootUnit: r.rootUnit })),
+    units: sim.units.map((u) => ({ id: u.id, name: u.name, side: sim.sides[u.side].id, formation: u.parent, arm: u.arm, startMen: u.startMen, men: u.men + u.detached, casualties: u.casualties, captured: u.captured, dispersed: u.dispersed, status: u.status, everRouted: u.everRouted, rallies: u.rallies })),
     stateHash: stateHash(sim),
   };
 }

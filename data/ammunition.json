@@ -1,24 +1,115 @@
 {
   "cartridges": {
-    "french": { "value": 50, "unit": "rounds per man", "source": "assumption", "confidence": "assumption", "note": "Commonly given as 50-60. A web check found the giberne itself held only 30-35; the rest was carried in the pack. Unverified." },
-    "british": { "value": 60, "unit": "rounds per man", "source": "muir-tactics", "confidence": "secondary", "note": "Sixty-round pouch (confirmed by secondary web pages, search snippet)." }
+    "french": {
+      "value": 50,
+      "unit": "rounds per man",
+      "source": "assumption",
+      "confidence": "assumption",
+      "note": "Commonly given as 50-60. A web check found the giberne itself held only 30-35; the rest was carried in the pack. Unverified."
+    },
+    "british": {
+      "value": 60,
+      "unit": "rounds per man",
+      "source": "muir-tactics",
+      "confidence": "secondary",
+      "note": "Sixty-round pouch (confirmed by secondary web pages, search snippet)."
+    },
+    "french_massed": {
+      "value": 50,
+      "unit": "rounds per man",
+      "source": "assumption",
+      "confidence": "assumption",
+      "note": "Commonly given as 50-60. A web check found the giberne itself held only 30-35; the rest was carried in the pack. Unverified."
+    }
   },
   "guns": {
     "field_8pdr": {
-      "roundshot": { "value": 80, "unit": "rounds per gun", "source": "kiley-artillery", "confidence": "recalled", "note": "Trail chest plus one caisson with the battery. Further caissons in the park are not modelled. Unverified." },
-      "canister": { "value": 20, "unit": "rounds per gun", "source": "kiley-artillery", "confidence": "recalled", "note": "About a fifth to a quarter of the ready ammunition. Unverified." }
+      "roundshot": {
+        "value": 80,
+        "unit": "rounds per gun",
+        "source": "kiley-artillery",
+        "confidence": "recalled",
+        "note": "Trail chest plus one caisson with the battery. Further caissons in the park are not modelled. Unverified."
+      },
+      "canister": {
+        "value": 20,
+        "unit": "rounds per gun",
+        "source": "kiley-artillery",
+        "confidence": "recalled",
+        "note": "About a fifth to a quarter of the ready ammunition. Unverified."
+      }
     },
     "heavy_12pdr": {
-      "roundshot": { "value": 57, "unit": "rounds per gun", "source": "kiley-artillery", "confidence": "secondary", "note": "Gribeauval 12-pdr: 9 in the trail chest and 48 in one caisson (Wikipedia, Canon de 12 Gribeauval; search snippet)." },
-      "canister": { "value": 20, "unit": "rounds per gun", "source": "kiley-artillery", "confidence": "secondary", "note": "20 canister in one caisson (same source)." }
+      "roundshot": {
+        "value": 57,
+        "unit": "rounds per gun",
+        "source": "kiley-artillery",
+        "confidence": "secondary",
+        "note": "Gribeauval 12-pdr: 9 in the trail chest and 48 in one caisson (Wikipedia, Canon de 12 Gribeauval; search snippet)."
+      },
+      "canister": {
+        "value": 20,
+        "unit": "rounds per gun",
+        "source": "kiley-artillery",
+        "confidence": "secondary",
+        "note": "20 canister in one caisson (same source)."
+      }
     }
   },
-  "firstVolleyBonus": { "value": 1.5, "unit": "multiplier", "source": "assumption", "confidence": "assumption", "note": "A battalion's first volley was loaded at leisure and fired from clean barrels (Muir and Nosworthy, from memory). The size of the advantage is a guess." },
-  "foulingRounds": { "value": 25, "unit": "volleys", "source": "assumption", "confidence": "assumption", "note": "Volleys after which barrels are fully fouled and flints worn. Commonly put at 20-30." },
-  "foulingSlowdown": { "value": 0.5, "unit": "fraction when fully fouled", "source": "assumption", "confidence": "assumption", "note": "Reload time is multiplied by 1 + this x fouling: 2 rounds a minute falls to 1.3. Consistent with '2-3 at first, 1-2 sustained'." },
-  "foulingMisfire": { "value": 0.2, "unit": "fraction when fully fouled", "source": "assumption", "confidence": "assumption", "note": "Hits are multiplied by 1 - this x fouling. A clean flintlock already misfired about one round in six (secondary: Wikipedia and 1834 British trials, search snippet); that is inside the battlefield factor." },
-  "resupplyTime": { "value": 600, "unit": "s", "source": "assumption", "confidence": "assumption", "note": "A battalion with no formed enemy within resupplyDistance for this long is refilled from its reserve cartridges." },
-  "resupplyDistance": { "value": 400, "unit": "m", "source": "assumption", "confidence": "assumption", "note": "See resupplyTime." },
-  "resupplyFraction": { "value": 0.5, "unit": "fraction of full load", "source": "assumption", "confidence": "assumption", "note": "Brought up to at least this share of a full load." },
-  "maxResupplies": { "value": 1, "unit": "count", "source": "assumption", "confidence": "assumption", "note": "The battalion's own reserve, once. Guns are not resupplied." }
+  "firstVolleyBonus": {
+    "value": 1.5,
+    "unit": "multiplier",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "A battalion's first volley was loaded at leisure and fired from clean barrels (Muir and Nosworthy, from memory). The size of the advantage is a guess."
+  },
+  "foulingRounds": {
+    "value": 25,
+    "unit": "volleys",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Volleys after which barrels are fully fouled and flints worn. Commonly put at 20-30."
+  },
+  "foulingSlowdown": {
+    "value": 0.5,
+    "unit": "fraction when fully fouled",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Reload time is multiplied by 1 + this x fouling: 2 rounds a minute falls to 1.3. Consistent with '2-3 at first, 1-2 sustained'."
+  },
+  "foulingMisfire": {
+    "value": 0.2,
+    "unit": "fraction when fully fouled",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Hits are multiplied by 1 - this x fouling. A clean flintlock already misfired about one round in six (secondary: Wikipedia and 1834 British trials, search snippet); that is inside the battlefield factor."
+  },
+  "resupplyTime": {
+    "value": 600,
+    "unit": "s",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "A battalion with no formed enemy within resupplyDistance for this long is refilled from its reserve cartridges."
+  },
+  "resupplyDistance": {
+    "value": 400,
+    "unit": "m",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "See resupplyTime."
+  },
+  "resupplyFraction": {
+    "value": 0.5,
+    "unit": "fraction of full load",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Brought up to at least this share of a full load."
+  },
+  "maxResupplies": {
+    "value": 1,
+    "unit": "count",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "The battalion's own reserve, once. Guns are not resupplied."
+  }
 }

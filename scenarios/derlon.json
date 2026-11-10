@@ -1,0 +1,1083 @@
+{
+  "format": "napsim-scenario",
+  "version": 1,
+  "name": "D'Erlon's attack, Waterloo, 18 June 1815 (centre)",
+  "description": "Donzelot's and Marcognet's divisions of d'Erlon's I Corps attack Wellington's left centre after a bombardment by part of the grand battery. Bijlandt's Netherlands brigade stands on the crest; Kempt's and Pack's brigades of Picton's division lie behind it; the Union Brigade is in reserve. La Haye Sainte and the Papelotte flank are outside the map. The clock starts at 13:00. See CALIBRATION.md.",
+  "map": {
+    "width": 1400,
+    "height": 2400,
+    "cellSize": 25,
+    "hills": [
+      {
+        "x": 700,
+        "y": 540,
+        "rx": 1100,
+        "ry": 330,
+        "height": 18
+      },
+      {
+        "x": 700,
+        "y": 1330,
+        "rx": 1100,
+        "ry": 260,
+        "height": 10
+      },
+      {
+        "x": 700,
+        "y": 2100,
+        "rx": 1100,
+        "ry": 420,
+        "height": 14
+      }
+    ],
+    "features": [
+      {
+        "type": "farm",
+        "name": "La Haye Sainte",
+        "polygon": [
+          [
+            20,
+            700
+          ],
+          [
+            110,
+            700
+          ],
+          [
+            110,
+            820
+          ],
+          [
+            20,
+            820
+          ]
+        ]
+      }
+    ],
+    "labels": [
+      {
+        "text": "Chemin d’Ohain",
+        "at": [
+          1100,
+          560
+        ]
+      },
+      {
+        "text": "Mont-Saint-Jean",
+        "at": [
+          330,
+          90
+        ]
+      },
+      {
+        "text": "La Belle Alliance",
+        "at": [
+          330,
+          2290
+        ]
+      }
+    ],
+    "roads": [
+      [
+        [
+          70,
+          0
+        ],
+        [
+          60,
+          700
+        ],
+        [
+          75,
+          1400
+        ],
+        [
+          60,
+          2400
+        ]
+      ],
+      [
+        [
+          0,
+          580
+        ],
+        [
+          500,
+          595
+        ],
+        [
+          1000,
+          585
+        ],
+        [
+          1400,
+          570
+        ]
+      ]
+    ]
+  },
+  "weather": {
+    "sky": "clear",
+    "ground": "mud",
+    "windFrom": 250,
+    "windSpeed": 3
+  },
+  "features": {
+    "commandControl": true,
+    "fatigue": true,
+    "ammunition": true,
+    "skirmishers": true,
+    "quality": true,
+    "elevationLos": true,
+    "smoke": true,
+    "weatherGround": true
+  },
+  "timeLimit": 9000,
+  "objective": {
+    "at": [
+      700,
+      600
+    ],
+    "radius": 450,
+    "defender": "allied",
+    "name": "the crest of the Ohain road"
+  },
+  "sides": [
+    {
+      "id": "french",
+      "name": "French",
+      "color": "blue",
+      "posture": "attack_column",
+      "rear": [
+        0,
+        1
+      ],
+      "units": [
+        {
+          "id": "fr-d1-1",
+          "name": "1/13e Léger",
+          "type": "fr_battalion_massed",
+          "at": [
+            180,
+            1450
+          ],
+          "men": 570,
+          "quality": "veteran",
+          "formation": "column"
+        },
+        {
+          "id": "fr-d1-2",
+          "name": "2/13e Léger",
+          "type": "fr_battalion_massed",
+          "at": [
+            295,
+            1450
+          ],
+          "men": 570,
+          "quality": "veteran",
+          "formation": "column"
+        },
+        {
+          "id": "fr-d1-3",
+          "name": "3/13e Léger",
+          "type": "fr_battalion_massed",
+          "at": [
+            410,
+            1450
+          ],
+          "men": 570,
+          "quality": "veteran",
+          "formation": "column"
+        },
+        {
+          "id": "fr-d1-4",
+          "name": "1/17e de Ligne",
+          "type": "fr_battalion_massed",
+          "at": [
+            525,
+            1450
+          ],
+          "men": 570,
+          "quality": "line",
+          "formation": "column"
+        },
+        {
+          "id": "fr-d1-5",
+          "name": "2/17e de Ligne",
+          "type": "fr_battalion_massed",
+          "at": [
+            640,
+            1450
+          ],
+          "men": 570,
+          "quality": "line",
+          "formation": "column"
+        },
+        {
+          "id": "fr-d2-1",
+          "name": "1/19e de Ligne",
+          "type": "fr_battalion_massed",
+          "at": [
+            220,
+            1610
+          ],
+          "men": 570,
+          "quality": "line",
+          "formation": "column"
+        },
+        {
+          "id": "fr-d2-2",
+          "name": "2/19e de Ligne",
+          "type": "fr_battalion_massed",
+          "at": [
+            346.6666666666667,
+            1610
+          ],
+          "men": 570,
+          "quality": "line",
+          "formation": "column"
+        },
+        {
+          "id": "fr-d2-3",
+          "name": "1/51e de Ligne",
+          "type": "fr_battalion_massed",
+          "at": [
+            473.33333333333337,
+            1610
+          ],
+          "men": 570,
+          "quality": "line",
+          "formation": "column"
+        },
+        {
+          "id": "fr-d2-4",
+          "name": "2/51e de Ligne",
+          "type": "fr_battalion_massed",
+          "at": [
+            600,
+            1610
+          ],
+          "men": 570,
+          "quality": "line",
+          "formation": "column"
+        },
+        {
+          "id": "fr-m1-1",
+          "name": "1/21e de Ligne",
+          "type": "fr_battalion_massed",
+          "at": [
+            780,
+            1450
+          ],
+          "men": 510,
+          "quality": "line",
+          "formation": "column"
+        },
+        {
+          "id": "fr-m1-2",
+          "name": "2/21e de Ligne",
+          "type": "fr_battalion_massed",
+          "at": [
+            920,
+            1450
+          ],
+          "men": 510,
+          "quality": "line",
+          "formation": "column"
+        },
+        {
+          "id": "fr-m1-3",
+          "name": "1/46e de Ligne",
+          "type": "fr_battalion_massed",
+          "at": [
+            1060,
+            1450
+          ],
+          "men": 510,
+          "quality": "line",
+          "formation": "column"
+        },
+        {
+          "id": "fr-m1-4",
+          "name": "2/46e de Ligne",
+          "type": "fr_battalion_massed",
+          "at": [
+            1200,
+            1450
+          ],
+          "men": 510,
+          "quality": "line",
+          "formation": "column"
+        },
+        {
+          "id": "fr-m2-1",
+          "name": "1/25e de Ligne",
+          "type": "fr_battalion_massed",
+          "at": [
+            780,
+            1610
+          ],
+          "men": 510,
+          "quality": "line",
+          "formation": "column"
+        },
+        {
+          "id": "fr-m2-2",
+          "name": "2/25e de Ligne",
+          "type": "fr_battalion_massed",
+          "at": [
+            920,
+            1610
+          ],
+          "men": 510,
+          "quality": "line",
+          "formation": "column"
+        },
+        {
+          "id": "fr-m2-3",
+          "name": "1/45e de Ligne",
+          "type": "fr_battalion_massed",
+          "at": [
+            1060,
+            1610
+          ],
+          "men": 510,
+          "quality": "line",
+          "formation": "column"
+        },
+        {
+          "id": "fr-m2-4",
+          "name": "2/45e de Ligne",
+          "type": "fr_battalion_massed",
+          "at": [
+            1200,
+            1610
+          ],
+          "men": 510,
+          "quality": "line",
+          "formation": "column"
+        },
+        {
+          "id": "fr-art-1",
+          "name": "12-pdr battery, I Corps reserve",
+          "type": "heavy_battery",
+          "at": [
+            200,
+            1250
+          ],
+          "quality": "line"
+        },
+        {
+          "id": "fr-art-2",
+          "name": "Battery, 2nd Division",
+          "type": "foot_battery",
+          "at": [
+            450,
+            1250
+          ],
+          "quality": "line"
+        },
+        {
+          "id": "fr-art-3",
+          "name": "12-pdr battery, Guard",
+          "type": "heavy_battery",
+          "at": [
+            700,
+            1250
+          ],
+          "quality": "line"
+        },
+        {
+          "id": "fr-art-4",
+          "name": "Battery, 3rd Division",
+          "type": "foot_battery",
+          "at": [
+            950,
+            1250
+          ],
+          "quality": "line"
+        },
+        {
+          "id": "fr-art-5",
+          "name": "Battery, 4th Division",
+          "type": "foot_battery",
+          "at": [
+            1200,
+            1250
+          ],
+          "quality": "line"
+        },
+        {
+          "id": "fr-cuir-1",
+          "name": "7e Cuirassiers, 1er esc.",
+          "type": "cavalry_squadron",
+          "at": [
+            90,
+            1560
+          ],
+          "men": 135,
+          "quality": "elite"
+        },
+        {
+          "id": "fr-cuir-2",
+          "name": "7e Cuirassiers, 2e esc.",
+          "type": "cavalry_squadron",
+          "at": [
+            180,
+            1560
+          ],
+          "men": 135,
+          "quality": "elite"
+        },
+        {
+          "id": "fr-cuir-3",
+          "name": "12e Cuirassiers, 1er esc.",
+          "type": "cavalry_squadron",
+          "at": [
+            90,
+            1630
+          ],
+          "men": 135,
+          "quality": "elite"
+        },
+        {
+          "id": "fr-cuir-4",
+          "name": "12e Cuirassiers, 2e esc.",
+          "type": "cavalry_squadron",
+          "at": [
+            180,
+            1630
+          ],
+          "men": 135,
+          "quality": "elite"
+        },
+        {
+          "id": "fr-lanc-1",
+          "name": "3e Lanciers, 1e esc.",
+          "type": "cavalry_squadron",
+          "at": [
+            1230,
+            1540
+          ],
+          "men": 140,
+          "quality": "line"
+        },
+        {
+          "id": "fr-lanc-2",
+          "name": "3e Lanciers, 2e esc.",
+          "type": "cavalry_squadron",
+          "at": [
+            1320,
+            1540
+          ],
+          "men": 140,
+          "quality": "line"
+        },
+        {
+          "id": "fr-lanc-3",
+          "name": "3e Lanciers, 3e esc.",
+          "type": "cavalry_squadron",
+          "at": [
+            1230,
+            1610
+          ],
+          "men": 140,
+          "quality": "line"
+        },
+        {
+          "id": "fr-lanc-4",
+          "name": "4e Lanciers, 1e esc.",
+          "type": "cavalry_squadron",
+          "at": [
+            1320,
+            1610
+          ],
+          "men": 140,
+          "quality": "line"
+        },
+        {
+          "id": "fr-lanc-5",
+          "name": "4e Lanciers, 2e esc.",
+          "type": "cavalry_squadron",
+          "at": [
+            1230,
+            1680
+          ],
+          "men": 140,
+          "quality": "line"
+        }
+      ],
+      "command": {
+        "id": "fr-corps",
+        "level": "corps",
+        "commander": {
+          "name": "Comte d'Erlon",
+          "at": [
+            700,
+            1900
+          ],
+          "initiative": 0.4
+        },
+        "children": [
+          {
+            "id": "fr-donzelot",
+            "level": "division",
+            "commander": {
+              "name": "Donzelot",
+              "initiative": 0.5
+            },
+            "children": [
+              {
+                "id": "fr-schmitz",
+                "level": "brigade",
+                "commander": {
+                  "name": "Schmitz"
+                },
+                "units": [
+                  "fr-d1-1",
+                  "fr-d1-2",
+                  "fr-d1-3",
+                  "fr-d1-4",
+                  "fr-d1-5"
+                ]
+              },
+              {
+                "id": "fr-aulard",
+                "level": "brigade",
+                "commander": {
+                  "name": "Aulard"
+                },
+                "units": [
+                  "fr-d2-1",
+                  "fr-d2-2",
+                  "fr-d2-3",
+                  "fr-d2-4"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "fr-marcognet",
+            "level": "division",
+            "commander": {
+              "name": "Marcognet",
+              "initiative": 0.5
+            },
+            "children": [
+              {
+                "id": "fr-nogues",
+                "level": "brigade",
+                "commander": {
+                  "name": "Noguès"
+                },
+                "units": [
+                  "fr-m1-1",
+                  "fr-m1-2",
+                  "fr-m1-3",
+                  "fr-m1-4"
+                ]
+              },
+              {
+                "id": "fr-grenier",
+                "level": "brigade",
+                "commander": {
+                  "name": "Grenier"
+                },
+                "units": [
+                  "fr-m2-1",
+                  "fr-m2-2",
+                  "fr-m2-3",
+                  "fr-m2-4"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "fr-battery",
+            "level": "brigade",
+            "commander": {
+              "name": "Grand battery (part)",
+              "radius": 700,
+              "initiative": 0.2
+            },
+            "units": [
+              "fr-art-1",
+              "fr-art-2",
+              "fr-art-3",
+              "fr-art-4",
+              "fr-art-5"
+            ]
+          },
+          {
+            "id": "fr-travers",
+            "level": "brigade",
+            "commander": {
+              "name": "Travers (cuirassiers)",
+              "initiative": 0.6
+            },
+            "units": [
+              "fr-cuir-1",
+              "fr-cuir-2",
+              "fr-cuir-3",
+              "fr-cuir-4"
+            ]
+          },
+          {
+            "id": "fr-jacquinot",
+            "level": "brigade",
+            "commander": {
+              "name": "Jacquinot (lancers)",
+              "initiative": 0.7
+            },
+            "units": [
+              "fr-lanc-1",
+              "fr-lanc-2",
+              "fr-lanc-3",
+              "fr-lanc-4",
+              "fr-lanc-5"
+            ]
+          }
+        ]
+      },
+      "orders": [
+        {
+          "at": 0,
+          "to": "fr-donzelot",
+          "type": "hold"
+        },
+        {
+          "at": 0,
+          "to": "fr-marcognet",
+          "type": "hold"
+        },
+        {
+          "at": 0,
+          "to": "fr-battery",
+          "type": "defend"
+        },
+        {
+          "at": 0,
+          "to": "fr-travers",
+          "type": "reserve"
+        },
+        {
+          "at": 0,
+          "to": "fr-jacquinot",
+          "type": "reserve"
+        },
+        {
+          "at": 1500,
+          "to": "fr-donzelot",
+          "type": "attack",
+          "formation": "column",
+          "objective": [
+            410,
+            600
+          ]
+        },
+        {
+          "at": 1500,
+          "to": "fr-marcognet",
+          "type": "attack",
+          "formation": "column",
+          "objective": [
+            990,
+            600
+          ]
+        }
+      ]
+    },
+    {
+      "id": "allied",
+      "name": "Allied",
+      "color": "red",
+      "posture": "defend",
+      "rear": [
+        0,
+        -1
+      ],
+      "units": [
+        {
+          "id": "al-nl-1",
+          "name": "27th Jagers",
+          "type": "br_line_battalion",
+          "at": [
+            260,
+            615
+          ],
+          "men": 480,
+          "quality": "conscript",
+          "formation": "line"
+        },
+        {
+          "id": "al-nl-2",
+          "name": "7th Line (Netherlands)",
+          "type": "br_line_battalion",
+          "at": [
+            480,
+            615
+          ],
+          "men": 480,
+          "quality": "conscript",
+          "formation": "line"
+        },
+        {
+          "id": "al-nl-3",
+          "name": "5th Militia",
+          "type": "br_line_battalion",
+          "at": [
+            700,
+            615
+          ],
+          "men": 480,
+          "quality": "militia",
+          "formation": "line"
+        },
+        {
+          "id": "al-nl-4",
+          "name": "7th Militia",
+          "type": "br_line_battalion",
+          "at": [
+            920,
+            615
+          ],
+          "men": 480,
+          "quality": "militia",
+          "formation": "line"
+        },
+        {
+          "id": "al-nl-5",
+          "name": "8th Militia",
+          "type": "br_line_battalion",
+          "at": [
+            1140,
+            615
+          ],
+          "men": 480,
+          "quality": "militia",
+          "formation": "line"
+        },
+        {
+          "id": "al-k-1",
+          "name": "1/28th Foot",
+          "type": "br_line_battalion",
+          "at": [
+            620,
+            470
+          ],
+          "men": 557,
+          "quality": "veteran",
+          "formation": "line"
+        },
+        {
+          "id": "al-k-2",
+          "name": "1/32nd Foot",
+          "type": "br_line_battalion",
+          "at": [
+            480,
+            470
+          ],
+          "men": 503,
+          "quality": "veteran",
+          "formation": "line"
+        },
+        {
+          "id": "al-k-3",
+          "name": "1/79th Highlanders",
+          "type": "br_line_battalion",
+          "at": [
+            340,
+            470
+          ],
+          "men": 445,
+          "quality": "veteran",
+          "formation": "line"
+        },
+        {
+          "id": "al-k-4",
+          "name": "1/95th Rifles",
+          "type": "br_rifle_battalion",
+          "at": [
+            200,
+            470
+          ],
+          "men": 418,
+          "quality": "elite",
+          "formation": "line"
+        },
+        {
+          "id": "al-p-1",
+          "name": "3/1st Royal Scots",
+          "type": "br_line_battalion",
+          "at": [
+            780,
+            470
+          ],
+          "men": 453,
+          "quality": "veteran",
+          "formation": "line"
+        },
+        {
+          "id": "al-p-2",
+          "name": "1/42nd Highlanders",
+          "type": "br_line_battalion",
+          "at": [
+            920,
+            470
+          ],
+          "men": 338,
+          "quality": "veteran",
+          "formation": "line"
+        },
+        {
+          "id": "al-p-3",
+          "name": "2/44th Foot",
+          "type": "br_line_battalion",
+          "at": [
+            1060,
+            470
+          ],
+          "men": 494,
+          "quality": "veteran",
+          "formation": "line"
+        },
+        {
+          "id": "al-p-4",
+          "name": "1/92nd Highlanders",
+          "type": "br_line_battalion",
+          "at": [
+            1200,
+            470
+          ],
+          "men": 422,
+          "quality": "veteran",
+          "formation": "line"
+        },
+        {
+          "id": "al-art-1",
+          "name": "Rogers's battery",
+          "type": "foot_battery",
+          "at": [
+            480,
+            590
+          ],
+          "quality": "line"
+        },
+        {
+          "id": "al-art-2",
+          "name": "Bijleveld's horse battery",
+          "type": "foot_battery",
+          "at": [
+            920,
+            590
+          ],
+          "quality": "line"
+        },
+        {
+          "id": "al-ub-1",
+          "name": "1st Royal Dragoons, 1st sqn",
+          "type": "cavalry_squadron",
+          "at": [
+            300,
+            250
+          ],
+          "men": 140,
+          "quality": "elite"
+        },
+        {
+          "id": "al-ub-2",
+          "name": "1st Royal Dragoons, 2nd sqn",
+          "type": "cavalry_squadron",
+          "at": [
+            390,
+            250
+          ],
+          "men": 140,
+          "quality": "elite"
+        },
+        {
+          "id": "al-ub-3",
+          "name": "1st Royal Dragoons, 3rd sqn",
+          "type": "cavalry_squadron",
+          "at": [
+            480,
+            250
+          ],
+          "men": 140,
+          "quality": "elite"
+        },
+        {
+          "id": "al-ub-4",
+          "name": "6th Inniskilling Dragoons, 1st sqn",
+          "type": "cavalry_squadron",
+          "at": [
+            610,
+            250
+          ],
+          "men": 140,
+          "quality": "elite"
+        },
+        {
+          "id": "al-ub-5",
+          "name": "6th Inniskilling Dragoons, 2nd sqn",
+          "type": "cavalry_squadron",
+          "at": [
+            700,
+            250
+          ],
+          "men": 140,
+          "quality": "elite"
+        },
+        {
+          "id": "al-ub-6",
+          "name": "6th Inniskilling Dragoons, 3rd sqn",
+          "type": "cavalry_squadron",
+          "at": [
+            790,
+            250
+          ],
+          "men": 140,
+          "quality": "elite"
+        },
+        {
+          "id": "al-ub-7",
+          "name": "2nd Dragoons (Scots Greys), 1st sqn",
+          "type": "cavalry_squadron",
+          "at": [
+            920,
+            250
+          ],
+          "men": 140,
+          "quality": "elite"
+        },
+        {
+          "id": "al-ub-8",
+          "name": "2nd Dragoons (Scots Greys), 2nd sqn",
+          "type": "cavalry_squadron",
+          "at": [
+            1010,
+            250
+          ],
+          "men": 140,
+          "quality": "elite"
+        },
+        {
+          "id": "al-ub-9",
+          "name": "2nd Dragoons (Scots Greys), 3rd sqn",
+          "type": "cavalry_squadron",
+          "at": [
+            1100,
+            250
+          ],
+          "men": 140,
+          "quality": "elite"
+        }
+      ],
+      "command": {
+        "id": "al-picton",
+        "level": "division",
+        "commander": {
+          "name": "Sir Thomas Picton",
+          "at": [
+            700,
+            380
+          ],
+          "initiative": 0.8,
+          "radius": 900
+        },
+        "children": [
+          {
+            "id": "al-bijlandt",
+            "level": "brigade",
+            "commander": {
+              "name": "Bijlandt",
+              "initiative": 0.3,
+              "radius": 500
+            },
+            "units": [
+              "al-nl-1",
+              "al-nl-2",
+              "al-nl-3",
+              "al-nl-4",
+              "al-nl-5"
+            ]
+          },
+          {
+            "id": "al-kempt",
+            "level": "brigade",
+            "commander": {
+              "name": "Kempt",
+              "initiative": 0.7
+            },
+            "units": [
+              "al-k-1",
+              "al-k-2",
+              "al-k-3",
+              "al-k-4",
+              "al-art-1"
+            ]
+          },
+          {
+            "id": "al-pack",
+            "level": "brigade",
+            "commander": {
+              "name": "Pack",
+              "initiative": 0.7
+            },
+            "units": [
+              "al-p-1",
+              "al-p-2",
+              "al-p-3",
+              "al-p-4",
+              "al-art-2"
+            ]
+          },
+          {
+            "id": "al-union",
+            "level": "brigade",
+            "commander": {
+              "name": "Ponsonby (Union Brigade)",
+              "initiative": 0.9
+            },
+            "units": [
+              "al-ub-1",
+              "al-ub-2",
+              "al-ub-3",
+              "al-ub-4",
+              "al-ub-5",
+              "al-ub-6",
+              "al-ub-7",
+              "al-ub-8",
+              "al-ub-9"
+            ]
+          }
+        ]
+      },
+      "orders": [
+        {
+          "at": 0,
+          "to": "al-picton",
+          "type": "defend"
+        },
+        {
+          "at": 0,
+          "to": "al-union",
+          "type": "reserve"
+        },
+        {
+          "when": {
+            "enemyWithin": 120,
+            "of": "al-bijlandt"
+          },
+          "to": "al-union",
+          "type": "attack",
+          "formation": "line",
+          "objective": [
+            700,
+            720
+          ]
+        }
+      ]
+    }
+  ]
+}

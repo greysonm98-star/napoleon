@@ -398,22 +398,38 @@ function initiative(sim: Sim, n: CNode): void {
   if (o.type === 'withdraw') return;
   // opportunity: a vulnerable enemy close to a formation that was not told to attack
   const range = cav * 2 > formed ? cfg.opportunityRangeCavalry : cfg.opportunityRangeInfantry;
+  const watchers = state(sim).nodes[n.parent].all;
   let best: Unit | null = null,
     bd = range;
   for (const e of sim.units) {
-    if (e.side === n.side || e.status !== 'ok' || e.arm === 'cav') continue;
-    if (!(e.morale < cfg.opportunityMorale || e.formT > 0 || e.melee)) continue;
+    if (e.side === n.side || e.status !== 'ok') continue;
+    if (e.arm === 'cav') {
+      // enemy horse is fair game only to cavalry, and only once it is blown
+      if (!(cav * 2 > formed && e.blown > 0)) continue;
+    } else if (!(e.morale < cfg.opportunityMorale || e.formT > 0 || e.melee)) continue;
     if (e.arm === 'inf' && e.form === 'square' && e.formT <= 0 && cav * 2 > formed) continue;
     let d = Infinity;
     for (const i of n.all) {
       const u = sim.units[i];
       if (u.status !== 'ok') continue;
       const g = gapOf(sim, u, e);
-      if (g < d && hooks.canSee(sim, u, e)) d = g; // the commander acts on what his troops can see
+      if (g < d) d = g;
+    }
+    // He acts on what his own troops, or those of the formations beside him, can see and report.
+    if (d < bd) {
+      let seen = false;
+      for (const i of watchers) {
+        const u = sim.units[i];
+        if (u.status === 'ok' && hooks.canSee(sim, u, e)) {
+          seen = true;
+          break;
+        }
+      }
+      if (!seen) continue;
     }
     if (d < bd) (bd = d), (best = e);
   }
-  if (best && roll()) act(makeFOrder(sim, { type: 'attack', objective: [best.x, best.y], formation: 'line' }, true), `saw ${best.name} in disorder ${Math.round(bd)} m away`, cfg.counterattackTime);
+  if (best && roll()) act(makeFOrder(sim, { type: 'attack', objective: [best.x, best.y], formation: 'line' }, true), `saw ${best.name} ${best.arm === 'cav' ? 'blown' : 'in disorder'} ${Math.round(bd)} m away`, cfg.counterattackTime);
 }
 
 export function update(sim: Sim): void {

@@ -92,6 +92,11 @@ A 600-man French battalion is 112 m × 2 m in line, 37 m × 43 m in column of
 divisions and 32 m square. A British one is 168 m in line (two deep). A 150-sabre
 squadron is 75 m wide. A six-gun battery is 90 m.
 
+**Doctrines.** `data/doctrine.json` holds one entry per drill system: `french`,
+`british`, and `french_massed`. The last is the French entry with the times to form
+square and to deploy from column set to 600 s. It stands for battalions in a massed
+divisional column, which had no room to do either; it is used by the d'Erlon scenario.
+
 **Formation change** takes the drill-book time for that pair of formations. Until it
 is complete the unit cannot move or fire and is treated as "forming" in melee and
 when charged.
@@ -430,6 +435,16 @@ on the column. That is the Peninsular pattern.
 8. **Attack in line deploys inside canister range.** `deployRange` (300 m) was
    outside canister range in the prototype and is inside it at real ranges.
 
+9. **Canister is probably about twice too effective, and too concentrated.** The
+   historical check in `CALIBRATION.md` shows two batteries breaking eleven
+   battalions on the slope at Waterloo, where the guns hurt the columns but did not
+   stop them. At half the canister factor the action resembles the record. The
+   factor has not been changed on the strength of one action.
+10. **Roundshot stops at the first unit it hits.** A deep mass of several battalions
+    is no worse a target than one.
+11. **Cavalry prefers guns and charges them frontally**, then stands blown in front
+    of them.
+
 ### 11.3 Port against prototype
 
 Share of runs won by the French. The prototype column is its own simulation run
@@ -529,6 +544,11 @@ subordinates in the usual way.
 | Half his units have routed or gone | Withdraw 400 m |
 | Attacking, and over half his formed units are below morale 45 | Halt for 300 s, then resume |
 | Not ordered to attack, and a vulnerable enemy (morale below 55, changing formation, or in melee) is within 150 m of his infantry or 500 m of his cavalry | Attack it for 480 s, then return to his orders |
+| Commanding cavalry, not ordered to attack, and blown enemy cavalry is within 500 m | The same |
+
+He acts only on enemy that his own troops, or those of the formations alongside his
+under the same superior, can see (this matters when line of sight is on: cavalry
+waiting behind a ridge is told what the infantry on the crest can see).
 
 **Out of command.** A formed unit outside every radius in its chain recovers morale
 at half rate. A routed unit inside one recovers at double rate.
@@ -644,7 +664,7 @@ companies are below this simulator's resolution.
   six), British line 0.10, French light 0.33, British rifles 0.5. A scenario may set
   a number per unit. While out, those men are counted as detached: the formed body
   is that much smaller, with a shorter front and fewer muskets.
-- **Out and in.** The screen goes out when formed enemy is within 500 m. It comes in
+- **Out and in.** The screen goes out when formed enemy is within 500 m, but not within 90 s of having come in. It comes in
   when formed enemy infantry is within 180 m of the battalion (the screen is driven
   in), when unblown enemy cavalry is within 350 m, when the battalion forms square,
   enters melee or routs, or when no enemy is near. The survivors rejoin the ranks.

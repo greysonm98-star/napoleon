@@ -133,9 +133,11 @@ function writeOutputs(outDir: string, scenarioPath: string, scenario: Scenario, 
   const sideCols = ['men_start', 'killed_wounded', 'prisoners', 'dispersed', 'loss_fraction', 'kw_fraction', 'units', 'units_routed', 'units_gone', 'units_formed_end', 'rallies', 'broke', 'broke_at_s', 'break_x', 'break_y', 'break_centroid_x', 'break_centroid_y', 'tip_unit'];
   const runRows: unknown[][] = [['point', ...axisCols, 'seed', 'winner', 'decided_by', 'end_reason', 'duration_s', ...ids.flatMap((id) => sideCols.map((c) => `${id}_${c}`)), 'first_rout_s', 'first_rout_unit', 'first_rout_cause', 'state_hash']];
   const routRows: unknown[][] = [['point', ...axisCols, 'seed', 't_s', 'side', 'unit', 'name', 'x', 'y', 'kind', 'top_cause', 'trigger', 'root_cause', 'root_unit']];
+  const unitRows: unknown[][] = [['point', ...axisCols, 'seed', 'side', 'unit', 'name', 'formation', 'arm', 'men_start', 'men_end', 'killed_wounded', 'prisoners', 'dispersed', 'status', 'ever_routed', 'rallies']];
   results.forEach((rs, p) => {
     const vals = points[p].map((o) => o.value);
     for (const r of rs) {
+      for (const u of r.units) unitRows.push([p, ...vals, r.seed, u.side, u.id, u.name, u.formation, u.arm, u.startMen, u.men, u.casualties, u.captured, u.dispersed, u.status, u.everRouted ? 1 : 0, u.rallies]);
       const first = r.routs.find((x) => x.kind !== 'army_broken');
       runRows.push([p, ...vals, r.seed, r.winner, r.decidedBy, r.endReason, r.duration, ...r.sides.flatMap((s) => [s.startMen, s.casualties, s.captured, s.dispersed, s.lossFraction, s.casualtyFraction, s.units, s.unitsEverRouted, s.unitsGone, s.unitsFormedAtEnd, s.rallies, s.broke ? 1 : 0, s.brokeAt, s.breakX, s.breakY, s.breakCentroidX, s.breakCentroidY, s.tipUnit]), first?.t, first?.unit, first?.rootCause, r.stateHash]);
       for (const x of r.routs) routRows.push([p, ...vals, r.seed, x.t, x.side, x.unit, x.name, x.x, x.y, x.kind, x.topCause, x.trigger, x.rootCause, x.rootUnit]);
@@ -149,6 +151,7 @@ function writeOutputs(outDir: string, scenarioPath: string, scenario: Scenario, 
   }
   writeFileSync(join(outDir, 'runs.csv'), csv(runRows));
   writeFileSync(join(outDir, 'routs.csv'), csv(routRows));
+  writeFileSync(join(outDir, 'units.csv'), csv(unitRows));
   writeFileSync(join(outDir, 'summary.csv'), csv(sumRows));
   writeFileSync(join(outDir, 'summary.json'), JSON.stringify({ scenario: scenario.name, scenarioFile: scenarioPath, engineVersion: ENGINE_VERSION, dataHash: dataHash(data), seeds: { first: seeds[0], count: seeds.length }, fixedOverrides: fixed, axes, points: summaries }, null, 2));
 }
@@ -209,7 +212,7 @@ async function cmdBatch(pos: string[], opt: Opt, sweep: boolean): Promise<void> 
   const out = opt.out?.[0];
   if (out) {
     writeOutputs(out, scenarioPath, scenario, data, axes, fixed, points.map((p) => p.slice(fixed.length)), results, summaries, seeds);
-    console.log(`wrote ${join(out, 'runs.csv')}, routs.csv, summary.csv, summary.json`);
+    console.log(`wrote ${join(out, 'runs.csv')}, routs.csv, units.csv, summary.csv, summary.json`);
   }
 }
 
