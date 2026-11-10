@@ -631,3 +631,49 @@ Implausible or weak points:
   last eight minutes of continuous fire, longer than most assaults.
 - No battery is ever resupplied or relieved, and no caisson can be hit.
 - Fatigue has no effect on the willingness to advance, only on performance.
+
+### 12.3 Skirmishers (`skirmishers`)
+
+Parameters: `data/skirmish.json`, and `skirmishFraction` on each infantry type in
+`data/units.json`. All rates are assumptions.
+
+A screen is attached to its parent battalion. It is not a unit on the map, because
+companies are below this simulator's resolution.
+
+- **Strength.** A share of the battalion's men: French line 0.16 (one company in
+  six), British line 0.10, French light 0.33, British rifles 0.5. A scenario may set
+  a number per unit. While out, those men are counted as detached: the formed body
+  is that much smaller, with a shorter front and fewer muskets.
+- **Out and in.** The screen goes out when formed enemy is within 500 m. It comes in
+  when formed enemy infantry is within 180 m of the battalion (the screen is driven
+  in), when unblown enemy cavalry is within 350 m, when the battalion forms square,
+  enters melee or routs, or when no enemy is near. The survivors rejoin the ranks.
+- **Fire.** The screen works 150 m ahead of the battalion. Every 30 s each
+  skirmisher fires one aimed round at the nearest formed enemy within 160 m of the
+  screen: hit chance `trial curve × 0.05`, × 0.5 against gun crews, × the target's
+  cover. Casualties count as frontal musketry for morale.
+- **Screen against screen.** If the target battalion has its own screen out, the two
+  screens engage each other man for man, at a quarter of the hit chance (men in
+  extended order are hard to hit). Only the surplus skirmishers fire at the formed
+  body. Equal screens cancel; the stronger one gets through in proportion.
+
+A French battalion's 96 skirmishers, unopposed, cause roughly 4 casualties a minute.
+
+**Effect** (200 runs each, same seeds):
+
+| Scenario | Off | On |
+|---|---|---|
+| Pitched battle | Allied 100%, French K/W 17% | Allied 100%, French K/W 17% |
+| Column against line | Allied 100%, French loss 12% | Allied 100%, French loss 12% |
+| Grand battery | French 99%, 35 min | French 68%, 95 min |
+
+In a quick assault the screens are out for only a few minutes and change nothing
+measurable. In the slow grand-battery action they matter: the Allied screens wear
+down the French infantry and gun crews in front of the ridge, and the French win far
+less often and far more slowly.
+
+Implausible or weak points:
+- Skirmishers cannot be hurt by volleys or artillery, only by other skirmishers.
+- A screen cannot be ridden down; it always gets in before cavalry arrives.
+- The parent battalion fires through its own screen.
+- Rifles are not distinguished from muskets.

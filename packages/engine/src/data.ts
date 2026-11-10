@@ -72,6 +72,7 @@ export interface UnitType {
   weapon?: string;
   gun?: string;
   men: number;
+  skirmishFraction?: number;
   // cavalry
   ranks?: number;
   fileWidth?: number;

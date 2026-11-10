@@ -10,6 +10,13 @@
       "source": "prototype",
       "confidence": "prototype",
       "note": "Prototype battalion. A field-strength battalion of the period."
+    },
+    "skirmishFraction": {
+      "value": 0.16,
+      "unit": "fraction of men",
+      "source": "nafziger-bayonets",
+      "confidence": "recalled",
+      "note": "One voltigeur company in six. Used only when the skirmisher feature is on."
     }
   },
   "br_line_battalion": {
@@ -23,6 +30,13 @@
       "source": "prototype",
       "confidence": "prototype",
       "note": "Prototype battalion."
+    },
+    "skirmishFraction": {
+      "value": 0.1,
+      "unit": "fraction of men",
+      "source": "nafziger-bayonets",
+      "confidence": "recalled",
+      "note": "One light company in ten."
     }
   },
   "cavalry_squadron": {
@@ -170,6 +184,46 @@
       "source": "assumption",
       "confidence": "assumption",
       "note": "Heavier and slower than the field battery."
+    }
+  },
+  "fr_light_battalion": {
+    "label": "French light infantry battalion",
+    "arm": "inf",
+    "doctrine": "french",
+    "weapon": "charleville_1777",
+    "men": {
+      "value": 600,
+      "unit": "men",
+      "source": "prototype",
+      "confidence": "prototype",
+      "note": "As the line battalion."
+    },
+    "skirmishFraction": {
+      "value": 0.33,
+      "unit": "fraction of men",
+      "source": "assumption",
+      "confidence": "assumption",
+      "note": "Light infantry could put two or more companies out, or the whole battalion; a third is used."
+    }
+  },
+  "br_rifle_battalion": {
+    "label": "British rifle or light battalion",
+    "arm": "inf",
+    "doctrine": "british",
+    "weapon": "brown_bess",
+    "men": {
+      "value": 600,
+      "unit": "men",
+      "source": "prototype",
+      "confidence": "prototype",
+      "note": "As the line battalion."
+    },
+    "skirmishFraction": {
+      "value": 0.5,
+      "unit": "fraction of men",
+      "source": "assumption",
+      "confidence": "assumption",
+      "note": "Riflemen and light infantry fought largely in extended order. The rifle itself is not modelled; the unit fires as musket-armed."
     }
   }
 }

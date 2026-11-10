@@ -5,24 +5,32 @@ import type { ExpandedUnit } from './scenario.ts';
 import type { Sim, SimInput, Unit } from './types.ts';
 import * as command from './features/command.ts';
 import * as endurance from './features/endurance.ts';
+import * as skirmish from './features/skirmish.ts';
 
 export const hooks = {
   init(sim: Sim, expanded: ExpandedUnit[]): void {
     if (sim.features.fatigue || sim.features.ammunition) endurance.init(sim);
+    if (sim.features.skirmishers) skirmish.init(sim, expanded);
     if (sim.features.commandControl) command.init(sim, expanded);
   },
   preTick(sim: Sim): void {
     if (sim.features.commandControl) command.update(sim);
   },
-  preFire(_sim: Sim): void {},
+  preFire(sim: Sim): void {
+    if (sim.features.skirmishers) skirmish.update(sim);
+  },
   postTick(sim: Sim): void {
     if (sim.features.fatigue || sim.features.ammunition) endurance.postTick(sim);
   },
   onCommandInput(sim: Sim, input: SimInput): void {
     if (sim.features.commandControl) command.onCommandInput(sim, input);
   },
-  onRout(_sim: Sim, _u: Unit): void {},
-  onRemove(_sim: Sim, _u: Unit): void {},
+  onRout(sim: Sim, u: Unit): void {
+    if (sim.features.skirmishers) skirmish.onBreak(sim, u);
+  },
+  onRemove(sim: Sim, u: Unit): void {
+    if (sim.features.skirmishers) skirmish.onBreak(sim, u);
+  },
   onMoved(sim: Sim, u: Unit, metres: number): void {
     if (sim.features.fatigue) endurance.onMoved(sim, u, metres);
   },

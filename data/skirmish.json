@@ -1,0 +1,11 @@
+{
+  "deployRange": { "value": 500, "unit": "m", "source": "assumption", "confidence": "assumption", "note": "A battalion throws out its skirmishers when formed enemy is this close." },
+  "screenDistance": { "value": 150, "unit": "m", "source": "assumption", "confidence": "assumption", "note": "The screen works this far in front of its battalion. Period practice was 100-300 paces." },
+  "skirmishRange": { "value": 160, "unit": "m", "source": "assumption", "confidence": "assumption", "note": "Skirmishers fire at a target within this distance of the screen. Aimed fire was opened at longer range than volleys." },
+  "recallGap": { "value": 180, "unit": "m", "source": "assumption", "confidence": "assumption", "note": "The screen is driven in when formed enemy infantry comes this close to the battalion, about 30 m from the screen itself." },
+  "cavalryRecallRange": { "value": 350, "unit": "m", "source": "assumption", "confidence": "assumption", "note": "The screen runs in when unblown enemy cavalry is this close to the battalion." },
+  "fireInterval": { "value": 30, "unit": "s", "source": "assumption", "confidence": "assumption", "note": "One aimed round per skirmisher in this time." },
+  "battlefieldFactor": { "value": 0.05, "unit": "fraction", "source": "assumption", "confidence": "assumption", "note": "Scales the musket trial curve for aimed skirmish fire at a formed body. Set a little above the volley factor (0.04) because the fire is aimed and deliberate." },
+  "vsSkirmishers": { "value": 0.25, "unit": "multiplier", "source": "assumption", "confidence": "assumption", "note": "Hit chance against men in extended order relative to a formed body." },
+  "shock": { "value": 1.0, "unit": "multiplier", "source": "assumption", "confidence": "assumption", "note": "Morale factor for casualties from skirmish fire, as frontal musketry." }
+}
