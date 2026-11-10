@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Napoleonic Battle Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IM+Fell+English:ital@0;1&family=Alegreya+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./src/style.css">
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <div class="title">
+      <h1>Napoleonic Battle Simulator</h1>
+      <p>Set it up, run it many times, see why it went the way it did.</p>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Mode">
+      <button class="tab" id="tab-replay" role="tab" aria-selected="true" aria-controls="panel-replay" type="button">Replay</button>
+      <button class="tab" id="tab-live" role="tab" aria-selected="false" aria-controls="panel-live" type="button">Live run</button>
+      <button class="tab" id="tab-editor" role="tab" aria-selected="false" aria-controls="panel-editor" type="button">Editor</button>
+    </nav>
+  </header>
+
+  <div class="stage">
+    <section class="field" aria-label="Battlefield">
+      <div class="hud">
+        <div class="army l">
+          <div class="who"><span class="chip s0"></span><span id="side0-name">Blue</span></div>
+          <div class="nums" id="hud0">&nbsp;</div>
+          <div class="bar"><i id="bar0"></i></div>
+        </div>
+        <div class="clockbox"><div class="clock" id="clock">0:00</div><div class="sub" id="clock-sub">&nbsp;</div></div>
+        <div class="army r">
+          <div class="who"><span id="side1-name">Red</span><span class="chip s1"></span></div>
+          <div class="nums" id="hud1">&nbsp;</div>
+          <div class="bar"><i id="bar1"></i></div>
+        </div>
+      </div>
+      <div class="result" id="result" hidden></div>
+
+      <div class="mapbox" id="mapbox">
+        <canvas id="map" tabindex="0" aria-label="Battle map. Drag to pan, scroll to zoom, click a unit to inspect it."></canvas>
+        <div class="mapbtns">
+          <button class="btn sm" id="zoom-in" type="button" aria-label="Zoom in">+</button>
+          <button class="btn sm" id="zoom-out" type="button" aria-label="Zoom out">−</button>
+          <button class="btn sm" id="zoom-fit" type="button" aria-label="Fit map to view">Fit</button>
+        </div>
+        <div class="empty" id="empty">
+          <strong>No battle loaded</strong>
+          <span>Drop a replay file here, or record a run from the panel.</span>
+        </div>
+      </div>
+
+      <div class="transport" id="transport">
+        <button class="btn primary" id="play" type="button" aria-label="Play or pause">Play</button>
+        <button class="btn sm" id="step-back" type="button" aria-label="Step back">◂</button>
+        <button class="btn sm" id="step-fwd" type="button" aria-label="Step forward">▸</button>
+        <div class="seg" role="group" aria-label="Speed" id="speeds"></div>
+        <div class="scrub">
+          <canvas id="marks" height="14" aria-hidden="true"></canvas>
+          <input type="range" id="scrub" min="0" max="1" step="1" value="0" aria-label="Time">
+        </div>
+      </div>
+      <p class="hint" id="hint">Drag to pan, scroll to zoom. Click a unit to inspect it.</p>
+    </section>
+
+    <aside class="side">
+      <section class="panel" id="panel-replay" role="tabpanel" aria-labelledby="tab-replay">
+        <h2>Replay</h2>
+        <div class="row">
+          <label class="btn" for="file">Open replay file…</label>
+          <input type="file" id="file" accept=".json,application/json" class="visually-hidden">
+          <span class="muted" id="replay-info">None loaded.</span>
+        </div>
+        <h3>Record a run here</h3>
+        <div class="grid2">
+          <label for="rec-scenario">Scenario</label>
+          <select id="rec-scenario"></select>
+          <label for="rec-seed">Seed</label>
+          <input type="number" id="rec-seed" value="1" min="0" step="1">
+        </div>
+        <div class="row"><button class="btn" id="rec-go" type="button">Record and load</button><span class="muted" id="rec-status"></span></div>
+      </section>
+
+      <section class="panel" id="panel-live" role="tabpanel" aria-labelledby="tab-live" hidden>
+        <h2>Live run</h2>
+        <div class="grid2">
+          <label for="live-scenario">Scenario</label>
+          <select id="live-scenario"></select>
+          <label for="live-seed">Seed</label>
+          <input type="number" id="live-seed" value="1" min="0" step="1">
+          <label for="live-post0" id="live-post0-label">Blue</label>
+          <select id="live-post0"></select>
+          <label for="live-post1" id="live-post1-label">Red</label>
+          <select id="live-post1"></select>
+        </div>
+        <fieldset class="features" id="live-features"><legend>Model features</legend></fieldset>
+        <div class="row">
+          <button class="btn primary" id="live-start" type="button">Start</button>
+          <button class="btn" id="live-save" type="button" disabled>Save replay</button>
+        </div>
+        <p class="muted" id="live-status">Both sides run from their orders. You may step in, but you never have to.</p>
+        <div id="orders" hidden>
+          <h3>Your orders</h3>
+          <div class="muted" id="orders-unit">Select a unit on the map.</div>
+          <div class="row">
+            <div class="seg" role="group" aria-label="Formation">
+              <button class="btn" id="o-line" type="button">Line</button>
+              <button class="btn" id="o-column" type="button">Column</button>
+              <button class="btn" id="o-square" type="button">Square</button>
+            </div>
+            <button class="btn" id="o-halt" type="button">Halt</button>
+            <button class="btn" id="o-release" type="button">Hand back to staff</button>
+          </div>
+          <p class="muted">With a unit selected: click the ground to march there, click an enemy to attack it. Shift-click selects another unit.</p>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-editor" role="tabpanel" aria-labelledby="tab-editor" hidden>
+        <h2>Editor</h2>
+        <p class="muted">The scenario editor arrives in Phase 5.</p>
+      </section>
+
+      <section class="panel" id="panel-inspector" aria-live="polite">
+        <h2>Unit</h2>
+        <div id="inspector"><p class="muted">Click a unit on the map.</p></div>
+      </section>
+
+      <section class="panel" id="panel-log">
+        <h2>Dispatches</h2>
+        <label class="check"><input type="checkbox" id="log-filter"> <span>Only the selected unit</span></label>
+        <ol id="log"></ol>
+      </section>
+    </aside>
+  </div>
+</main>
+<script type="module" src="./src/main.ts"></script>
+</body>
+</html>
