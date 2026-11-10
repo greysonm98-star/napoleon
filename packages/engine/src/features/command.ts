@@ -10,6 +10,7 @@ import { STREAM, emit, gapOf, makeOrder, rnd, setFormation, shock } from '../sim
 import type { Sim, SimInput, Unit } from '../types.ts';
 import { clamp, len } from '../math.ts';
 import { hooks } from '../hooks.ts';
+import { courierFactor } from './weather.ts';
 
 export interface FOrder {
   id: number;
@@ -444,7 +445,7 @@ export function update(sim: Sim): void {
     sendCourier(sim, st.nodes[m.from], st.nodes[m.to], m.order, m.relay, true);
   }
   // couriers ride
-  const step = cfg.courierSpeed * dt;
+  const step = cfg.courierSpeed * courierFactor(sim) * dt;
   for (let i = st.couriers.length - 1; i >= 0; i--) {
     const c = st.couriers[i];
     const to = st.nodes[c.to];

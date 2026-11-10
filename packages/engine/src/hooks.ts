@@ -7,12 +7,16 @@ import * as command from './features/command.ts';
 import * as endurance from './features/endurance.ts';
 import * as skirmish from './features/skirmish.ts';
 import * as los from './features/los.ts';
+import * as smoke from './features/smoke.ts';
+import * as weather from './features/weather.ts';
 
 const QC = (sim: Sim, u: Unit) => sim.data.quality.classes[u.quality];
 
 export const hooks = {
   init(sim: Sim, expanded: ExpandedUnit[]): void {
     if (sim.features.fatigue || sim.features.ammunition) endurance.init(sim);
+    if (sim.features.weatherGround) weather.init(sim);
+    if (sim.features.smoke) smoke.init(sim);
     if (sim.features.elevationLos) los.init(sim);
     if (sim.features.skirmishers) skirmish.init(sim, expanded);
     if (sim.features.commandControl) command.init(sim, expanded);
@@ -25,6 +29,7 @@ export const hooks = {
   },
   postTick(sim: Sim): void {
     if (sim.features.fatigue || sim.features.ammunition) endurance.postTick(sim);
+    if (sim.features.smoke) smoke.update(sim);
   },
   onCommandInput(sim: Sim, input: SimInput): void {
     if (sim.features.commandControl) command.onCommandInput(sim, input);
@@ -43,10 +48,13 @@ export const hooks = {
   },
   onFired(sim: Sim, u: Unit, kind: 'musket' | 'roundshot' | 'canister', shots: number, _range: number): void {
     if (sim.features.fatigue || sim.features.ammunition) endurance.onFired(sim, u, kind, shots);
+    if (sim.features.smoke) smoke.onFired(sim, u, kind, shots);
   },
 
   canSee(sim: Sim, a: Unit, b: Unit): boolean {
+    if (sim.features.weatherGround && !weather.inSight(sim, a, b)) return false;
     if (sim.features.elevationLos && !los.canSee(sim, a, b)) return false;
+    if (sim.features.smoke && !smoke.canSee(sim, a, b)) return false;
     return true;
   },
   canFire(sim: Sim, u: Unit): boolean {
@@ -67,7 +75,7 @@ export const hooks = {
   },
 
   speedFactor(sim: Sim, u: Unit, heading: number): number {
-    let f = endurance.speedFactor(sim, u);
+    let f = endurance.speedFactor(sim, u) * weather.speedFactor(sim, u);
     if (sim.features.elevationLos) f *= los.slopeSpeed(sim, u, heading);
     return f;
   },
@@ -78,14 +86,19 @@ export const hooks = {
   reloadFactor(sim: Sim, u: Unit): number {
     return endurance.reloadFactor(sim, u) * (sim.features.quality ? QC(sim, u).reload : 1);
   },
-  musketFactor(sim: Sim, u: Unit, _t: Unit, _range: number): number {
-    return endurance.musketFactor(sim, u) * (sim.features.quality ? QC(sim, u).fire : 1);
+  musketFactor(sim: Sim, u: Unit, t: Unit, _range: number): number {
+    let f = endurance.musketFactor(sim, u) * weather.musketFactor(sim) * (sim.features.quality ? QC(sim, u).fire : 1);
+    if (sim.features.smoke) f *= smoke.hitFactor(sim, u, t);
+    return f;
   },
   musketRangeFactor(_sim: Sim, _u: Unit): number {
     return 1;
   },
-  gunFactor(sim: Sim, u: Unit, _t: Unit, _range: number, _canister: boolean): number {
-    return sim.features.quality ? QC(sim, u).fire : 1;
+  gunFactor(sim: Sim, u: Unit, t: Unit, _range: number, canister: boolean): number {
+    let f = sim.features.quality ? QC(sim, u).fire : 1;
+    if (!canister) f *= weather.roundshotFactor(sim);
+    if (sim.features.smoke) f *= smoke.hitFactor(sim, u, t);
+    return f;
   },
   gunRangeFactor(_sim: Sim, _u: Unit): number {
     return 1;

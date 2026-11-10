@@ -1,0 +1,54 @@
+{
+  "sky": {
+    "clear": {
+      "musket": { "value": 1.0, "unit": "multiplier on hits", "source": "assumption", "confidence": "assumption", "note": "Reference." },
+      "sight": { "value": 3000, "unit": "m", "source": "assumption", "confidence": "assumption", "note": "Limit of vision." },
+      "smokeDecay": { "value": 1.0, "unit": "multiplier", "source": "assumption", "confidence": "assumption", "note": "Reference." }
+    },
+    "rain": {
+      "musket": { "value": 0.6, "unit": "multiplier on hits", "source": "assumption", "confidence": "assumption", "note": "Damp priming: many more misfires. The direction is well attested; the size is a guess." },
+      "sight": { "value": 1500, "unit": "m", "source": "assumption", "confidence": "assumption", "note": "Limit of vision." },
+      "smokeDecay": { "value": 1.5, "unit": "multiplier", "source": "assumption", "confidence": "assumption", "note": "Rain beats smoke down." }
+    },
+    "heavy_rain": {
+      "musket": { "value": 0.25, "unit": "multiplier on hits", "source": "assumption", "confidence": "assumption", "note": "Muskets largely useless, as at the Katzbach and Dresden in 1813, where infantry could not fire and squares were broken by cavalry (from memory)." },
+      "sight": { "value": 600, "unit": "m", "source": "assumption", "confidence": "assumption", "note": "Limit of vision." },
+      "smokeDecay": { "value": 2.0, "unit": "multiplier", "source": "assumption", "confidence": "assumption", "note": "As rain, more so." }
+    },
+    "fog": {
+      "musket": { "value": 1.0, "unit": "multiplier on hits", "source": "assumption", "confidence": "assumption", "note": "No effect on the weapon itself." },
+      "sight": { "value": 300, "unit": "m", "source": "assumption", "confidence": "assumption", "note": "Limit of vision, as on the morning of Austerlitz in the valleys." },
+      "smokeDecay": { "value": 0.7, "unit": "multiplier", "source": "assumption", "confidence": "assumption", "note": "Still, damp air holds smoke." }
+    }
+  },
+  "ground": {
+    "firm": {
+      "infantry": { "value": 1.0, "unit": "multiplier on speed", "source": "assumption", "confidence": "assumption", "note": "Reference." },
+      "cavalry": { "value": 1.0, "unit": "multiplier on speed", "source": "assumption", "confidence": "assumption", "note": "Reference." },
+      "artillery": { "value": 1.0, "unit": "multiplier on speed", "source": "assumption", "confidence": "assumption", "note": "Reference." },
+      "roundshot": { "value": 1.0, "unit": "multiplier on roundshot effect", "source": "assumption", "confidence": "assumption", "note": "Reference: the trial figures were shot over firm ground, where the ball bounds on." },
+      "fatigue": { "value": 1.0, "unit": "multiplier on marching fatigue", "source": "assumption", "confidence": "assumption", "note": "Reference." }
+    },
+    "soft": {
+      "infantry": { "value": 0.92, "unit": "multiplier on speed", "source": "assumption", "confidence": "assumption", "note": "Wet ground." },
+      "cavalry": { "value": 0.85, "unit": "multiplier on speed", "source": "assumption", "confidence": "assumption", "note": "Wet ground." },
+      "artillery": { "value": 0.7, "unit": "multiplier on speed", "source": "assumption", "confidence": "assumption", "note": "Wheels sink." },
+      "roundshot": { "value": 0.75, "unit": "multiplier on roundshot effect", "source": "assumption", "confidence": "assumption", "note": "Shot loses much of its bounce." },
+      "fatigue": { "value": 1.25, "unit": "multiplier on marching fatigue", "source": "assumption", "confidence": "assumption", "note": "Wet ground." }
+    },
+    "mud": {
+      "infantry": { "value": 0.8, "unit": "multiplier on speed", "source": "assumption", "confidence": "assumption", "note": "As at Waterloo after the night's rain." },
+      "cavalry": { "value": 0.7, "unit": "multiplier on speed", "source": "assumption", "confidence": "assumption", "note": "Charges were delivered at little more than a trot." },
+      "artillery": { "value": 0.45, "unit": "multiplier on speed", "source": "assumption", "confidence": "assumption", "note": "Guns could barely be moved; Napoleon delayed the battle for the ground to dry." },
+      "roundshot": { "value": 0.5, "unit": "multiplier on roundshot effect", "source": "adkin-waterloo", "confidence": "recalled", "note": "Shot buried itself instead of bounding; widely reported at Waterloo. The factor itself is a guess." },
+      "fatigue": { "value": 1.6, "unit": "multiplier on marching fatigue", "source": "assumption", "confidence": "assumption", "note": "Mud." }
+    },
+    "frozen": {
+      "infantry": { "value": 1.0, "unit": "multiplier on speed", "source": "assumption", "confidence": "assumption", "note": "Hard ground." },
+      "cavalry": { "value": 0.9, "unit": "multiplier on speed", "source": "assumption", "confidence": "assumption", "note": "Slippery for horses." },
+      "artillery": { "value": 1.0, "unit": "multiplier on speed", "source": "assumption", "confidence": "assumption", "note": "Hard ground." },
+      "roundshot": { "value": 1.15, "unit": "multiplier on roundshot effect", "source": "assumption", "confidence": "assumption", "note": "Shot bounds farther, as at Eylau and Austerlitz." },
+      "fatigue": { "value": 1.0, "unit": "multiplier on marching fatigue", "source": "assumption", "confidence": "assumption", "note": "Hard ground." }
+    }
+  }
+}

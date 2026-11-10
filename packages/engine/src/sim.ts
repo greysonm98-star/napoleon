@@ -903,7 +903,7 @@ export function execInput(sim: Sim, input: SimInput): void {
       }
     } else u.order = { type: 'move', target: -1, x: o.x ?? u.x, y: o.y ?? u.y, charge: false };
   }
-  emit(sim, { type: 'input', kind: input.kind, unit: input.unit, detail: input.order ?? input.formation ?? null });
+  emit(sim, { type: 'input', kind: input.kind, unit: input.unit, side: u.side, detail: input.order ?? input.formation ?? null });
 }
 
 // ------------------------------------------------------------------ the tick

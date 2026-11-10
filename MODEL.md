@@ -749,3 +749,87 @@ Implausible or weak points:
 - No overhead fire rule: guns fire through friendly units in front of them.
 - Units still march on enemy they cannot see.
 - Indirect effects of roundshot (bounding over a crest into troops behind) are not modelled.
+
+### 12.6 Smoke (`smoke`)
+
+Parameters: `data/smoke.json`. All assumptions.
+
+A grid of 50 m cells holds smoke density. Density 1 in a cell is a bank that halves
+the effect of fire through it.
+
+- **Made by firing.** Each musket fired adds 0.002 and each gun 0.15, spread along
+  the firing unit's front just ahead of it. A 500-musket volley adds about 1 in
+  total; a six-gun salvo about 0.9.
+- **Drift, thinning, spread.** Every 5 s each cell takes the density that was
+  upwind of it (wind speed and direction from the scenario's `weather`), loses 0.4%
+  per second (half gone in about three minutes; faster in rain, slower in fog when
+  the weather feature is on), and exchanges 4% with each neighbour.
+- **Effect on fire.** Musketry and artillery are multiplied by
+  `1 / (1 + optical depth)`, where optical depth is density summed along the line
+  from muzzle to target in units of one cell, plus half the density at the muzzle.
+- **Effect on sight.** At optical depth above 4 the target cannot be seen: no fire,
+  no cavalry charge, no initiative against it.
+
+**Effect** (200 runs each, same seeds):
+
+| Scenario | Off | On, wind 3 m/s |
+|---|---|---|
+| Pitched battle | Allied 100%; French K/W 17% | Allied 100%; French K/W 16% |
+| Column against line: Allied loss | 2% | 3% |
+
+Column against line with smoke on, by wind speed: Allied loss 4% in still air, 3% at
+3 m/s, 2% at 8 m/s. In a ten-minute stand-up firefight at 80 m, fire in still air
+does under 70% of the damage it does with no smoke, and a stiff wind restores most
+of it (test `smoke-weather.test.ts`).
+
+The effect on these short actions is small: smoke matters in prolonged firefights,
+and the presets end before one develops.
+
+Implausible or weak points:
+- Smoke has no height: a battery on a hill is blinded by smoke in the valley.
+- Cells are 50 m, coarser than a battalion's depth.
+- The amounts and the thinning rate are guesses with no measurement behind them.
+
+### 12.7 Weather and ground (`weatherGround`)
+
+Parameters: `data/weather.json`. The scenario's `weather` block names the sky
+(clear, rain, heavy_rain, fog), the ground (firm, soft, mud, frozen) and the wind.
+The directions of these effects are well attested; every size is an assumption.
+
+| Sky | Musketry hits | Limit of sight | Smoke thinning |
+|---|---|---|---|
+| Clear | 1 | 3,000 m | 1 |
+| Rain | 0.6 | 1,500 m | 1.5 |
+| Heavy rain | 0.25 | 600 m | 2 |
+| Fog | 1 | 300 m | 0.7 |
+
+| Ground | Infantry speed | Cavalry speed | Gun speed | Roundshot effect | Marching fatigue |
+|---|---|---|---|---|---|
+| Firm | 1 | 1 | 1 | 1 | 1 |
+| Soft | 0.92 | 0.85 | 0.7 | 0.75 | 1.25 |
+| Mud | 0.8 | 0.7 | 0.45 | 0.5 | 1.6 |
+| Frozen | 1 | 0.9 | 1 | 1.15 | 1 |
+
+Cavalry speed also applies to charges and to couriers. The roundshot factor stands
+for the ball burying itself instead of bounding on; canister is unaffected. The
+limit of sight applies to fire, to cavalry choosing targets and to initiative,
+whether or not the elevation feature is on.
+
+**Effect** (200 runs each, same seeds, feature on):
+
+| Scenario | Condition | Result |
+|---|---|---|
+| Grand battery | firm, mud | French win 99%, 3% |
+| Pitched battle | firm, soft, mud | Allied 100% throughout; 15.4, 16.2, 18.6 min |
+| Column against line | clear, rain, heavy rain | French win 0%, 0%, 4%; Allied loss 2%, 5%, 10% |
+| Pitched battle | fog | Allied win on the objective in 47 min; French lose 6 of 12 units one at a time; Allied casualties nil |
+
+Mud all but cancels the grand battery, which is the Waterloo lesson. Heavy rain is
+the only condition found so far in which columns ever beat lines.
+
+Implausible or weak points:
+- Rain does not make squares vulnerable to cavalry, as it did historically, because
+  cavalry in this model never charges a steady square.
+- In fog the attackers walk into canister one battalion at a time and their own guns
+  never fire; no one waits for the fog to lift.
+- Weather is constant for the whole action.

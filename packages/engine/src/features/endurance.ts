@@ -3,6 +3,7 @@
 import { gradAt } from '../scenario.ts';
 import { emit } from '../sim.ts';
 import type { Sim, Unit } from '../types.ts';
+import { fatigueFactor } from './weather.ts';
 
 const F = (sim: Sim): Record<string, number> => sim.data.fatigue as Record<string, number>;
 interface AmmoData {
@@ -65,17 +66,10 @@ export function onMoved(sim: Sim, u: Unit, metres: number): void {
     const T = sim.data.terrain.slopeThreshold;
     if (gx * gx + gy * gy > T * T) per *= f.roughFactor;
   }
-  per *= weatherFatigue(sim);
+  per *= fatigueFactor(sim);
   u.fatigue += (per * metres) / 1000;
   if (u.fatigue > 1) u.fatigue = 1;
 }
-
-let weatherFatigueFn: (sim: Sim) => number = () => 1;
-/** Set by the weather module so that heavy ground tires troops faster. */
-export function setWeatherFatigue(fn: (sim: Sim) => number): void {
-  weatherFatigueFn = fn;
-}
-const weatherFatigue = (sim: Sim): number => weatherFatigueFn(sim);
 
 export function onFired(sim: Sim, u: Unit, kind: 'musket' | 'roundshot' | 'canister', shots: number): void {
   (sim.ext.lastFired as Float64Array)[u.idx] = sim.t;
