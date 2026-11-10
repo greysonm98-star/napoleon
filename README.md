@@ -101,8 +101,8 @@ switched per scenario in its `features` block: `commandControl`, `fatigue`,
 - **Live run**: run a scenario in the browser. You may give orders, and they are
   recorded, but nothing needs you to.
 - **Results**: read a batch. Either open the folder that `batch` or `sweep` wrote with
-  `--out`, or run a batch in the page (up to two sweep settings, using all but one of
-  your processor cores). It shows:
+  `--out` ("Open a batch folder"), or run a batch in the page (up to two sweep settings,
+  using all but one of your processor cores, at most eight). It shows:
   - each side's win rate with its 95% interval, the typical duration, and whether
     battles ended with an army breaking or were settled on the objective;
   - for a sweep, win rate, losses and duration against the swept setting;

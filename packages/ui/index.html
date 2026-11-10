@@ -18,6 +18,7 @@
     <nav class="tabs" role="tablist" aria-label="Mode">
       <button class="tab" id="tab-replay" role="tab" aria-selected="true" aria-controls="panel-replay" type="button">Replay</button>
       <button class="tab" id="tab-live" role="tab" aria-selected="false" aria-controls="panel-live" type="button">Live run</button>
+      <button class="tab" id="tab-results" role="tab" aria-selected="false" aria-controls="panel-results" type="button">Results</button>
       <button class="tab" id="tab-editor" role="tab" aria-selected="false" aria-controls="panel-editor" type="button">Editor</button>
     </nav>
   </header>
@@ -64,6 +65,8 @@
       </div>
       <p class="hint" id="hint">Drag to pan, scroll to zoom. Click a unit to inspect it.</p>
     </section>
+
+    <section class="results-main" id="results-main" aria-label="Batch results" hidden></section>
 
     <aside class="side">
       <section class="panel" id="panel-replay" role="tabpanel" aria-labelledby="tab-replay">
@@ -117,6 +120,8 @@
           <p class="muted">With a unit selected: click the ground to march there, click an enemy to attack it. Shift-click selects another unit.</p>
         </div>
       </section>
+
+      <section class="panel" id="panel-results" role="tabpanel" aria-labelledby="tab-results" hidden></section>
 
       <section class="panel" id="panel-editor" role="tabpanel" aria-labelledby="tab-editor" hidden>
         <h2>Editor</h2>

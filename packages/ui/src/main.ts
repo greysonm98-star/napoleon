@@ -12,6 +12,7 @@ import { BIG, ROUTINE, desnake, sentence } from './text.ts';
 import { $, clock, download, el, fmt } from './util.ts';
 import { Editor, unusableScenario } from './editor.ts';
 import { EditorPanel } from './editor-panel.ts';
+import { ResultsView } from './results.ts';
 
 // ------------------------------------------------------------------ data and scenarios
 
@@ -37,7 +38,7 @@ const SPEEDS = [1, 4, 16, 60];
 
 // ------------------------------------------------------------------ state
 
-type Mode = 'replay' | 'live' | 'editor';
+type Mode = 'replay' | 'live' | 'results' | 'editor';
 interface Live {
   sim: Sim;
   rec: Recorder;
@@ -325,11 +326,18 @@ function setMode(m: Mode): void {
   mode = m;
   sel = null;
   highlight = new Set();
-  for (const k of ['replay', 'live', 'editor'] as Mode[]) {
+  for (const k of MODES) {
     $('tab-' + k).setAttribute('aria-selected', String(k === m));
     $('panel-' + k).hidden = k !== m;
   }
   document.body.classList.toggle('mode-editor', m === 'editor');
+  document.body.classList.toggle('mode-results', m === 'results');
+  $('results-main').hidden = m !== 'results';
+  if (m === 'results') results.activate();
+  else {
+    results.deactivate();
+    layout(); // the map may have been resized while it was hidden
+  }
   cv.style.cursor = '';
   if (m === 'editor') editor.activate();
   else editor.deactivate();
@@ -340,7 +348,18 @@ function setMode(m: Mode): void {
   if (m !== 'editor') $('hint').textContent = '';
   syncUi(true);
 }
-for (const k of ['replay', 'live', 'editor'] as Mode[]) $('tab-' + k).addEventListener('click', () => setMode(k));
+const MODES: Mode[] = ['replay', 'live', 'results', 'editor'];
+for (const k of MODES) $('tab-' + k).addEventListener('click', () => setMode(k));
+// arrow keys move between tabs, as in any tab list
+$('tab-replay').parentElement!.addEventListener('keydown', (e) => {
+  if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+  e.preventDefault();
+  e.stopPropagation();
+  const i = MODES.indexOf(mode);
+  const next = MODES[(i + (e.key === 'ArrowRight' ? 1 : MODES.length - 1)) % MODES.length];
+  setMode(next);
+  $('tab-' + next).focus();
+});
 
 function togglePlay(): void {
   if (mode === 'live' && live && !live.done) {
@@ -539,6 +558,7 @@ window.addEventListener('keydown', (e) => {
   const tag = (e.target as HTMLElement).tagName;
   if (tag === 'INPUT' && (e.target as HTMLInputElement).type !== 'range' && (e.target as HTMLInputElement).type !== 'checkbox') return;
   if (tag === 'SELECT' || tag === 'TEXTAREA') return;
+  if (mode === 'results') return; // the transport keys mean nothing here
   if (mode === 'editor') {
     if (editor.key(e)) {
       e.preventDefault();
@@ -769,6 +789,22 @@ const editor = new Editor({
 });
 new EditorPanel($('panel-editor'), editor);
 
+// ------------------------------------------------------------------ results
+
+const results = new ResultsView(
+  {
+    data,
+    scenarios,
+    editorScenario: () => editor.sc ?? null,
+    openReplay: (r, label, note) => {
+      loadReplay(r, label);
+      $('replay-info').textContent += ` Re-run from a batch: ${note}.`;
+    },
+  },
+  $('results-main'),
+  $('panel-results'),
+);
+
 // ------------------------------------------------------------------ frame loop
 
 let lastTs = 0;
@@ -790,6 +826,7 @@ function frameLoop(ts: number): void {
 function frameBody(ts: number): void {
   const dt = Math.min(0.1, (ts - lastTs) / 1000 || 0);
   lastTs = ts;
+  if (mode === 'results') return; // the map is hidden; the Results tab draws itself
   if (liveActive() && live) {
     if (playing) {
       live.acc += dt * speed;
@@ -897,5 +934,6 @@ if (url) {
 }
 if (q.get('mode') === 'live') setMode('live');
 if (q.get('mode') === 'editor') setMode('editor');
+if (q.get('mode') === 'results') setMode('results');
 syncUi(true);
 requestAnimationFrame(frameLoop);

@@ -8,4 +8,6 @@ export default defineConfig({
   base: './',
   server: { fs: { allow: [resolve(here, '../..')] } },
   build: { outDir: 'dist', target: 'es2022', chunkSizeWarningLimit: 1500 },
+  // the batch runner's workers import the engine as modules
+  worker: { format: 'es' },
 });
