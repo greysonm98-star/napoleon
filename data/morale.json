@@ -35,11 +35,11 @@
     "note": "Below this strength a unit ceases to exist."
   },
   "casualtyShock": {
-    "value": 1.0,
+    "value": 3.0,
     "unit": "morale per 1% of starting strength lost",
-    "source": "prototype",
-    "confidence": "prototype",
-    "note": "Multiplied by the cause factor below and by the unit's steadiness."
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Multiplied by the cause factor and the unit's steadiness. The prototype's value is 1, which needs about 66% casualties from frontal fire to rout a battalion. Raised to 3 as a plausibility correction (MODEL.md 11, change A): a line battalion now breaks after about 22% losses to frontal musketry, 16% to canister, 10% to close fire on a column; a guard battalion stands half as much again. Anchor: units of the period usually gave way with a minority of their men down. Restore the prototype with --set data:morale.casualtyShock=1."
   },
   "shockFireFront": {
     "value": 1.0,
@@ -210,11 +210,11 @@
     "note": "Recovery ceiling is 100 x (base + (1 - base) x strength fraction)."
   },
   "routRecoveryRate": {
-    "value": 0.86,
+    "value": 0.05,
     "unit": "morale/s",
-    "source": "prototype",
-    "confidence": "prototype",
-    "note": "For a routed unit far from the enemy (6 divided by 7)."
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "For a routed unit far from the enemy. The prototype's value divided by 7 is 0.86, which rallies a broken battalion in about half a minute and sends it straight back into the attack. Lowered as a plausibility correction (MODEL.md 11, change B): regaining the 28 points needed to rally now takes about nine minutes. Restore the prototype with --set data:morale.routRecoveryRate=0.86."
   },
   "routRecoveryCap": {
     "value": 60,

@@ -371,41 +371,91 @@ its opponent has the high ground: melee power × 1.15, musketry × 1.15, and rou
 fired up at it × 0.8. Ground steeper than 3% slows movement to 0.88. In the baseline
 everything can see everything; line of sight comes with the elevation feature.
 
-## 11. Known implausibilities
+## 11. Plausibility: corrections made and problems still open
 
-A running list. Entries are findings, not yet fixes.
+### 11.1 Corrections made
 
-1. **Units fight until destroyed by fire.** Frontal musketry takes 1 morale per 1% of
-   strength lost, so fire alone needs about 66% casualties to rout a battalion.
-   Historically units broke with a minority of their men down. This is the
-   prototype's rule, and the prototype is as bloody (40–70% losses for both sides in
-   its own pitched battle). `casualtyShock` is the parameter to examine.
-2. **Melee is too bloody.** Two battalions that close lose around 40% each before one
-   breaks. Period evidence is that bayonet fights were rare, short and caused few
-   casualties.
-3. **Unlimited canister.** A battery fires canister for as long as a target stands in
-   range. With no ammunition limit a pair of batteries can inflict 2,000 casualties.
-   The ammunition feature (Phase 4) addresses this.
-4. **Attackers do worse than in the prototype.** See the table below. At real scale a
-   battalion spends about eight times as long inside canister range and twice as long
-   inside musket range as the prototype's did, because the prototype's units moved
-   several times too fast for its weapon ranges. The direction is plausible (an
-   unprepared frontal attack on a ridge with guns should usually fail); the casualty
-   totals are not, because of item 1.
-5. **Infantry fire passes through friends.** No masking by friendly units.
-6. **A battalion knows when cavalry has picked it as a target.** Simplification kept
-   from the prototype.
+Two coefficients ported from the prototype gave results well outside the historical
+record at real scale. Both were changed after the Phase 2 sweeps. The prototype's
+values can be restored from the command line to see the difference.
 
-Prototype against port, share of runs won by the French (prototype 200 runs, port
-100 runs; "none" is no decision in two hours):
+**Change A: `casualtyShock` 1 → 3.** With the prototype's value, frontal musketry
+took 1 morale per 1% of strength lost, so fire alone needed about 66% casualties to
+rout a battalion and units were shot to pieces where they stood. At 3 a line
+battalion breaks after about 22% losses to frontal musketry, 16% to canister and 10%
+to close fire on a column; a guard battalion stands about half as much again.
 
-| Preset | Prototype | Port |
-|---|---|---|
-| Pitched battle (French attack in line) | 34% | 0% |
-| Column against line | 8% | 0% |
-| Cavalry against squares (with two batteries) | 97% | 100% |
-| The grand battery | 64% | 58%, none 24% |
-| Allied counterattack (French defend) | 60% | 100% |
+**Change B: `routRecoveryRate` 0.86 → 0.05 morale/s.** The prototype's rate, divided
+by 7, rallied a broken battalion in about 35 seconds and sent it back into the
+attack; battalions routed, rallied and re-attacked three times in half an hour.
+Regaining the 28 points needed to rally now takes about nine minutes.
+
+Effect on the pitched-battle preset (200 runs; French attack a ridge in line):
+
+| | Prototype values | A only | A and B |
+|---|---|---|---|
+| Allied win | 100% | 100% | 100% |
+| Median duration | 28 min | 33 min | 15 min |
+| French killed and wounded | 61% | 49% | 17% |
+| French total loss | 81% | 72% | 29% |
+| Allied killed and wounded | 12% | 9% | 3% |
+
+Column against line (200 runs), with A and B: the columns are repulsed every time,
+losing 12% against 2%, and the cause recorded for nearly every rout is close musketry
+on the column. That is the Peninsular pattern.
+
+### 11.2 Still open
+
+1. **Attackers do worse than in the prototype.** See the table below. At real scale
+   a battalion spends about eight times as long inside canister range and twice as
+   long inside musket range as the prototype's did, because the prototype's units
+   moved several times too fast for its weapon ranges. The direction is plausible:
+   an unprepared frontal attack on a ridge with guns should usually fail.
+2. **Numbers do not help a column attack.** Twelve battalions attacking four in
+   column lose as surely as four do. They arrive in waves of four, each column
+   meets a fresh line alone, breaks within ten seconds of contact, and the army
+   gives up when two waves have gone. A 3:1 attack that never succeeds is doubtful.
+3. **Unlimited canister.** With no ammunition limit a battery fires canister for as
+   long as a target stands in range. Canister is the leading cause of French routs
+   in the pitched battle, and its trial-to-battle factor is the most influential
+   single coefficient found so far (sweep below). The ammunition feature limits it.
+4. **Melee losses.** Smaller than before change A but still several percent per
+   side in a few seconds. Period evidence is that bayonet fights were rare, short
+   and caused few casualties.
+5. **Melee has no randomness.** Its outcome is fixed by the state at contact, so
+   infantry-only scenarios vary very little between seeds (duration p10 to p90 of
+   the column preset: 18.4 to 18.5 min).
+6. **Infantry fire passes through friends.** No masking by friendly units.
+7. **A battalion knows when cavalry has picked it as a target.** Kept from the prototype.
+8. **Attack in line deploys inside canister range.** `deployRange` (300 m) was
+   outside canister range in the prototype and is inside it at real ranges.
+
+### 11.3 Port against prototype
+
+Share of runs won by the French. The prototype column is its own simulation run
+headless (`tools/prototype-baseline.mjs`, 200 runs). "none" is no decision in two hours.
+
+| Preset | Prototype | Port, prototype values | Port, with A and B |
+|---|---|---|---|
+| Pitched battle (French attack in line) | 34% | 0% | 0% |
+| Column against line | 8% | 0% | 0% |
+| Cavalry against squares (with two batteries) | 97% | 100% | 99% |
+| The grand battery | 64% | 61%, none 25% | 99% |
+| Allied counterattack (French defend) | 60% | 100% | 100% |
+
+### 11.4 Sensitivity (Phase 2 sweeps, 150-200 runs per point, same seeds at every point)
+
+| Coefficient | Scenario | Values | Effect |
+|---|---|---|---|
+| Canister battlefield factor | Pitched | 0.025, 0.05, 0.1, 0.2 | French win 21%, 2%, 0%, 0% (prototype morale values) |
+| Musket battlefield factor, both sides | Pitched | 0.02, 0.04, 0.08 | None: the attack is decided by canister before musketry matters |
+| Musket battlefield factor, defender | Column | 0.01, 0.02, 0.04, 0.08 | French win 3%, 0%, 0%, 0%; Allied loss 10%, 6%, 2%, 0% |
+| `casualtyShock` | Pitched | 1, 2, 3, 4, 6 | French killed and wounded 61%, 56%, 49%, 42%, 30%; winner unchanged |
+| `rippleFriend` | Pitched | 0, 7, 14, 21 | No visible effect on the winner |
+| `blownTime` | Pitched | 60, 300, 900 s | No visible effect on the winner |
+| French batteries | Pitched | 0, 2, 4, 6 | French win 0%, 0%, 0%, 3%; battle lasts 14, 15, 19, 22 min |
+| French battalions | Column | 4 to 12 | French win 0% throughout (item 2 above) |
+| French posture | Pitched | line, column | No difference in the winner or in losses |
 
 ## 12. Deeper-model features
 

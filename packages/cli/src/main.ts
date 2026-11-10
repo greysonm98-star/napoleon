@@ -103,6 +103,10 @@ Paths for --param and --set start with data: or scenario:, e.g.
   }
 }
 
+process.stdout.on('error', (e: NodeJS.ErrnoException) => {
+  if (e.code === 'EPIPE') process.exit(0);
+});
+
 main().catch((e) => {
   console.error(e instanceof Error ? e.message : e);
   process.exit(1);
