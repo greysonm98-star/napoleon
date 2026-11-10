@@ -8,6 +8,41 @@
         "source": "prototype",
         "confidence": "prototype",
         "note": "Prototype: Vieille Garde 0.6, 1st Foot Guards 0.7."
+      },
+      "fire": {
+        "value": 1.15,
+        "unit": "multiplier on hits",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Steadiness of fire: musketry and gunnery hits. Used only when the quality feature is on. The size of the effect is a guess."
+      },
+      "reload": {
+        "value": 0.9,
+        "unit": "multiplier on reload time",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Speed of loading. The size of the effect is a guess."
+      },
+      "drill": {
+        "value": 0.8,
+        "unit": "multiplier on formation-change time",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Speed of manoeuvre: trained troops changed formation faster and raw ones slower (Nafziger and Muir, from memory). The size of the effect is a guess."
+      },
+      "melee": {
+        "value": 1.2,
+        "unit": "multiplier on melee power",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Weight in a close fight. The size of the effect is a guess."
+      },
+      "rally": {
+        "value": 1.5,
+        "unit": "multiplier on morale recovery when routed",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Readiness to rally. The size of the effect is a guess."
       }
     },
     "elite": {
@@ -18,6 +53,41 @@
         "source": "prototype",
         "confidence": "prototype",
         "note": "Prototype: 42nd Highlanders, cuirassiers, Life Guards 0.85."
+      },
+      "fire": {
+        "value": 1.1,
+        "unit": "multiplier on hits",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Steadiness of fire: musketry and gunnery hits. Used only when the quality feature is on. The size of the effect is a guess."
+      },
+      "reload": {
+        "value": 0.95,
+        "unit": "multiplier on reload time",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Speed of loading. The size of the effect is a guess."
+      },
+      "drill": {
+        "value": 0.85,
+        "unit": "multiplier on formation-change time",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Speed of manoeuvre: trained troops changed formation faster and raw ones slower (Nafziger and Muir, from memory). The size of the effect is a guess."
+      },
+      "melee": {
+        "value": 1.15,
+        "unit": "multiplier on melee power",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Weight in a close fight. The size of the effect is a guess."
+      },
+      "rally": {
+        "value": 1.3,
+        "unit": "multiplier on morale recovery when routed",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Readiness to rally. The size of the effect is a guess."
       }
     },
     "veteran": {
@@ -28,6 +98,41 @@
         "source": "prototype",
         "confidence": "prototype",
         "note": "Prototype: light infantry, KGL, dragoons 0.9-0.95."
+      },
+      "fire": {
+        "value": 1.05,
+        "unit": "multiplier on hits",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Steadiness of fire: musketry and gunnery hits. Used only when the quality feature is on. The size of the effect is a guess."
+      },
+      "reload": {
+        "value": 0.97,
+        "unit": "multiplier on reload time",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Speed of loading. The size of the effect is a guess."
+      },
+      "drill": {
+        "value": 0.9,
+        "unit": "multiplier on formation-change time",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Speed of manoeuvre: trained troops changed formation faster and raw ones slower (Nafziger and Muir, from memory). The size of the effect is a guess."
+      },
+      "melee": {
+        "value": 1.05,
+        "unit": "multiplier on melee power",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Weight in a close fight. The size of the effect is a guess."
+      },
+      "rally": {
+        "value": 1.15,
+        "unit": "multiplier on morale recovery when routed",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Readiness to rally. The size of the effect is a guess."
       }
     },
     "line": {
@@ -38,6 +143,41 @@
         "source": "prototype",
         "confidence": "prototype",
         "note": "Reference."
+      },
+      "fire": {
+        "value": 1,
+        "unit": "multiplier on hits",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Steadiness of fire: musketry and gunnery hits. Used only when the quality feature is on. Reference class."
+      },
+      "reload": {
+        "value": 1,
+        "unit": "multiplier on reload time",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Speed of loading. Reference class."
+      },
+      "drill": {
+        "value": 1,
+        "unit": "multiplier on formation-change time",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Speed of manoeuvre: trained troops changed formation faster and raw ones slower (Nafziger and Muir, from memory). Reference class."
+      },
+      "melee": {
+        "value": 1,
+        "unit": "multiplier on melee power",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Weight in a close fight. Reference class."
+      },
+      "rally": {
+        "value": 1,
+        "unit": "multiplier on morale recovery when routed",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Readiness to rally. Reference class."
       }
     },
     "conscript": {
@@ -48,6 +188,41 @@
         "source": "prototype",
         "confidence": "prototype",
         "note": "Prototype: 5e and 8e de Ligne 1.05, Brunswick and Nassau 1.1."
+      },
+      "fire": {
+        "value": 0.9,
+        "unit": "multiplier on hits",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Steadiness of fire: musketry and gunnery hits. Used only when the quality feature is on. The size of the effect is a guess."
+      },
+      "reload": {
+        "value": 1.1,
+        "unit": "multiplier on reload time",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Speed of loading. The size of the effect is a guess."
+      },
+      "drill": {
+        "value": 1.3,
+        "unit": "multiplier on formation-change time",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Speed of manoeuvre: trained troops changed formation faster and raw ones slower (Nafziger and Muir, from memory). The size of the effect is a guess."
+      },
+      "melee": {
+        "value": 0.9,
+        "unit": "multiplier on melee power",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Weight in a close fight. The size of the effect is a guess."
+      },
+      "rally": {
+        "value": 0.8,
+        "unit": "multiplier on morale recovery when routed",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Readiness to rally. The size of the effect is a guess."
       }
     },
     "militia": {
@@ -58,6 +233,41 @@
         "source": "assumption",
         "confidence": "assumption",
         "note": "Not in the prototype; extends the scale for Landwehr and similar."
+      },
+      "fire": {
+        "value": 0.8,
+        "unit": "multiplier on hits",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Steadiness of fire: musketry and gunnery hits. Used only when the quality feature is on. The size of the effect is a guess."
+      },
+      "reload": {
+        "value": 1.2,
+        "unit": "multiplier on reload time",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Speed of loading. The size of the effect is a guess."
+      },
+      "drill": {
+        "value": 1.6,
+        "unit": "multiplier on formation-change time",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Speed of manoeuvre: trained troops changed formation faster and raw ones slower (Nafziger and Muir, from memory). The size of the effect is a guess."
+      },
+      "melee": {
+        "value": 0.8,
+        "unit": "multiplier on melee power",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Weight in a close fight. The size of the effect is a guess."
+      },
+      "rally": {
+        "value": 0.6,
+        "unit": "multiplier on morale recovery when routed",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Readiness to rally. The size of the effect is a guess."
       }
     }
   }

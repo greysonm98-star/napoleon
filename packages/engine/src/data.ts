@@ -104,7 +104,11 @@ export interface TerrainType {
 export interface QualityClass {
   label: string;
   steadiness: number;
-  [k: string]: number | string;
+  fire: number;
+  reload: number;
+  drill: number;
+  melee: number;
+  rally: number;
 }
 
 type Nums = Record<string, number>;

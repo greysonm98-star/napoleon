@@ -7,6 +7,8 @@ import * as command from './features/command.ts';
 import * as endurance from './features/endurance.ts';
 import * as skirmish from './features/skirmish.ts';
 
+const QC = (sim: Sim, u: Unit) => sim.data.quality.classes[u.quality];
+
 export const hooks = {
   init(sim: Sim, expanded: ExpandedUnit[]): void {
     if (sim.features.fatigue || sim.features.ammunition) endurance.init(sim);
@@ -64,26 +66,27 @@ export const hooks = {
   speedFactor(sim: Sim, u: Unit, _heading: number): number {
     return endurance.speedFactor(sim, u);
   },
-  drillTimeFactor(_sim: Sim, _u: Unit): number {
-    return 1;
+  // quality (MODEL 12.4): with the toggle on, a unit's class also scales its fire, loading, drill, melee and rallying
+  drillTimeFactor(sim: Sim, u: Unit): number {
+    return sim.features.quality ? QC(sim, u).drill : 1;
   },
   reloadFactor(sim: Sim, u: Unit): number {
-    return endurance.reloadFactor(sim, u);
+    return endurance.reloadFactor(sim, u) * (sim.features.quality ? QC(sim, u).reload : 1);
   },
   musketFactor(sim: Sim, u: Unit, _t: Unit, _range: number): number {
-    return endurance.musketFactor(sim, u);
+    return endurance.musketFactor(sim, u) * (sim.features.quality ? QC(sim, u).fire : 1);
   },
   musketRangeFactor(_sim: Sim, _u: Unit): number {
     return 1;
   },
-  gunFactor(_sim: Sim, _u: Unit, _t: Unit, _range: number, _canister: boolean): number {
-    return 1;
+  gunFactor(sim: Sim, u: Unit, _t: Unit, _range: number, _canister: boolean): number {
+    return sim.features.quality ? QC(sim, u).fire : 1;
   },
   gunRangeFactor(_sim: Sim, _u: Unit): number {
     return 1;
   },
   meleeFactor(sim: Sim, a: Unit, _b: Unit): number {
-    return endurance.meleeFactor(sim, a);
+    return endurance.meleeFactor(sim, a) * (sim.features.quality ? QC(sim, a).melee : 1);
   },
   casualtyShockFactor(sim: Sim, u: Unit): number {
     return endurance.shockFactor(sim, u);
@@ -100,7 +103,7 @@ export const hooks = {
     return f;
   },
   rallyFactor(sim: Sim, u: Unit): number {
-    let f = 1;
+    let f = sim.features.quality ? QC(sim, u).rally : 1;
     if (sim.features.commandControl) f *= command.rallyFactor(sim, u);
     return f;
   },

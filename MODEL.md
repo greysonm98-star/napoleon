@@ -677,3 +677,34 @@ Implausible or weak points:
 - A screen cannot be ridden down; it always gets in before cavalry arrives.
 - The parent battalion fires through its own screen.
 - Rifles are not distinguished from muskets.
+
+### 12.4 Unit quality and experience (`quality`)
+
+Parameters: `data/quality.json`. The steadiness values come from the prototype; the
+other five columns are assumptions.
+
+Every unit has a quality class. In the baseline the class sets only steadiness `q`
+(the multiplier on morale loss) and, through it, starting morale. With the toggle on
+the class also scales five other things:
+
+| Class | Steadiness | Fire (hits) | Reload time | Drill time | Melee power | Rally rate |
+|---|---|---|---|---|---|---|
+| Guard | 0.65 | 1.15 | 0.90 | 0.80 | 1.20 | 1.5 |
+| Elite | 0.85 | 1.10 | 0.95 | 0.85 | 1.15 | 1.3 |
+| Veteran | 0.95 | 1.05 | 0.97 | 0.90 | 1.05 | 1.15 |
+| Line | 1.00 | 1 | 1 | 1 | 1 | 1 |
+| Conscript | 1.08 | 0.90 | 1.10 | 1.30 | 0.90 | 0.8 |
+| Militia | 1.20 | 0.80 | 1.20 | 1.60 | 0.80 | 0.6 |
+
+Fire applies to musketry and gunnery. Drill time applies to every change of
+formation, and so to how early a battalion must start forming square (9.1).
+
+**Effect** (200 runs each, same seeds): no change in who wins the pitched battle or
+the column preset, whose rosters are mostly line troops with a few better and worse
+battalions on each side. In a stand-up firefight between a guard and a militia
+battalion the guard inflicts more than 1.4 times the casualties it takes with the
+toggle on, and the two are equal with it off (test `quality.test.ts`).
+
+Implausible or weak points:
+- Quality is fixed for the battle; units do not gain or lose it.
+- One scale serves infantry, cavalry and gunners alike.
