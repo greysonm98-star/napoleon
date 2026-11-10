@@ -1,0 +1,171 @@
+{
+  "types": {
+    "wood": {
+      "label": "Wood",
+      "moveInfantry": {
+        "value": 0.55,
+        "unit": "multiplier",
+        "source": "prototype",
+        "confidence": "prototype",
+        "note": "Ported unchanged from the prototype."
+      },
+      "moveCavalry": {
+        "value": 0.4,
+        "unit": "multiplier",
+        "source": "prototype",
+        "confidence": "prototype",
+        "note": "Ported unchanged from the prototype."
+      },
+      "moveArtillery": {
+        "value": 0.55,
+        "unit": "multiplier",
+        "source": "prototype",
+        "confidence": "prototype",
+        "note": "Ported unchanged from the prototype."
+      },
+      "coverMusketry": {
+        "value": 0.7,
+        "unit": "multiplier",
+        "source": "prototype",
+        "confidence": "prototype",
+        "note": "Applied to casualties taken by a unit inside."
+      },
+      "coverArtillery": {
+        "value": 0.6,
+        "unit": "multiplier",
+        "source": "prototype",
+        "confidence": "prototype",
+        "note": "Ported unchanged from the prototype."
+      },
+      "cavalryMelee": {
+        "value": 0.5,
+        "unit": "multiplier",
+        "source": "prototype",
+        "confidence": "prototype",
+        "note": "Cavalry power when it or its opponent is inside."
+      },
+      "cavalryVsInfantryInside": {
+        "value": 1.0,
+        "unit": "multiplier",
+        "source": "prototype",
+        "confidence": "prototype",
+        "note": "No extra effect."
+      },
+      "sightHeight": {
+        "value": 15,
+        "unit": "m",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Height that blocks line of sight when the elevation feature is on."
+      }
+    },
+    "farm": {
+      "label": "Walled farm",
+      "moveInfantry": {
+        "value": 1.0,
+        "unit": "multiplier",
+        "source": "prototype",
+        "confidence": "prototype",
+        "note": "The prototype did not slow movement here."
+      },
+      "moveCavalry": {
+        "value": 1.0,
+        "unit": "multiplier",
+        "source": "prototype",
+        "confidence": "prototype",
+        "note": "Ported unchanged from the prototype."
+      },
+      "moveArtillery": {
+        "value": 1.0,
+        "unit": "multiplier",
+        "source": "prototype",
+        "confidence": "prototype",
+        "note": "Ported unchanged from the prototype."
+      },
+      "coverMusketry": {
+        "value": 0.45,
+        "unit": "multiplier",
+        "source": "prototype",
+        "confidence": "prototype",
+        "note": "Ported unchanged from the prototype."
+      },
+      "coverArtillery": {
+        "value": 0.5,
+        "unit": "multiplier",
+        "source": "prototype",
+        "confidence": "prototype",
+        "note": "Ported unchanged from the prototype."
+      },
+      "cavalryMelee": {
+        "value": 1.0,
+        "unit": "multiplier",
+        "source": "prototype",
+        "confidence": "prototype",
+        "note": "Ported unchanged from the prototype."
+      },
+      "cavalryVsInfantryInside": {
+        "value": 0.4,
+        "unit": "multiplier",
+        "source": "prototype",
+        "confidence": "prototype",
+        "note": "Cavalry power against infantry inside the walls."
+      },
+      "sightHeight": {
+        "value": 8,
+        "unit": "m",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Ported unchanged from the prototype."
+      }
+    }
+  },
+  "heightAdvantageMin": {
+    "value": 5,
+    "unit": "m",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "A unit this much higher than its opponent has the high-ground advantage. Replaces the prototype's 'on the ridge and the other is not'."
+  },
+  "highGroundMelee": {
+    "value": 1.15,
+    "unit": "multiplier",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Ported unchanged from the prototype."
+  },
+  "highGroundFire": {
+    "value": 1.15,
+    "unit": "multiplier",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Musketry from higher ground."
+  },
+  "roundshotUphill": {
+    "value": 0.8,
+    "unit": "multiplier",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Roundshot fired at a target on higher ground."
+  },
+  "slopeThreshold": {
+    "value": 0.03,
+    "unit": "gradient",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Ground steeper than this counts as a slope for movement. Replaces the prototype's 'on the ridge'."
+  },
+  "slopeMove": {
+    "value": 0.88,
+    "unit": "multiplier",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Ported unchanged from the prototype."
+  },
+  "mapMargin": {
+    "value": 30,
+    "unit": "m",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Formed units stay this far inside the map edge (24 px x1.4)."
+  }
+}

@@ -1,0 +1,302 @@
+{
+  "french": {
+    "label": "French infantry, Règlement of 1791, six-company battalions of 1808",
+    "ranks": {
+      "value": 3,
+      "unit": "ranks",
+      "source": "reglement-1791",
+      "confidence": "recalled",
+      "note": "French infantry formed three deep throughout the period."
+    },
+    "firingRanks": {
+      "value": 2,
+      "unit": "ranks",
+      "source": "nosworthy-tactics",
+      "confidence": "recalled",
+      "note": "The third rank's fire was widely judged ineffective or dangerous to the front ranks; it is counted as not firing."
+    },
+    "fileWidth": {
+      "value": 0.56,
+      "unit": "m",
+      "source": "assumption",
+      "confidence": "assumption",
+      "note": "22 in per file. The design draft had 0.65 m, which is the pace, not the file; a web check found no support for it. The only figure located (uncited, secondary) is 22 inches per file, the same as the British regulation. Neither the Règlement nor Nafziger could be read."
+    },
+    "rankDepth": {
+      "value": 0.65,
+      "unit": "m",
+      "source": "reglement-1791",
+      "confidence": "recalled",
+      "note": "One pace between ranks. Unverified."
+    },
+    "paceLength": {
+      "value": 0.65,
+      "unit": "m",
+      "source": "reglement-1791",
+      "confidence": "secondary",
+      "note": "Pas of two pieds. Confirmed by a secondary web source (Hamilton Papers note on the 1791 ordinance) via search snippet; original page not read."
+    },
+    "cadenceLine": {
+      "value": 76,
+      "unit": "paces/min",
+      "source": "reglement-1791",
+      "confidence": "secondary",
+      "note": "Pas ordinaire, used by a deployed line. Confirmed by a secondary web source (Hamilton Papers note on the 1791 ordinance) via search snippet; original page not read."
+    },
+    "cadenceColumn": {
+      "value": 100,
+      "unit": "paces/min",
+      "source": "reglement-1791",
+      "confidence": "secondary",
+      "note": "Pas accéléré, used by columns of manoeuvre and attack. Confirmed by a secondary web source (Hamilton Papers note on the 1791 ordinance) via search snippet; original page not read."
+    },
+    "lineDressingFactor": {
+      "value": 0.8,
+      "unit": "fraction",
+      "source": "assumption",
+      "confidence": "assumption",
+      "note": "A line advancing in battle halted to dress and moved below regulation rate (Nosworthy, Muir). The size of the reduction is a guess."
+    },
+    "squareSpeed": {
+      "value": 0.25,
+      "unit": "m/s",
+      "source": "prototype",
+      "confidence": "prototype",
+      "note": "Prototype square moved at 0.28 of line speed. 15 m/min is in the range the design assumed."
+    },
+    "routSpeed": {
+      "value": 1.8,
+      "unit": "m/s",
+      "source": "prototype",
+      "confidence": "prototype",
+      "note": "Prototype routers ran at 2.1 x line speed. 1.8 m/s is a jog."
+    },
+    "columnDivisions": {
+      "value": 3,
+      "unit": "divisions",
+      "source": "nafziger-bayonets",
+      "confidence": "recalled",
+      "note": "Column of divisions: six companies, two abreast, three divisions deep, so nine ranks."
+    },
+    "columnIntervalFraction": {
+      "value": 0.5,
+      "unit": "fraction of division frontage",
+      "source": "nafziger-bayonets",
+      "confidence": "recalled",
+      "note": "Column at half distance, the usual attack column."
+    },
+    "squareRanks": {
+      "value": 3,
+      "unit": "ranks",
+      "source": "nafziger-bayonets",
+      "confidence": "recalled",
+      "note": "French battalion square three deep."
+    },
+    "squareFiringRanks": {
+      "value": 2,
+      "unit": "ranks",
+      "source": "assumption",
+      "confidence": "assumption",
+      "note": "Same rule as the line: two ranks of a face fire."
+    },
+    "timeLineToColumn": {
+      "value": 120,
+      "unit": "s",
+      "source": "nafziger-bayonets",
+      "confidence": "recalled",
+      "note": "Design range 2-3 min for about 600 men. From memory of Nafziger; a web check found nothing either way."
+    },
+    "timeColumnToLine": {
+      "value": 150,
+      "unit": "s",
+      "source": "nafziger-bayonets",
+      "confidence": "recalled",
+      "note": "Deploying was the slow evolution. From memory of Nafziger; a web check found nothing either way."
+    },
+    "timeColumnToSquare": {
+      "value": 45,
+      "unit": "s",
+      "source": "nafziger-bayonets",
+      "confidence": "secondary",
+      "note": "30 s for an attack column, about 60 s for an awkward one, credited to Nafziger on secondary web pages (search snippet). Midpoint used."
+    },
+    "timeLineToSquare": {
+      "value": 100,
+      "unit": "s",
+      "source": "nafziger-bayonets",
+      "confidence": "secondary",
+      "note": "Drill-book time of 96-100 s credited to Nafziger on secondary web pages (search snippet), which add that field times ran longer. The design draft's 2-4 min was too high."
+    },
+    "timeSquareToColumn": {
+      "value": 60,
+      "unit": "s",
+      "source": "assumption",
+      "confidence": "assumption",
+      "note": "Taken as a little slower than column to square."
+    },
+    "timeSquareToLine": {
+      "value": 150,
+      "unit": "s",
+      "source": "assumption",
+      "confidence": "assumption",
+      "note": "Taken as equal to column to line."
+    },
+    "timeRallyReform": {
+      "value": 20,
+      "unit": "s",
+      "source": "prototype",
+      "confidence": "prototype",
+      "note": "Prototype: a rallied battalion needed 3 s to re-form (x7)."
+    }
+  },
+  "british": {
+    "label": "British and King's German Legion infantry, Dundas 1792, ten-company battalions",
+    "ranks": {
+      "value": 2,
+      "unit": "ranks",
+      "source": "dundas-1792",
+      "confidence": "recalled",
+      "note": "Regulation was three ranks; British practice in the field from the 1790s was two."
+    },
+    "firingRanks": {
+      "value": 2,
+      "unit": "ranks",
+      "source": "nosworthy-tactics",
+      "confidence": "recalled",
+      "note": "Both ranks fire."
+    },
+    "fileWidth": {
+      "value": 0.56,
+      "unit": "m",
+      "source": "dundas-1792",
+      "confidence": "recalled",
+      "note": "22 inches per file. Found only in modern secondary pages; Dundas not read."
+    },
+    "rankDepth": {
+      "value": 0.76,
+      "unit": "m",
+      "source": "dundas-1792",
+      "confidence": "recalled",
+      "note": "One pace of 30 inches between ranks."
+    },
+    "paceLength": {
+      "value": 0.76,
+      "unit": "m",
+      "source": "dundas-1792",
+      "confidence": "secondary",
+      "note": "30 inches. Confirmed by secondary web sources (Hamilton Papers note; 1802 military dictionary) via search snippet; Dundas not read."
+    },
+    "cadenceLine": {
+      "value": 75,
+      "unit": "paces/min",
+      "source": "dundas-1792",
+      "confidence": "secondary",
+      "note": "Ordinary time. Confirmed by secondary web sources (Hamilton Papers note; 1802 military dictionary) via search snippet; Dundas not read."
+    },
+    "cadenceColumn": {
+      "value": 108,
+      "unit": "paces/min",
+      "source": "dundas-1792",
+      "confidence": "secondary",
+      "note": "Quick time. Confirmed by secondary web sources (Hamilton Papers note; 1802 military dictionary) via search snippet; Dundas not read."
+    },
+    "lineDressingFactor": {
+      "value": 0.8,
+      "unit": "fraction",
+      "source": "assumption",
+      "confidence": "assumption",
+      "note": "Same assumption as the French line."
+    },
+    "squareSpeed": {
+      "value": 0.25,
+      "unit": "m/s",
+      "source": "prototype",
+      "confidence": "prototype",
+      "note": "As French."
+    },
+    "routSpeed": {
+      "value": 1.8,
+      "unit": "m/s",
+      "source": "prototype",
+      "confidence": "prototype",
+      "note": "As French."
+    },
+    "columnDivisions": {
+      "value": 5,
+      "unit": "divisions",
+      "source": "dundas-1792",
+      "confidence": "recalled",
+      "note": "Column of grand divisions: ten companies, two abreast, five deep, so ten ranks."
+    },
+    "columnIntervalFraction": {
+      "value": 0.25,
+      "unit": "fraction of division frontage",
+      "source": "dundas-1792",
+      "confidence": "recalled",
+      "note": "Quarter-distance column."
+    },
+    "squareRanks": {
+      "value": 4,
+      "unit": "ranks",
+      "source": "muir-tactics",
+      "confidence": "recalled",
+      "note": "British squares were normally four deep."
+    },
+    "squareFiringRanks": {
+      "value": 2,
+      "unit": "ranks",
+      "source": "muir-tactics",
+      "confidence": "recalled",
+      "note": "Front two ranks kneel with fixed bayonets against cavalry; the rear two fire."
+    },
+    "timeLineToColumn": {
+      "value": 120,
+      "unit": "s",
+      "source": "nafziger-bayonets",
+      "confidence": "recalled",
+      "note": "Design range 2-3 min for about 600 men. From memory of Nafziger; a web check found nothing either way."
+    },
+    "timeColumnToLine": {
+      "value": 150,
+      "unit": "s",
+      "source": "nafziger-bayonets",
+      "confidence": "recalled",
+      "note": "Deploying was the slow evolution. From memory of Nafziger; a web check found nothing either way."
+    },
+    "timeColumnToSquare": {
+      "value": 45,
+      "unit": "s",
+      "source": "nafziger-bayonets",
+      "confidence": "secondary",
+      "note": "30 s for an attack column, about 60 s for an awkward one, credited to Nafziger on secondary web pages (search snippet). Midpoint used."
+    },
+    "timeLineToSquare": {
+      "value": 100,
+      "unit": "s",
+      "source": "nafziger-bayonets",
+      "confidence": "secondary",
+      "note": "Drill-book time of 96-100 s credited to Nafziger on secondary web pages (search snippet), which add that field times ran longer. The design draft's 2-4 min was too high."
+    },
+    "timeSquareToColumn": {
+      "value": 60,
+      "unit": "s",
+      "source": "assumption",
+      "confidence": "assumption",
+      "note": "As French."
+    },
+    "timeSquareToLine": {
+      "value": 150,
+      "unit": "s",
+      "source": "assumption",
+      "confidence": "assumption",
+      "note": "As French."
+    },
+    "timeRallyReform": {
+      "value": 20,
+      "unit": "s",
+      "source": "prototype",
+      "confidence": "prototype",
+      "note": "As French."
+    }
+  }
+}

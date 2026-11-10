@@ -1,0 +1,204 @@
+{
+  "format": "napsim-scenario",
+  "version": 1,
+  "name": "The grand battery",
+  "description": "A French force strong in guns attacks a ridge. Prototype preset \"The grand battery\".",
+  "map": {
+    "width": 1200,
+    "height": 1700,
+    "cellSize": 25,
+    "hills": [
+      {
+        "x": 600,
+        "y": 380,
+        "rx": 580,
+        "ry": 170,
+        "height": 22
+      }
+    ],
+    "features": [
+      {
+        "type": "wood",
+        "name": "Bois du Loup",
+        "polygon": [
+          [
+            360,
+            850
+          ],
+          [
+            349,
+            915
+          ],
+          [
+            319,
+            967
+          ],
+          [
+            274,
+            996
+          ],
+          [
+            226,
+            996
+          ],
+          [
+            181,
+            967
+          ],
+          [
+            151,
+            915
+          ],
+          [
+            140,
+            850
+          ],
+          [
+            151,
+            785
+          ],
+          [
+            181,
+            733
+          ],
+          [
+            226,
+            704
+          ],
+          [
+            274,
+            704
+          ],
+          [
+            319,
+            733
+          ],
+          [
+            349,
+            785
+          ]
+        ]
+      },
+      {
+        "type": "farm",
+        "name": "Ferme de la Haie",
+        "polygon": [
+          [
+            720,
+            760
+          ],
+          [
+            840,
+            760
+          ],
+          [
+            840,
+            855
+          ],
+          [
+            720,
+            855
+          ]
+        ]
+      }
+    ],
+    "labels": [
+      {
+        "text": "Hauteur de Belle-Vue",
+        "at": [
+          850,
+          290
+        ]
+      }
+    ],
+    "roads": [
+      [
+        [
+          530,
+          1700
+        ],
+        [
+          500,
+          1300
+        ],
+        [
+          590,
+          800
+        ],
+        [
+          565,
+          0
+        ]
+      ]
+    ]
+  },
+  "weather": {
+    "sky": "clear",
+    "ground": "firm",
+    "windFrom": 270,
+    "windSpeed": 3
+  },
+  "features": {
+    "commandControl": false,
+    "fatigue": false,
+    "ammunition": false,
+    "skirmishers": false,
+    "quality": false,
+    "elevationLos": false,
+    "smoke": false,
+    "weatherGround": false
+  },
+  "timeLimit": 7200,
+  "sides": [
+    {
+      "id": "french",
+      "name": "French",
+      "color": "blue",
+      "posture": "attack_line",
+      "rear": [
+        0,
+        1
+      ],
+      "deploy": {
+        "centre": [
+          600,
+          1300
+        ],
+        "inf": 3,
+        "cav": 2,
+        "art": 4,
+        "roster": "french",
+        "types": {
+          "inf": "fr_line_battalion",
+          "cav": "cavalry_squadron",
+          "art": "foot_battery"
+        }
+      }
+    },
+    {
+      "id": "allied",
+      "name": "Allied",
+      "color": "red",
+      "posture": "defend",
+      "rear": [
+        0,
+        -1
+      ],
+      "deploy": {
+        "centre": [
+          600,
+          400
+        ],
+        "inf": 5,
+        "cav": 2,
+        "art": 1,
+        "roster": "allied",
+        "types": {
+          "inf": "br_line_battalion",
+          "cav": "cavalry_squadron",
+          "art": "foot_battery"
+        }
+      }
+    }
+  ]
+}

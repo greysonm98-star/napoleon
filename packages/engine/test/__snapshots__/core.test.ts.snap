@@ -1,0 +1,3 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`determinism > matches the stored reference hash for the column preset 1`] = `"7568016f"`;

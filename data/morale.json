@@ -1,0 +1,303 @@
+{
+  "startMorale": {
+    "value": 86,
+    "unit": "morale",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Starting morale on a 0-100 scale."
+  },
+  "startMoraleSteady": {
+    "value": 96,
+    "unit": "morale",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Starting morale of units with steadiness below steadyThreshold."
+  },
+  "steadyThreshold": {
+    "value": 0.9,
+    "unit": "steadiness",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Units steadier than this start at startMoraleSteady."
+  },
+  "routThreshold": {
+    "value": 20,
+    "unit": "morale",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "A formed unit at or below this routs."
+  },
+  "destroyedFraction": {
+    "value": 0.12,
+    "unit": "fraction of starting men",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Below this strength a unit ceases to exist."
+  },
+  "casualtyShock": {
+    "value": 1.0,
+    "unit": "morale per 1% of starting strength lost",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Multiplied by the cause factor below and by the unit's steadiness."
+  },
+  "shockFireFront": {
+    "value": 1.0,
+    "unit": "multiplier",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Musketry taken frontally."
+  },
+  "shockFireFlank": {
+    "value": 1.6,
+    "unit": "multiplier",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Musketry taken in flank or rear by infantry."
+  },
+  "shockColumnClose": {
+    "value": 2.15,
+    "unit": "multiplier",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Musketry taken by a column inside columnCloseRange. This is what stops columns in front of a steady line."
+  },
+  "columnCloseRange": {
+    "value": 75,
+    "unit": "m",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "55 px x1.4."
+  },
+  "shockRoundshot": {
+    "value": 1.2,
+    "unit": "multiplier",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Ported unchanged from the prototype."
+  },
+  "shockCanister": {
+    "value": 1.4,
+    "unit": "multiplier",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Ported unchanged from the prototype."
+  },
+  "shockMelee": {
+    "value": 1.5,
+    "unit": "multiplier",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Ported unchanged from the prototype."
+  },
+  "artilleryCrewFactor": {
+    "value": 0.5,
+    "unit": "multiplier",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Gun crews lose half the morale other troops would for the same loss."
+  },
+  "rippleRadius": {
+    "value": 250,
+    "unit": "m",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "175 px x1.4. Reaches the neighbouring battalions in line and the supports behind, not the next but one."
+  },
+  "rippleFriend": {
+    "value": 7,
+    "unit": "morale",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Lost by each friend within the radius when a unit routs or is destroyed; multiplied by steadiness."
+  },
+  "rippleEnemy": {
+    "value": 4,
+    "unit": "morale",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Gained by each enemy within the radius."
+  },
+  "squareSteadyMorale": {
+    "value": 40,
+    "unit": "morale",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "A formed square at or above this is steady and repels cavalry."
+  },
+  "contactCavOnForming": {
+    "value": 26,
+    "unit": "morale",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Infantry struck by cavalry while changing formation."
+  },
+  "contactCavFront": {
+    "value": 10,
+    "unit": "morale",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Infantry not in square struck frontally by cavalry."
+  },
+  "contactCavFlank": {
+    "value": 22,
+    "unit": "morale",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Struck in flank."
+  },
+  "contactCavRear": {
+    "value": 30,
+    "unit": "morale",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Struck in rear."
+  },
+  "contactCavOnShakenSquare": {
+    "value": 12,
+    "unit": "morale",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "A square below squareSteadyMorale when cavalry arrives."
+  },
+  "contactSquareRepulse": {
+    "value": 14,
+    "unit": "morale",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Lost by cavalry that recoils from a steady square."
+  },
+  "contactCavOnGuns": {
+    "value": 35,
+    "unit": "morale",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Not multiplied by steadiness."
+  },
+  "contactInfOnGuns": {
+    "value": 30,
+    "unit": "morale",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Not multiplied by steadiness."
+  },
+  "contactBayonet": {
+    "value": 8,
+    "unit": "morale",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Lost by a unit when a moving column reaches it."
+  },
+  "recoveryRate": {
+    "value": 0.19,
+    "unit": "morale/s",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "1.3 per prototype second divided by 7."
+  },
+  "recoveryDelay": {
+    "value": 35,
+    "unit": "s",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Time without loss before recovery starts (5 s x7)."
+  },
+  "recoveryCapBase": {
+    "value": 0.5,
+    "unit": "fraction",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Recovery ceiling is 100 x (base + (1 - base) x strength fraction)."
+  },
+  "routRecoveryRate": {
+    "value": 0.86,
+    "unit": "morale/s",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "For a routed unit far from the enemy (6 divided by 7)."
+  },
+  "routRecoveryCap": {
+    "value": 60,
+    "unit": "morale",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Ported unchanged from the prototype."
+  },
+  "rallyMorale": {
+    "value": 48,
+    "unit": "morale",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "A routed unit rallies on reaching this."
+  },
+  "rallyMinStrength": {
+    "value": 0.3,
+    "unit": "fraction of starting men",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Weaker units never rally."
+  },
+  "rallyEnemyDistance": {
+    "value": 350,
+    "unit": "m",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "No recovery or rally with a formed enemy nearer than this (250 px x1.4)."
+  },
+  "maxRallies": {
+    "value": 2,
+    "unit": "count",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Ported unchanged from the prototype."
+  },
+  "armyBreakFraction": {
+    "value": 0.6,
+    "unit": "fraction of units",
+    "source": "brief",
+    "confidence": "prototype",
+    "note": "An army breaks when this share of its starting units is routed or gone."
+  },
+  "aftermathDuration": {
+    "value": 100,
+    "unit": "s",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "The run continues this long after an army breaks so the pursuit is counted (14 s x7)."
+  },
+  "cavRecoilRange": {
+    "value": 85,
+    "unit": "m",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Cavalry hit by a volley inside this range may recoil (60 px x1.4)."
+  },
+  "cavRecoilMorale": {
+    "value": 52,
+    "unit": "morale",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "It recoils if its morale is below this."
+  },
+  "frontArc": {
+    "value": 60,
+    "unit": "deg",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "An attacker within this angle of the target's facing is in front (1.05 rad)."
+  },
+  "flankArc": {
+    "value": 132,
+    "unit": "deg",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Beyond the front arc and within this angle is the flank; beyond it is the rear (2.3 rad)."
+  },
+  "chainWindow": {
+    "value": 300,
+    "unit": "s",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Reporting only: how far back a rout's list of causes looks. Does not affect outcomes."
+  }
+}

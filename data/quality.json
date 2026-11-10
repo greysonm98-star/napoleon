@@ -1,0 +1,64 @@
+{
+  "classes": {
+    "guard": {
+      "label": "Guard",
+      "steadiness": {
+        "value": 0.65,
+        "unit": "multiplier on morale loss",
+        "source": "prototype",
+        "confidence": "prototype",
+        "note": "Prototype: Vieille Garde 0.6, 1st Foot Guards 0.7."
+      }
+    },
+    "elite": {
+      "label": "Elite",
+      "steadiness": {
+        "value": 0.85,
+        "unit": "multiplier on morale loss",
+        "source": "prototype",
+        "confidence": "prototype",
+        "note": "Prototype: 42nd Highlanders, cuirassiers, Life Guards 0.85."
+      }
+    },
+    "veteran": {
+      "label": "Veteran",
+      "steadiness": {
+        "value": 0.95,
+        "unit": "multiplier on morale loss",
+        "source": "prototype",
+        "confidence": "prototype",
+        "note": "Prototype: light infantry, KGL, dragoons 0.9-0.95."
+      }
+    },
+    "line": {
+      "label": "Line",
+      "steadiness": {
+        "value": 1.0,
+        "unit": "multiplier on morale loss",
+        "source": "prototype",
+        "confidence": "prototype",
+        "note": "Reference."
+      }
+    },
+    "conscript": {
+      "label": "Conscript",
+      "steadiness": {
+        "value": 1.08,
+        "unit": "multiplier on morale loss",
+        "source": "prototype",
+        "confidence": "prototype",
+        "note": "Prototype: 5e and 8e de Ligne 1.05, Brunswick and Nassau 1.1."
+      }
+    },
+    "militia": {
+      "label": "Militia",
+      "steadiness": {
+        "value": 1.2,
+        "unit": "multiplier on morale loss",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Not in the prototype; extends the scale for Landwehr and similar."
+      }
+    }
+  }
+}

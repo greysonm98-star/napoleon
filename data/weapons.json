@@ -1,0 +1,505 @@
+{
+  "muskets": {
+    "charleville_1777": {
+      "label": "French infantry musket, model 1777 (An IX)",
+      "trialCurve": {
+        "points": [
+          [
+            0,
+            0.55
+          ],
+          [
+            75,
+            0.46
+          ],
+          [
+            150,
+            0.32
+          ],
+          [
+            225,
+            0.325
+          ],
+          [
+            300,
+            0.21
+          ],
+          [
+            375,
+            0.13
+          ],
+          [
+            450,
+            0.095
+          ]
+        ],
+        "xUnit": "m",
+        "yUnit": "fraction of rounds striking a 6 ft x 100 ft board",
+        "source": "scharnhorst-1813",
+        "confidence": "secondary",
+        "note": "Scharnhorst's Prussian trials: 92, 64, 65, 42, 26, 19 hits per 200 rounds at 100-600 paces on a board 6 ft x 100 ft (pp. 80-83, as reproduced on secondary web pages; original not read). Pace taken as 0.75 m (assumption). The point at 0 m is extrapolated. Chosen over the often-quoted 60/40/25/20% table (Picard, via Hughes), which a web check showed was shot from a fixed rest at a 1.75 m x 3 m target, not at a formation front."
+      },
+      "battlefieldFactor": {
+        "value": 0.04,
+        "unit": "fraction",
+        "source": "hughes-firepower",
+        "confidence": "assumption",
+        "note": "Scales trial hits to battle. Gives 1.8% of rounds at 75 m and 1.4% at 135 m. Anchors: Hughes's Albuera estimate of about 1.3 casualties per 100 shots (secondary, search snippet), inside his overall span of under 1 to over 15; and the prototype's 1.8% at its engagement range. The design draft's '3-5%' could not be supported. The most influential single assumption in the model."
+      },
+      "roundsPerMinute": {
+        "value": 2.0,
+        "unit": "rounds/min",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Commonly given as 2-3 at first and 1-2 sustained; a web check found no reliable source. One flat figure until the fouling rule exists. Prototype reload of 3.2 s x7 gives 2.7."
+      },
+      "reloadJitter": {
+        "value": 0.1,
+        "unit": "fraction",
+        "source": "prototype",
+        "confidence": "prototype",
+        "note": "Each reload varies by plus or minus this fraction."
+      }
+    },
+    "brown_bess": {
+      "label": "British India Pattern musket",
+      "trialCurve": {
+        "points": [
+          [
+            0,
+            0.55
+          ],
+          [
+            75,
+            0.46
+          ],
+          [
+            150,
+            0.32
+          ],
+          [
+            225,
+            0.325
+          ],
+          [
+            300,
+            0.21
+          ],
+          [
+            375,
+            0.13
+          ],
+          [
+            450,
+            0.095
+          ]
+        ],
+        "xUnit": "m",
+        "yUnit": "fraction of rounds striking a 6 ft x 100 ft board",
+        "source": "scharnhorst-1813",
+        "confidence": "secondary",
+        "note": "Same curve as the French musket. Scharnhorst rated the French musket best at 100 paces and the English first or equal beyond (secondary, search snippet), but the per-pattern rows could not be found, so no difference is modelled."
+      },
+      "battlefieldFactor": {
+        "value": 0.04,
+        "unit": "fraction",
+        "source": "hughes-firepower",
+        "confidence": "assumption",
+        "note": "As French."
+      },
+      "roundsPerMinute": {
+        "value": 2.0,
+        "unit": "rounds/min",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "As French."
+      },
+      "reloadJitter": {
+        "value": 0.1,
+        "unit": "fraction",
+        "source": "prototype",
+        "confidence": "prototype",
+        "note": "As French."
+      }
+    }
+  },
+  "musketry": {
+    "openFireRange": {
+      "value": 135,
+      "unit": "m",
+      "source": "prototype",
+      "confidence": "prototype",
+      "note": "Prototype musket range of 95 px x1.4. Consistent with volleys opened at 100-150 paces (Muir, from memory)."
+    },
+    "arcHalfAngle": {
+      "value": 40,
+      "unit": "deg",
+      "source": "prototype",
+      "confidence": "prototype",
+      "note": "A line or column fires at targets within this angle of its facing (0.7 rad)."
+    },
+    "moraleFloor": {
+      "value": 0.6,
+      "unit": "fraction",
+      "source": "prototype",
+      "confidence": "prototype",
+      "note": "Fire effect is multiplied by floor + (1 - floor) x morale/100."
+    },
+    "vsArtillery": {
+      "value": 0.5,
+      "unit": "multiplier",
+      "source": "prototype",
+      "confidence": "prototype",
+      "note": "Gun crews are a dispersed target."
+    },
+    "vsColumn": {
+      "value": 1.25,
+      "unit": "multiplier",
+      "source": "prototype",
+      "confidence": "prototype",
+      "note": "Shots that miss the front ranks of a column find the ranks behind."
+    },
+    "artilleryTargetPenalty": {
+      "value": 40,
+      "unit": "m",
+      "source": "prototype",
+      "confidence": "prototype",
+      "note": "When choosing a target, a battery counts as this much farther away (30 px x1.4)."
+    },
+    "lookRange": {
+      "value": 335,
+      "unit": "m",
+      "source": "prototype",
+      "confidence": "prototype",
+      "note": "A halted unit turns to face the nearest enemy within this distance (240 px x1.4)."
+    },
+    "rankAndFileShare": {
+      "value": 0.9,
+      "unit": "fraction",
+      "source": "prototype",
+      "confidence": "prototype",
+      "note": "Share of a battalion's strength carrying a musket in the ranks; the rest are officers, sergeants, drummers and file-closers. The prototype's line fired with 0.9 of its men."
+    }
+  },
+  "guns": {
+    "field_8pdr": {
+      "label": "Field gun of the 6- to 9-pounder class (French 8-pdr or 6-pdr, British 9-pdr)",
+      "roundshotCurve": {
+        "points": [
+          [
+            0,
+            1.0
+          ],
+          [
+            475,
+            1.0
+          ],
+          [
+            870,
+            0.31
+          ],
+          [
+            1100,
+            0.17
+          ],
+          [
+            1300,
+            0.05
+          ]
+        ],
+        "xUnit": "m",
+        "yUnit": "fraction of rounds striking a cloth target 6 ft x 30 ft",
+        "source": "muller-1811",
+        "confidence": "secondary",
+        "note": "Müller's 6-pdr trials: 100% at 520 yd, 31% at 950 yd, 17% at 1,200 yd (as quoted on a secondary web page; original not read). The last point is extrapolated."
+      },
+      "roundshotBattlefieldFactor": {
+        "value": 0.5,
+        "unit": "fraction",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Trial to battle reduction for roundshot. With six guns and a three-deep line this gives 4.5 men per salvo inside 475 m; the prototype gave 7 falling to 4.5."
+      },
+      "roundshotMaxRange": {
+        "value": 1300,
+        "unit": "m",
+        "source": "muller-1811",
+        "confidence": "assumption",
+        "note": "A little beyond Müller's last trial range."
+      },
+      "roundshotEffectiveRange": {
+        "value": 800,
+        "unit": "m",
+        "source": "hughes-firepower",
+        "confidence": "secondary",
+        "note": "British 9-pdr about 800 yd (secondary web page). Used by the battery's decision to advance and by target scoring."
+      },
+      "roundshotReload": {
+        "value": 35,
+        "unit": "s",
+        "source": "prototype",
+        "confidence": "prototype",
+        "note": "Prototype 5 s x7, i.e. 1.7 rounds a minute per gun. Gribeauval 8-pdr about 2 a minute (Wikipedia, search snippet)."
+      },
+      "menPerRank": {
+        "value": 0.5,
+        "unit": "men per rank traversed",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "An effective round strikes a man in about half the ranks it passes: 1.5 men on a three-deep line, 1 on a two-deep line."
+      },
+      "maxRanksTraversed": {
+        "value": 8,
+        "unit": "ranks",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Cap on penetration, so an enfiladed line suffers 2.7 x a three-deep line taken frontally (prototype 2.6 x)."
+      },
+      "squareTargetFactor": {
+        "value": 1.33,
+        "unit": "multiplier",
+        "source": "prototype",
+        "confidence": "prototype",
+        "note": "Roundshot treats a square as a target as deep as the battalion's column, times this. Prototype ratio of square to column loss, 3.2 / 2.4."
+      },
+      "canisterRange": {
+        "value": 350,
+        "unit": "m",
+        "source": "hughes-firepower",
+        "confidence": "secondary",
+        "note": "British practice was not to use case beyond about 350 yd (secondary web page, search snippet)."
+      },
+      "canisterHitsCurve": {
+        "points": [
+          [
+            0,
+            60
+          ],
+          [
+            183,
+            55
+          ],
+          [
+            366,
+            25
+          ],
+          [
+            549,
+            6
+          ]
+        ],
+        "xUnit": "m",
+        "yUnit": "hits per round on a trial screen",
+        "source": "hughes-firepower",
+        "confidence": "secondary",
+        "note": "'A 6-pdr could deliver 55 hits at 200 yd, only 6 at 600 yd' (historyofwar.org, test unnamed; search snippet). The points at 0 and 366 m are interpolated guesses."
+      },
+      "canisterBattlefieldFactor": {
+        "value": 0.1,
+        "unit": "fraction",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Trial to battle reduction for case. Chosen so a six-gun salvo at 180 m causes about 33 casualties on a line, the prototype's 34."
+      },
+      "canisterReload": {
+        "value": 24,
+        "unit": "s",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "2-3 rounds a minute is commonly stated; a web check found no source."
+      }
+    },
+    "heavy_12pdr": {
+      "label": "12-pounder position gun",
+      "roundshotCurve": {
+        "points": [
+          [
+            0,
+            1.0
+          ],
+          [
+            600,
+            1.0
+          ],
+          [
+            1090,
+            0.31
+          ],
+          [
+            1375,
+            0.17
+          ],
+          [
+            1600,
+            0.05
+          ]
+        ],
+        "xUnit": "m",
+        "yUnit": "fraction of rounds striking a cloth target 6 ft x 30 ft",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Müller's 6-pdr curve stretched 1.25 x in range. Müller's own 12-pdr table could not be found."
+      },
+      "roundshotBattlefieldFactor": {
+        "value": 0.5,
+        "unit": "fraction",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "As the field gun."
+      },
+      "roundshotMaxRange": {
+        "value": 1600,
+        "unit": "m",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "End of the stretched curve."
+      },
+      "roundshotEffectiveRange": {
+        "value": 900,
+        "unit": "m",
+        "source": "kiley-artillery",
+        "confidence": "secondary",
+        "note": "900-1,000 m (Wikipedia, Canon de 12 Gribeauval; search snippet)."
+      },
+      "roundshotReload": {
+        "value": 60,
+        "unit": "s",
+        "source": "kiley-artillery",
+        "confidence": "secondary",
+        "note": "About one round a minute (Wikipedia, Canon de 12 Gribeauval; search snippet)."
+      },
+      "menPerRank": {
+        "value": 0.5,
+        "unit": "men per rank traversed",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "As the field gun."
+      },
+      "maxRanksTraversed": {
+        "value": 10,
+        "unit": "ranks",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Heavier shot carries farther through a formation."
+      },
+      "squareTargetFactor": {
+        "value": 1.33,
+        "unit": "multiplier",
+        "source": "prototype",
+        "confidence": "prototype",
+        "note": "Roundshot treats a square as a target as deep as the battalion's column, times this. Prototype ratio of square to column loss, 3.2 / 2.4."
+      },
+      "canisterRange": {
+        "value": 500,
+        "unit": "m",
+        "source": "kiley-artillery",
+        "confidence": "secondary",
+        "note": "500-600 m depending on the source (Wikipedia; search snippet)."
+      },
+      "canisterHitsCurve": {
+        "points": [
+          [
+            0,
+            38
+          ],
+          [
+            200,
+            34
+          ],
+          [
+            400,
+            18
+          ],
+          [
+            600,
+            5
+          ]
+        ],
+        "xUnit": "m",
+        "yUnit": "hits per round on a trial screen",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Large case of 41 balls (Wikipedia, Canon de 12 Gribeauval); the fall-off by range is a guess shaped like the 6-pdr figures."
+      },
+      "canisterBattlefieldFactor": {
+        "value": 0.1,
+        "unit": "fraction",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "As the field gun."
+      },
+      "canisterReload": {
+        "value": 30,
+        "unit": "s",
+        "source": "assumption",
+        "confidence": "assumption",
+        "note": "Slower than the field gun."
+      }
+    }
+  },
+  "gunnery": {
+    "aimTolerance": {
+      "value": 12.6,
+      "unit": "deg",
+      "source": "prototype",
+      "confidence": "prototype",
+      "note": "A battery fires only when pointed within this angle of its target (0.22 rad)."
+    },
+    "unlimberTime": {
+      "value": 60,
+      "unit": "s",
+      "source": "assumption",
+      "confidence": "assumption",
+      "note": "Time halted before a battery that has moved may fire. Prototype 3 s x7 = 21 s; about a minute is commonly given for foot artillery. Unverified."
+    },
+    "turnRate": {
+      "value": 0.086,
+      "unit": "rad/s",
+      "source": "prototype",
+      "confidence": "prototype",
+      "note": "Prototype 0.6 rad/s divided by 7."
+    },
+    "canisterVsSquare": {
+      "value": 1.5,
+      "unit": "multiplier",
+      "source": "prototype",
+      "confidence": "prototype",
+      "note": "Dense target."
+    },
+    "canisterVsColumn": {
+      "value": 1.25,
+      "unit": "multiplier",
+      "source": "prototype",
+      "confidence": "prototype",
+      "note": "Deep target."
+    },
+    "canisterVsLine": {
+      "value": 1.0,
+      "unit": "multiplier",
+      "source": "prototype",
+      "confidence": "prototype",
+      "note": "Reference target."
+    },
+    "canisterVsCavalry": {
+      "value": 0.6,
+      "unit": "multiplier",
+      "source": "prototype",
+      "confidence": "prototype",
+      "note": "Open files."
+    },
+    "canisterVsArtillery": {
+      "value": 0.4,
+      "unit": "multiplier",
+      "source": "prototype",
+      "confidence": "prototype",
+      "note": "Dispersed crews."
+    },
+    "strengthJitter": {
+      "value": 0.3,
+      "unit": "fraction",
+      "source": "prototype",
+      "confidence": "prototype",
+      "note": "Artillery salvo effect varies by plus or minus this fraction (prototype 0.7 + 0.6 x random)."
+    }
+  }
+}

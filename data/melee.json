@@ -1,0 +1,240 @@
+{
+  "contactDistance": {
+    "value": 5,
+    "unit": "m",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Units closer than this are in contact (4 px x1.4)."
+  },
+  "lethality": {
+    "value": 0.0043,
+    "unit": "men per unit of power per s",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "0.03 per prototype second divided by 7. Flagged in MODEL.md as bloodier than the record."
+  },
+  "moraleBase": {
+    "value": 0.5,
+    "unit": "fraction",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Power is multiplied by base + morale/100."
+  },
+  "armCavalry": {
+    "value": 2.2,
+    "unit": "multiplier per man",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Ported unchanged from the prototype."
+  },
+  "armInfantry": {
+    "value": 1.0,
+    "unit": "multiplier per man",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Ported unchanged from the prototype."
+  },
+  "armArtillery": {
+    "value": 0.15,
+    "unit": "multiplier per man",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Gunners are helpless once reached."
+  },
+  "infVsCavForming": {
+    "value": 0.2,
+    "unit": "multiplier",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Ported unchanged from the prototype."
+  },
+  "infVsCavSquareSteady": {
+    "value": 1.5,
+    "unit": "multiplier",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Ported unchanged from the prototype."
+  },
+  "infVsCavSquareShaken": {
+    "value": 0.6,
+    "unit": "multiplier",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Ported unchanged from the prototype."
+  },
+  "infVsCavColumn": {
+    "value": 0.45,
+    "unit": "multiplier",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Ported unchanged from the prototype."
+  },
+  "infVsCavLine": {
+    "value": 0.32,
+    "unit": "multiplier",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Ported unchanged from the prototype."
+  },
+  "infForming": {
+    "value": 0.6,
+    "unit": "multiplier",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Infantry against infantry or guns."
+  },
+  "infColumn": {
+    "value": 1.2,
+    "unit": "multiplier",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "The column's shock."
+  },
+  "infSquare": {
+    "value": 0.7,
+    "unit": "multiplier",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Ported unchanged from the prototype."
+  },
+  "infLine": {
+    "value": 1.0,
+    "unit": "multiplier",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Ported unchanged from the prototype."
+  },
+  "infFlankBonus": {
+    "value": 1.5,
+    "unit": "multiplier",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Infantry attacking the flank or rear of infantry not in square."
+  },
+  "cavVsSquareSteady": {
+    "value": 0.1,
+    "unit": "multiplier",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Ported unchanged from the prototype."
+  },
+  "cavVsSquareShaken": {
+    "value": 0.7,
+    "unit": "multiplier",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Ported unchanged from the prototype."
+  },
+  "cavVsInfFront": {
+    "value": 1.2,
+    "unit": "multiplier",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Ported unchanged from the prototype."
+  },
+  "cavVsInfFlank": {
+    "value": 2.2,
+    "unit": "multiplier",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Ported unchanged from the prototype."
+  },
+  "cavVsInfRear": {
+    "value": 3.0,
+    "unit": "multiplier",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Ported unchanged from the prototype."
+  },
+  "cavVsInfForming": {
+    "value": 1.5,
+    "unit": "multiplier",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Extra, on top of the facing multiplier."
+  },
+  "cavVsArtillery": {
+    "value": 3.0,
+    "unit": "multiplier",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Ported unchanged from the prototype."
+  },
+  "cavChargeBonus": {
+    "value": 1.4,
+    "unit": "multiplier",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "While charge impetus lasts."
+  },
+  "chargeImpetusTime": {
+    "value": 18,
+    "unit": "s",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "2.5 s x7."
+  },
+  "pursuitCavalry": {
+    "value": 3.4,
+    "unit": "men/s",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Loss inflicted on a routed unit in contact with formed cavalry (24 divided by 7)."
+  },
+  "pursuitInfantry": {
+    "value": 1.0,
+    "unit": "men/s",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "By formed infantry (7 divided by 7)."
+  },
+  "capturedShare": {
+    "value": 0.7,
+    "unit": "fraction",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Share of pursuit losses counted as prisoners; the rest are killed or wounded. Bookkeeping only."
+  },
+  "blownTime": {
+    "value": 300,
+    "unit": "s",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Time a squadron is blown after a repulse or a completed charge. Prototype 7 s x7 = 49 s, which is too short to rally and breathe horses; the design assumed 10-20 min. Five minutes is used and is a candidate for a sweep."
+  },
+  "blownAfterCharge": {
+    "value": 1,
+    "unit": "flag",
+    "source": "brief",
+    "confidence": "assumption",
+    "note": "1: cavalry is also blown when a melee it charged into ends. The prototype blew cavalry only on a repulse; the brief says after a charge."
+  },
+  "bounceDistance": {
+    "value": 240,
+    "unit": "m",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Recoiling cavalry falls back this far (170 px x1.4)."
+  },
+  "avoidTime": {
+    "value": 200,
+    "unit": "s",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Repulsed cavalry will not charge the same steady target frontally again for this long (28 s x7)."
+  },
+  "contactHoldFactor": {
+    "value": 4,
+    "unit": "multiplier",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Units already in contact stay in contact until the gap exceeds contactDistance times this. Needed because unit footprints shrink with losses here; the prototype's were fixed."
+  },
+  "recontactTime": {
+    "value": 120,
+    "unit": "s",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Contact shocks (charge, bayonet) are not applied again to the same pair within this time. Prevents a melee that briefly opens and closes from counting as a fresh charge."
+  }
+}

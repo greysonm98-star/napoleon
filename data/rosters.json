@@ -1,0 +1,146 @@
+{
+  "french": {
+    "inf": [
+      [
+        "1er de Ligne",
+        "line"
+      ],
+      [
+        "2e de Ligne",
+        "line"
+      ],
+      [
+        "3e Léger",
+        "veteran"
+      ],
+      [
+        "4e de Ligne",
+        "line"
+      ],
+      [
+        "5e de Ligne",
+        "conscript"
+      ],
+      [
+        "Vieille Garde",
+        "guard"
+      ],
+      [
+        "7e Léger",
+        "veteran"
+      ],
+      [
+        "8e de Ligne",
+        "conscript"
+      ]
+    ],
+    "cav": [
+      [
+        "Cuirassiers",
+        "elite"
+      ],
+      [
+        "Chasseurs à Cheval",
+        "line"
+      ],
+      [
+        "Dragons",
+        "veteran"
+      ],
+      [
+        "Lanciers",
+        "line"
+      ]
+    ],
+    "art": [
+      [
+        "1re Batterie",
+        "line"
+      ],
+      [
+        "2e Batterie",
+        "line"
+      ],
+      [
+        "3e Batterie",
+        "line"
+      ],
+      [
+        "Artillerie de la Garde",
+        "line"
+      ]
+    ]
+  },
+  "allied": {
+    "inf": [
+      [
+        "1st Foot Guards",
+        "guard"
+      ],
+      [
+        "27th Inniskilling",
+        "veteran"
+      ],
+      [
+        "42nd Highlanders",
+        "elite"
+      ],
+      [
+        "52nd Light",
+        "veteran"
+      ],
+      [
+        "King's German Legion",
+        "veteran"
+      ],
+      [
+        "33rd Foot",
+        "line"
+      ],
+      [
+        "Brunswick Infantry",
+        "conscript"
+      ],
+      [
+        "Nassau Infantry",
+        "conscript"
+      ]
+    ],
+    "cav": [
+      [
+        "Scots Greys",
+        "veteran"
+      ],
+      [
+        "Life Guards",
+        "elite"
+      ],
+      [
+        "Light Dragoons",
+        "line"
+      ],
+      [
+        "KGL Hussars",
+        "line"
+      ]
+    ],
+    "art": [
+      [
+        "Royal Horse Artillery",
+        "line"
+      ],
+      [
+        "Foot Battery",
+        "line"
+      ],
+      [
+        "KGL Battery",
+        "line"
+      ],
+      [
+        "Reserve Battery",
+        "line"
+      ]
+    ]
+  }
+}

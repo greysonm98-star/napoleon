@@ -1,9 +1,8 @@
 # Napoleonic battalion-level battle simulator — design
 
-Status: **draft for review.** No engine code exists yet. Nothing below is built.
-
-This document covers the model, the data schemas, the sources, and the phased plan.
-Section 10 lists the decisions I need from you before Phase 1 starts.
+Status: **approved; in build.** This is the plan as agreed, amended where the
+prototype and the source check changed it (marked "Amended"). `MODEL.md` is the
+record of what the engine actually does; where the two differ, `MODEL.md` is right.
 
 ---
 
@@ -25,10 +24,19 @@ Three consequences shape everything else:
 
 ### Starting point
 
-`prototype/index.html` is not in the repository (the repo was empty when I started).
-Phase 1 therefore rebuilds the baseline from the rule list in the brief. If you have
-the prototype, commit it to `prototype/index.html` and I will port its rules and
-numbers instead of re-deriving them, and note every place the new engine departs.
+**Amended.** The prototype is in `prototype/index.html` and Phase 1 ports its rules.
+It works in pixels and compressed time, so the port keeps its rules and its
+dimensionless coefficients and replaces its scale with real figures. `MODEL.md`
+section 2 lists the conversion and every deliberate departure. Two points in this
+document gave way to the prototype:
+
+- Melee is the prototype's rule (a morale shock on contact, then continuous losses),
+  not the two-step resolve contest described in 3.1.
+- The prototype already gives units a steadiness rating, so the baseline keeps it.
+  The Phase 4 quality toggle adds the other effects of quality on top.
+
+`tools/prototype-baseline.mjs` runs the prototype's own simulation headless, to
+compare its outcome rates with the port's.
 
 ### Not modelled
 
@@ -403,6 +411,17 @@ napsim sweep scenarios/meadow.json --runs 200 \
 
 ### 5.1 An honest note on verification
 
+**Amended.** A web check was run before the data files were written. Page fetches
+were blocked, so it confirmed figures only from search-result summaries of secondary
+pages; no original text was read. It corrected several figures in the table below:
+French file width (0.65 m had no support; 22 in is used), the musket trial curve
+(the 60/40/25/20% table was shot at a small target from a rest; Scharnhorst's
+formation-front trial is used instead), Hughes's battlefield hit rate (his Albuera
+figure is about 1.3%, not 3-5%), line-to-square time (about 100 s), and the formed
+gallop (no more than about 320 m/min). The data files carry the corrected values,
+each marked `secondary`, `recalled` (memory, unchecked) or `assumption`. The table
+below is the original plan and is kept for the record.
+
 I am working from memory of this literature and do not have the books in front of
 me. The figures below are the ones I intend to use, and I believe they are close,
 but none has been checked against a page yet. In Phase 1 every figure goes into the
@@ -620,9 +639,9 @@ scenario, and `CALIBRATION.md`.
 
 ---
 
-## 10. Decisions needed
+## 10. Decisions
 
-Each has a default. Replying "go" accepts all of them.
+All accepted as their defaults, except the first: the prototype was supplied and is ported.
 
 1. **Prototype.** It is not in the repo. Default: rebuild the baseline from the
    brief. If you can commit `prototype/index.html`, I will port it instead.

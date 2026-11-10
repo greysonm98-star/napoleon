@@ -1,0 +1,175 @@
+{
+  "fr_line_battalion": {
+    "label": "French line battalion",
+    "arm": "inf",
+    "doctrine": "french",
+    "weapon": "charleville_1777",
+    "men": {
+      "value": 600,
+      "unit": "men",
+      "source": "prototype",
+      "confidence": "prototype",
+      "note": "Prototype battalion. A field-strength battalion of the period."
+    }
+  },
+  "br_line_battalion": {
+    "label": "British or allied line battalion",
+    "arm": "inf",
+    "doctrine": "british",
+    "weapon": "brown_bess",
+    "men": {
+      "value": 600,
+      "unit": "men",
+      "source": "prototype",
+      "confidence": "prototype",
+      "note": "Prototype battalion."
+    }
+  },
+  "cavalry_squadron": {
+    "label": "Cavalry squadron",
+    "arm": "cav",
+    "men": {
+      "value": 150,
+      "unit": "men",
+      "source": "prototype",
+      "confidence": "derived",
+      "note": "The prototype's 300-sabre cavalry unit is fielded as two squadrons of 150, the brief's unit of account."
+    },
+    "ranks": {
+      "value": 2,
+      "unit": "ranks",
+      "source": "nafziger-bayonets",
+      "confidence": "recalled",
+      "note": "Cavalry formed two deep."
+    },
+    "fileWidth": {
+      "value": 1.0,
+      "unit": "m",
+      "source": "assumption",
+      "confidence": "assumption",
+      "note": "Knee to knee is under a metre; one forum figure gives 6 ft for manoeuvre. Unverified."
+    },
+    "rankDepth": {
+      "value": 4.0,
+      "unit": "m",
+      "source": "assumption",
+      "confidence": "assumption",
+      "note": "A horse length plus interval per rank."
+    },
+    "trotSpeed": {
+      "value": 3.5,
+      "unit": "m/s",
+      "source": "assumption",
+      "confidence": "secondary",
+      "note": "210 m/min. Period estimates for formed bodies run 130-233 m/min at the trot (forum citing late 18th century figures; search snippet)."
+    },
+    "chargeSpeed": {
+      "value": 5.3,
+      "unit": "m/s",
+      "source": "assumption",
+      "confidence": "secondary",
+      "note": "320 m/min, the top of the 222-317 m/min range found for a formed gallop. The design draft's higher figure was not supported."
+    },
+    "routSpeed": {
+      "value": 4.6,
+      "unit": "m/s",
+      "source": "prototype",
+      "confidence": "prototype",
+      "note": "Prototype routed cavalry moved at 1.3 x its trot."
+    },
+    "chargeStartRange": {
+      "value": 200,
+      "unit": "m",
+      "source": "assumption",
+      "confidence": "assumption",
+      "note": "Distance at which the squadron goes to the gallop. Prototype 210 px."
+    },
+    "turnRate": {
+      "value": 0.29,
+      "unit": "rad/s",
+      "source": "prototype",
+      "confidence": "prototype",
+      "note": "Prototype 2 rad/s divided by 7. Cavalry changes direction by turning horses about, not by wheeling the squadron on a pivot."
+    }
+  },
+  "foot_battery": {
+    "label": "Foot battery, six field guns",
+    "arm": "art",
+    "gun": "field_8pdr",
+    "men": {
+      "value": 100,
+      "unit": "men",
+      "source": "prototype",
+      "confidence": "prototype",
+      "note": "Prototype battery crew."
+    },
+    "guns": {
+      "value": 6,
+      "unit": "guns",
+      "source": "kiley-artillery",
+      "confidence": "recalled",
+      "note": "French foot batteries had six guns and two howitzers; howitzers are not modelled."
+    },
+    "gunInterval": {
+      "value": 15,
+      "unit": "m",
+      "source": "assumption",
+      "confidence": "assumption",
+      "note": "Interval between pieces in battery; figures of 10-20 m are usual."
+    },
+    "depth": {
+      "value": 10,
+      "unit": "m",
+      "source": "assumption",
+      "confidence": "assumption",
+      "note": "Depth of the gun line. Limbers and caissons are not modelled."
+    },
+    "speed": {
+      "value": 0.6,
+      "unit": "m/s",
+      "source": "prototype",
+      "confidence": "prototype",
+      "note": "Prototype guns moved at 0.89 x line speed."
+    }
+  },
+  "heavy_battery": {
+    "label": "12-pounder battery, six guns",
+    "arm": "art",
+    "gun": "heavy_12pdr",
+    "men": {
+      "value": 120,
+      "unit": "men",
+      "source": "assumption",
+      "confidence": "assumption",
+      "note": "Larger detachments for the heavier piece."
+    },
+    "guns": {
+      "value": 6,
+      "unit": "guns",
+      "source": "kiley-artillery",
+      "confidence": "recalled",
+      "note": "As the foot battery."
+    },
+    "gunInterval": {
+      "value": 15,
+      "unit": "m",
+      "source": "assumption",
+      "confidence": "assumption",
+      "note": "As the foot battery."
+    },
+    "depth": {
+      "value": 10,
+      "unit": "m",
+      "source": "assumption",
+      "confidence": "assumption",
+      "note": "As the foot battery."
+    },
+    "speed": {
+      "value": 0.5,
+      "unit": "m/s",
+      "source": "assumption",
+      "confidence": "assumption",
+      "note": "Heavier and slower than the field battery."
+    }
+  }
+}

@@ -1,0 +1,352 @@
+{
+  "thinkInterval": {
+    "value": 4,
+    "unit": "s",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Each unit reconsiders its orders this often (0.5 s x7, rounded up)."
+  },
+  "squareProximity": {
+    "value": 140,
+    "unit": "m",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Infantry forms square if unblown enemy cavalry is this close, whatever it is doing (100 px x1.4)."
+  },
+  "squareHoldProximity": {
+    "value": 280,
+    "unit": "m",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "A square stays in square while cavalry is this close (200 px x1.4)."
+  },
+  "squareSafetyMargin": {
+    "value": 30,
+    "unit": "s",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Infantry targeted by cavalry forms square when the cavalry could arrive within its time to form square plus this margin. Replaces the prototype's fixed 185 px, which assumed its 3.5 s formation change."
+  },
+  "cavApproachSpeed": {
+    "value": 4.5,
+    "unit": "m/s",
+    "source": "assumption",
+    "confidence": "derived",
+    "note": "Speed assumed for that estimate: between trot and gallop."
+  },
+  "threatQualityBonus": {
+    "value": 125,
+    "unit": "m",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Steadier troops react earlier: added distance x (1 - steadiness) (90 px x1.4)."
+  },
+  "deployRange": {
+    "value": 300,
+    "unit": "m",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Attack in line: stay in column beyond this distance from the target, deploy inside it (210 px x1.4)."
+  },
+  "engageRange": {
+    "value": 110,
+    "unit": "m",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Attack in line: halt and fire at this distance (80 px x1.4)."
+  },
+  "chargeMoraleAbsolute": {
+    "value": 55,
+    "unit": "morale",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Attack in line: close with the bayonet when the target's morale is below this."
+  },
+  "chargeMoraleAdvantage": {
+    "value": 8,
+    "unit": "morale",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Or when it is this far below the attacker's own."
+  },
+  "faceTolerance": {
+    "value": 26,
+    "unit": "deg",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Halted infantry re-faces only if the nearest enemy is more than this off its front (0.45 rad)."
+  },
+  "moveFaceToleranceInfantry": {
+    "value": 23,
+    "unit": "deg",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "A unit must be pointed within this angle of its heading before it steps off (0.4 rad)."
+  },
+  "moveFaceToleranceCavalry": {
+    "value": 52,
+    "unit": "deg",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "0.9 rad."
+  },
+  "separationFactor": {
+    "value": 0.62,
+    "unit": "fraction",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Friends closer than this fraction of their combined radii push apart."
+  },
+  "separationPush": {
+    "value": 0.25,
+    "unit": "fraction",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Ported unchanged from the prototype."
+  },
+  "cavLeashDefend": {
+    "value": 460,
+    "unit": "m",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Defending cavalry ignores targets farther than this (330 px x1.4)."
+  },
+  "cavLeashAttack": {
+    "value": 870,
+    "unit": "m",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "620 px x1.4."
+  },
+  "cavMinScore": {
+    "value": 12,
+    "unit": "score",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "A target must score above this to be charged."
+  },
+  "cavScoreRouted": {
+    "value": 42,
+    "unit": "score",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Base score of a routed unit within cavRoutChaseRange."
+  },
+  "cavRoutChaseRange": {
+    "value": 420,
+    "unit": "m",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "300 px x1.4."
+  },
+  "cavScoreGuns": {
+    "value": 62,
+    "unit": "score",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Ported unchanged from the prototype."
+  },
+  "cavGunsSupportedPenalty": {
+    "value": 22,
+    "unit": "score",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Subtracted if formed infantry stands within cavGunsSupportRadius of the battery."
+  },
+  "cavGunsSupportRadius": {
+    "value": 120,
+    "unit": "m",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "85 px x1.4."
+  },
+  "cavScoreCavBlown": {
+    "value": 58,
+    "unit": "score",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Ported unchanged from the prototype."
+  },
+  "cavScoreCavFresh": {
+    "value": 44,
+    "unit": "score",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Ported unchanged from the prototype."
+  },
+  "cavScoreShakenSquare": {
+    "value": 52,
+    "unit": "score",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "A steady square is never charged."
+  },
+  "cavScoreForming": {
+    "value": 70,
+    "unit": "score",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Infantry that will still be changing formation when the charge arrives."
+  },
+  "cavScoreFlank": {
+    "value": 58,
+    "unit": "score",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Infantry approachable from flank or rear."
+  },
+  "cavScoreShaken": {
+    "value": 52,
+    "unit": "score",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Infantry with morale below chargeMoraleAbsolute."
+  },
+  "cavScoreUnderFire": {
+    "value": 40,
+    "unit": "score",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Infantry hit within the last cavUnderFireWindow."
+  },
+  "cavUnderFireWindow": {
+    "value": 18,
+    "unit": "s",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "2.5 s x7."
+  },
+  "cavScoreFrontAttack": {
+    "value": 36,
+    "unit": "score",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Steady infantry frontally, when attacking."
+  },
+  "cavScoreFrontDefend": {
+    "value": 18,
+    "unit": "score",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "The same, when defending."
+  },
+  "cavDistanceCostNear": {
+    "value": 12.6,
+    "unit": "m per score point",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Distance penalty for guns, cavalry and defending cavalry's infantry targets (9 px x1.4)."
+  },
+  "cavDistanceCostRouted": {
+    "value": 14,
+    "unit": "m per score point",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "10 px x1.4."
+  },
+  "cavDistanceCostFar": {
+    "value": 16.8,
+    "unit": "m per score point",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "For squares and for attacking cavalry's infantry targets (12 px x1.4)."
+  },
+  "cavFormingMargin": {
+    "value": 2,
+    "unit": "s",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Cavalry counts infantry as catchable if its remaining formation time exceeds the ride time plus this (0.3 s x7)."
+  },
+  "cavFollowDistance": {
+    "value": 180,
+    "unit": "m",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Attacking cavalry with no target keeps this far behind its leading infantry (130 px x1.4)."
+  },
+  "cavStandoff": {
+    "value": 365,
+    "unit": "m",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "With no infantry left it closes to this distance from the nearest enemy (260 px x1.4)."
+  },
+  "cavHomeTolerance": {
+    "value": 56,
+    "unit": "m",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Defending cavalry returns to its post if farther from it than this (40 px x1.4)."
+  },
+  "artAdvanceFraction": {
+    "value": 0.9,
+    "unit": "fraction of effective range",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "An attacking battery advances until the nearest enemy is this close (390 of 430 px)."
+  },
+  "artScoreSquare": {
+    "value": 3.0,
+    "unit": "score",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Ported unchanged from the prototype."
+  },
+  "artScoreColumn": {
+    "value": 2.2,
+    "unit": "score",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Ported unchanged from the prototype."
+  },
+  "artScoreLine": {
+    "value": 1.0,
+    "unit": "score",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Ported unchanged from the prototype."
+  },
+  "artScoreCavalry": {
+    "value": 1.3,
+    "unit": "score",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Ported unchanged from the prototype."
+  },
+  "artScoreArtillery": {
+    "value": 0.6,
+    "unit": "score",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Ported unchanged from the prototype."
+  },
+  "artDistanceScale": {
+    "value": 0.6,
+    "unit": "fraction of effective range",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Target score is divided by 1 + distance / (this x effective range) (260 of 430 px)."
+  },
+  "artCanisterPriority": {
+    "value": 2.5,
+    "unit": "multiplier",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "Targets inside canister range."
+  },
+  "artPreferredBonus": {
+    "value": 3.0,
+    "unit": "multiplier",
+    "source": "prototype",
+    "confidence": "prototype",
+    "note": "A target the player has pointed the battery at."
+  },
+  "redeployFactor": {
+    "value": 2.0,
+    "unit": "multiplier",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Attack in line: a battalion already in line returns to column only if its target is farther than deployRange times this. Not in the prototype, where changing formation took 3.5 s and switching back and forth cost nothing; at real drill times it left battalions re-forming under canister."
+  }
+}
