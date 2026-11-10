@@ -94,12 +94,26 @@ switched per scenario in its `features` block: `commandControl`, `fatigue`,
 
 ## Interface
 
-`npm run ui` opens three tabs:
+`npm run ui` opens four tabs:
 
 - **Replay**: load a recorded run (or record one in the page), scrub it, and click a
   unit to see its history and the chain of morale events behind its rout.
 - **Live run**: run a scenario in the browser. You may give orders, and they are
   recorded, but nothing needs you to.
+- **Results**: read a batch. Either open the folder that `batch` or `sweep` wrote with
+  `--out`, or run a batch in the page (up to two sweep settings, using all but one of
+  your processor cores). It shows:
+  - each side's win rate with its 95% interval, the typical duration, and whether
+    battles ended with an army breaking or were settled on the objective;
+  - for a sweep, win rate, losses and duration against the swept setting;
+  - the spread of losses, durations and break times across runs;
+  - a map of where each side's units broke, coloured by the root cause of the rout;
+  - losses by formation and unit;
+  - every run, each with a Replay button that re-records it and checks that the
+    replay matches the batch.
+
+  A batch run in the page gives the same results as the command line for the same
+  seeds, and its files can be downloaded.
 - **Editor**: place units, draw terrain, build the chain of command, write orders,
   save and load scenario JSON, and test-run the result.
 
