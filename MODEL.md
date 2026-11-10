@@ -708,3 +708,44 @@ toggle on, and the two are equal with it off (test `quality.test.ts`).
 Implausible or weak points:
 - Quality is fixed for the battle; units do not gain or lose it.
 - One scale serves infantry, cavalry and gunners alike.
+
+### 12.5 Line of sight and elevation (`elevationLos`)
+
+Parameters: `data/los.json`, and `sightHeight` on each terrain type.
+
+**Line of sight.** A sight line runs from eye height above the ground at one unit's
+centre to target height above the ground at the other's (1.7 m on foot, 2.5 m
+mounted). It is tested every 20 m. It is blocked if the ground rises above it, or if
+it passes through a wood (15 m high) or a farm (8 m) that neither unit is standing
+in. A unit in a wood or farm is treated as being at its edge: it sees out and is
+seen. Nothing is seen beyond 3,000 m. Each pair is re-tested every 5 s.
+
+What needs a clear line:
+- Musketry and artillery: a unit fires only at what it can see.
+- Cavalry choosing a target to charge.
+- A commander's initiative: he acts only on enemy that some unit of his can see.
+
+What does not: infantry and guns still march toward the enemy and form square
+against cavalry as before. The army is assumed to know roughly where the enemy is.
+
+**Slope.** The baseline's flat 0.88 on any slope is replaced by the grade along the
+line of march: speed loses 25% per 10% of uphill grade, up to 60%. Level and
+downhill movement is not slowed.
+
+**Effect** (200 runs each, same seeds):
+
+| Scenario | Off | On |
+|---|---|---|
+| Pitched battle (defenders on the crest) | Allied 100%; Allied loss 8%, K/W 3% | Allied 100%; Allied loss 4%, K/W 2% |
+| Reverse slope (infantry 130 m behind the crest, guns on it) | Allied 100%; Allied loss 12%, K/W 4%; 19 min | Allied 100%; Allied loss 5%, K/W 2%; 16 min |
+| Grand battery | French 99% in 35 min | French 94% in 71 min |
+
+Drawing the infantry behind the crest more than halves its losses once sight lines
+are modelled, and does nothing without them. The grand battery takes twice as long
+to win, because its guns must find targets they can see.
+
+Implausible or weak points:
+- Sight is from centre to centre: a long line partly behind a crest is all seen or all hidden.
+- No overhead fire rule: guns fire through friendly units in front of them.
+- Units still march on enemy they cannot see.
+- Indirect effects of roundshot (bounding over a crest into troops behind) are not modelled.

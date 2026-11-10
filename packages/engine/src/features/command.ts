@@ -9,6 +9,7 @@ import type { CommandNode, ExpandedUnit, Formation, OrderSpec, ScenarioSide } fr
 import { STREAM, emit, gapOf, makeOrder, rnd, setFormation, shock } from '../sim.ts';
 import type { Sim, SimInput, Unit } from '../types.ts';
 import { clamp, len } from '../math.ts';
+import { hooks } from '../hooks.ts';
 
 export interface FOrder {
   id: number;
@@ -407,7 +408,7 @@ function initiative(sim: Sim, n: CNode): void {
       const u = sim.units[i];
       if (u.status !== 'ok') continue;
       const g = gapOf(sim, u, e);
-      if (g < d) d = g;
+      if (g < d && hooks.canSee(sim, u, e)) d = g; // the commander acts on what his troops can see
     }
     if (d < bd) (bd = d), (best = e);
   }

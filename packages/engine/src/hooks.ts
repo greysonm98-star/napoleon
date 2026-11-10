@@ -6,12 +6,14 @@ import type { Sim, SimInput, Unit } from './types.ts';
 import * as command from './features/command.ts';
 import * as endurance from './features/endurance.ts';
 import * as skirmish from './features/skirmish.ts';
+import * as los from './features/los.ts';
 
 const QC = (sim: Sim, u: Unit) => sim.data.quality.classes[u.quality];
 
 export const hooks = {
   init(sim: Sim, expanded: ExpandedUnit[]): void {
     if (sim.features.fatigue || sim.features.ammunition) endurance.init(sim);
+    if (sim.features.elevationLos) los.init(sim);
     if (sim.features.skirmishers) skirmish.init(sim, expanded);
     if (sim.features.commandControl) command.init(sim, expanded);
   },
@@ -43,7 +45,8 @@ export const hooks = {
     if (sim.features.fatigue || sim.features.ammunition) endurance.onFired(sim, u, kind, shots);
   },
 
-  canSee(_sim: Sim, _a: Unit, _b: Unit): boolean {
+  canSee(sim: Sim, a: Unit, b: Unit): boolean {
+    if (sim.features.elevationLos && !los.canSee(sim, a, b)) return false;
     return true;
   },
   canFire(sim: Sim, u: Unit): boolean {
@@ -63,8 +66,10 @@ export const hooks = {
     return !endurance.tooTiredToCharge(sim, u);
   },
 
-  speedFactor(sim: Sim, u: Unit, _heading: number): number {
-    return endurance.speedFactor(sim, u);
+  speedFactor(sim: Sim, u: Unit, heading: number): number {
+    let f = endurance.speedFactor(sim, u);
+    if (sim.features.elevationLos) f *= los.slopeSpeed(sim, u, heading);
+    return f;
   },
   // quality (MODEL 12.4): with the toggle on, a unit's class also scales its fire, loading, drill, melee and rallying
   drillTimeFactor(sim: Sim, u: Unit): number {

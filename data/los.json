@@ -1,0 +1,9 @@
+{
+  "eyeHeightFoot": { "value": 1.7, "unit": "m", "source": "assumption", "confidence": "assumption", "note": "Eye and target height of men on foot and gunners." },
+  "eyeHeightMounted": { "value": 2.5, "unit": "m", "source": "assumption", "confidence": "assumption", "note": "Eye and target height of mounted men." },
+  "sampleStep": { "value": 20, "unit": "m", "source": "assumption", "confidence": "assumption", "note": "Spacing of the points tested along a sight line. Numerical, not historical." },
+  "maxSight": { "value": 3000, "unit": "m", "source": "assumption", "confidence": "assumption", "note": "Nothing is seen beyond this on a clear day." },
+  "recheckInterval": { "value": 5, "unit": "s", "source": "assumption", "confidence": "assumption", "note": "A sight line is re-tested this often. Numerical, not historical." },
+  "uphillSpeedLossPer10": { "value": 0.25, "unit": "fraction per 10% of grade", "source": "assumption", "confidence": "assumption", "note": "Speed lost moving uphill, in proportion to the grade along the line of march, up to maxSlopeLoss. Replaces the baseline's flat 0.88 on any slope." },
+  "maxSlopeLoss": { "value": 0.6, "unit": "fraction", "source": "assumption", "confidence": "assumption", "note": "Cap on the uphill speed loss." }
+}

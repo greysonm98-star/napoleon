@@ -30,7 +30,6 @@ export function think(sim: Sim, u: Unit): void {
   const formed: Unit[] = [];
   for (const e of sim.units) {
     if (e.side === u.side || e.status === 'gone') continue;
-    if (!hooks.canSee(sim, u, e)) continue;
     foes.push(e);
     if (e.status === 'ok') formed.push(e);
   }
@@ -85,6 +84,7 @@ export function think(sim: Sim, u: Unit): void {
     for (const e of foes) {
       const d = gapOf(sim, u, e);
       if (d > leash) continue;
+      if (!hooks.canSee(sim, u, e)) continue; // cavalry does not charge what it cannot see
       let sc: number;
       if (e.status === 'rout') sc = d < A.cavRoutChaseRange ? A.cavScoreRouted - d / A.cavDistanceCostRouted : -1;
       else if (e.arm === 'art') {

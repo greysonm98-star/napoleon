@@ -45,6 +45,21 @@ for (const [key, [name, description, f, a]] of Object.entries(presets)) {
   };
   writeFileSync(new URL(`../scenarios/${key}.json`, import.meta.url), JSON.stringify(sc, null, 2) + '\n');
 }
+// The pitched battle with the Allied infantry drawn back behind the crest and the guns left on it.
+{
+  const f = side('french', 'French', 'blue', 'attack_line', [0, 1], [600, 1300], 'french', 6, 4, 2);
+  const a = side('allied', 'Allied', 'red', 'defend', [0, -1], [600, 250], 'allied', 7, 4, 2);
+  a.deploy.gunForward = 130;
+  a.deploy.rowDepth = 110;
+  const sc = {
+    format: 'napsim-scenario', version: 1, name: 'Reverse slope',
+    description: 'The pitched battle with the Allied infantry 130 m behind the crest, out of sight of the French guns, and the Allied batteries on the crest. Meant to be run with and without the elevation feature.',
+    map: map(), weather: { sky: 'clear', ground: 'firm', windFrom: 270, windSpeed: 3 },
+    features: { commandControl: false, fatigue: false, ammunition: false, skirmishers: false, quality: false, elevationLos: true, smoke: false, weatherGround: false },
+    timeLimit: 7200, objective: { at: [600, 330], radius: 350, defender: 'allied', name: 'the ridge' }, sides: [f, a],
+  };
+  writeFileSync(new URL('../scenarios/reverse-slope.json', import.meta.url), JSON.stringify(sc, null, 2) + '\n');
+}
 // The pitched battle again, but run from written orders through a chain of command.
 {
   const f = side('french', 'French', 'blue', 'attack_column', [0, 1], [600, 1300], 'french', 6, 4, 2);
