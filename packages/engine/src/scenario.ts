@@ -201,10 +201,13 @@ export function validateScenario(sc: Scenario, data: Data): string[] {
       checkType(u.type, `unit ${u.id}`);
       if (u.quality && !data.quality.classes[u.quality]) e.push(`${tag}: unit ${u.id}: unknown quality '${u.quality}'`);
       if (!Array.isArray(u.at)) e.push(`${tag}: unit ${u.id}: missing position`);
+      if (u.men !== undefined && !(u.men >= 1)) e.push(`${tag}: unit ${u.id}: men must be at least 1`);
+      if (u.skirmishers !== undefined && !(u.skirmishers >= 0)) e.push(`${tag}: unit ${u.id}: skirmishers cannot be negative`);
     }
     for (const g of s.groups ?? []) {
       checkType(g.type, `group ${g.id}`);
       if (!(g.count >= 0)) e.push(`${tag}: group ${g.id}: bad count`);
+      if (g.men !== undefined && !(g.men >= 1)) e.push(`${tag}: group ${g.id}: men must be at least 1`);
     }
     if (s.deploy) {
       if (!data.rosters[s.deploy.roster]) e.push(`${tag}: unknown roster '${s.deploy.roster}'`);

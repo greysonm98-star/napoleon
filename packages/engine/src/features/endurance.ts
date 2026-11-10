@@ -25,6 +25,8 @@ interface AmmoState {
   quiet: Float64Array; // seconds with no formed enemy near
   resupplies: Int32Array;
   lastFired: Float64Array;
+  /** Has the battalion fired at all today? The first-volley bonus is given once, not again after resupply. */
+  fired: Uint8Array;
 }
 
 export function init(sim: Sim): void {
@@ -32,7 +34,7 @@ export function init(sim: Sim): void {
   if (sim.features.ammunition) {
     const a = A(sim);
     if (!a) throw new Error("ammunition is on but data file 'ammunition.json' is missing");
-    const st: AmmoState = { full: new Float64Array(sim.n), quiet: new Float64Array(sim.n), resupplies: new Int32Array(sim.n), lastFired: new Float64Array(sim.n).fill(-1e9) };
+    const st: AmmoState = { full: new Float64Array(sim.n), quiet: new Float64Array(sim.n), resupplies: new Int32Array(sim.n), lastFired: new Float64Array(sim.n).fill(-1e9), fired: new Uint8Array(sim.n) };
     for (const u of sim.units) {
       if (u.arm === 'inf') {
         const c = a.cartridges[u.ut.doctrine!];
@@ -84,6 +86,7 @@ export function onFired(sim: Sim, u: Unit, kind: 'musket' | 'roundshot' | 'canis
       u.ammo -= men > 0 ? shots / men : 1;
       if (u.ammo < 0) u.ammo = 0;
       u.roundsFired += 1;
+      (sim.ext.ammo as AmmoState).fired[u.idx] = 1;
       if (u.ammo < 1 && sim.eventLevel === 'full') emit(sim, { type: 'ammunition', unit: u.id, side: u.side, state: 'cartridges exhausted' });
     } else if (kind === 'canister') {
       u.gunCanister = Math.max(0, u.gunCanister - shots);
@@ -157,7 +160,7 @@ export function reloadFactor(sim: Sim, u: Unit): number {
 export function musketFactor(sim: Sim, u: Unit): number {
   if (!sim.features.ammunition) return 1;
   const a = A(sim);
-  return u.roundsFired === 0 ? a.firstVolleyBonus : 1 - a.foulingMisfire * fouling(sim, u);
+  return (sim.ext.ammo as AmmoState).fired[u.idx] ? 1 - a.foulingMisfire * fouling(sim, u) : a.firstVolleyBonus;
 }
 
 export const canFire = (sim: Sim, u: Unit): boolean => !sim.features.ammunition || u.ammo >= 0.5;

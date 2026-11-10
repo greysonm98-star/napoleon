@@ -74,14 +74,14 @@
       "value": 3.5,
       "unit": "m/s",
       "source": "assumption",
-      "confidence": "secondary",
+      "confidence": "assumption",
       "note": "210 m/min. Period estimates for formed bodies run 130-233 m/min at the trot (forum citing late 18th century figures; search snippet)."
     },
     "chargeSpeed": {
       "value": 5.3,
       "unit": "m/s",
       "source": "assumption",
-      "confidence": "secondary",
+      "confidence": "assumption",
       "note": "320 m/min, the top of the 222-317 m/min range found for a formed gallop. The design draft's higher figure was not supported."
     },
     "routSpeed": {

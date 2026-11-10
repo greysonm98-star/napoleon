@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { Worker } from 'node:worker_threads';
 import { ENGINE_VERSION, dataHash, recordRun } from '@napoleon/engine';
 import type { Data, Replay, RunResult, Scenario } from '@napoleon/engine';
+import { intOpt } from './args.ts';
 import { loadData, loadScenario } from './load.ts';
 import { applyOverrides, parseAxis, sweepPoints } from './overrides.ts';
 import type { Override, SweepAxis } from './overrides.ts';
@@ -161,9 +162,9 @@ async function cmdBatch(pos: string[], opt: Opt, sweep: boolean): Promise<void> 
   if (!scenarioPath) throw new Error(`usage: napsim ${sweep ? 'sweep' : 'batch'} <scenario.json> ${sweep ? '--param scope:path=values ' : ''}[--runs N] [--seed0 N] [--out dir] [--jobs N] [--set scope:path=value]`);
   const { data } = loadData(opt.data?.[0]);
   const scenario = loadScenario(scenarioPath);
-  const runs = Number(opt.runs?.[0] ?? 200);
-  const seed0 = Number(opt.seed0?.[0] ?? 1);
-  const jobsN = Number(opt.jobs?.[0] ?? Math.max(1, availableParallelism() - 1));
+  const runs = intOpt(opt, 'runs', 200, 1);
+  const seed0 = intOpt(opt, 'seed0', 1, -2147483648);
+  const jobsN = intOpt(opt, 'jobs', Math.max(1, availableParallelism() - 1), 1);
   const fixed: Override[] = (opt.set ?? []).map((s) => {
     const a = parseAxis(s);
     if (a.values.length !== 1) throw new Error(`--set takes one value: ${s}`);
@@ -220,8 +221,11 @@ function cmdParams(opt: Opt): void {
   const { params } = loadData(opt.data?.[0]);
   const want = opt.confidence?.[0];
   const rows = params.filter((p) => !want || p.confidence === want);
-  if (opt.csv) {
-    process.stdout.write(csv([['path', 'value', 'unit', 'confidence', 'source', 'note'], ...rows.map((p) => [p.path, p.value, p.unit, p.confidence, p.source, p.note])]));
+  if (opt.csv || opt.out) {
+    const text = csv([['path', 'value', 'unit', 'confidence', 'source', 'note'], ...rows.map((p) => [p.path, p.value, p.unit, p.confidence, p.source, p.note])]);
+    // --out writes UTF-8 directly; redirecting stdout in Windows PowerShell would re-encode it
+    if (opt.out) writeFileSync(opt.out[0], text);
+    else process.stdout.write(text);
     return;
   }
   for (const p of rows) console.log(`${p.path.padEnd(52)} ${String(p.value).slice(0, 28).padEnd(28)} ${p.unit.slice(0, 26).padEnd(26)} ${p.confidence.padEnd(10)} ${p.source}`);
@@ -234,13 +238,27 @@ function cmdVerify(pos: string[], opt: Opt): void {
   if (!pos[0]) throw new Error('usage: napsim verify <replay.json>');
   const rep = JSON.parse(readFileSync(pos[0], 'utf8')) as Replay;
   const { data } = loadData(opt.data?.[0]);
+  const baseHash = dataHash(data);
+  applyOverrides(data, structuredClone(rep.scenario), (rep.dataOverrides ?? []).map((o) => ({ scope: 'data' as const, path: o.path, value: o.value })));
   const now = recordRun(rep.scenario, data, rep.seed, { inputs: rep.inputs, sampleInterval: rep.sampleInterval });
   const sameData = dataHash(data) === rep.dataHash;
-  const same = now.result.stateHash === rep.result.stateHash;
-  console.log(`replay: seed ${rep.seed}, engine ${rep.engineVersion}, data ${rep.dataHash}, state ${rep.result.stateHash}`);
-  console.log(`re-run: engine ${ENGINE_VERSION}, data ${dataHash(data)}, state ${now.result.stateHash}`);
-  console.log(same ? 'MATCH: the recording reproduces exactly.' : sameData ? 'MISMATCH with identical data: the engine has changed since this was recorded.' : 'MISMATCH: the data files have changed since this was recorded.');
-  if (!same) process.exitCode = 3;
+  // every recorded part is compared, not only the final state: a replay with edited tracks or events must not pass
+  const parts: [string, unknown, unknown][] = [
+    ['final state', rep.result?.stateHash, now.result.stateHash],
+    ['result', rep.result, now.result],
+    ['sample times', rep.times, now.times],
+    ['unit tracks', rep.tracks, now.tracks],
+    ['events', rep.events, now.events],
+  ];
+  const differing = parts.filter(([, a, b]) => JSON.stringify(a) !== JSON.stringify(b)).map(([name]) => name);
+  console.log(`replay: seed ${rep.seed}, engine ${rep.engineVersion}, data ${rep.dataHash}, state ${rep.result?.stateHash}${rep.dataOverrides?.length ? `, ${rep.dataOverrides.length} coefficient override(s)` : ''}`);
+  console.log(`re-run: engine ${ENGINE_VERSION}, data ${dataHash(data)}${rep.dataOverrides?.length ? ` (files ${baseHash})` : ''}, state ${now.result.stateHash}`);
+  if (!differing.length) console.log('MATCH: result, tracks and events all reproduce exactly.');
+  else if (!sameData) console.log(`MISMATCH (${differing.join(', ')}): the data files differ from those the replay was recorded with.`);
+  else if (!rep.result?.endReason) console.log(`MISMATCH (${differing.join(', ')}): this replay was saved before the run had ended, so it cannot be compared with a full run.`);
+  else if (differing.includes('final state')) console.log(`MISMATCH (${differing.join(', ')}) with identical data: the engine or the embedded scenario has changed since this was recorded.`);
+  else console.log(`MISMATCH (${differing.join(', ')}): the run reproduces, but the file's contents have been altered.`);
+  if (differing.length) process.exitCode = 3;
 }
 
 export async function dispatch(cmd: string, pos: string[], opt: Opt): Promise<void> {

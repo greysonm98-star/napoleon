@@ -56,7 +56,8 @@ export function histogram(xs: number[], lo: number, hi: number, bins: number): n
 
 export function csvCell(v: unknown): string {
   if (v === null || v === undefined || (typeof v === 'number' && v !== v)) return '';
-  const s = typeof v === 'number' ? String(Math.round(v * 10000) / 10000) : String(v);
+  // seven significant figures: enough for small coefficients on a sweep axis, short enough to read
+  const s = typeof v === 'number' ? (Number.isInteger(v) ? String(v) : String(Number(v.toPrecision(7)))) : String(v);
   return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
 }
 export const csv = (rows: unknown[][]): string => rows.map((r) => r.map(csvCell).join(',')).join('\n') + '\n';

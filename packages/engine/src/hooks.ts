@@ -34,6 +34,9 @@ export const hooks = {
   onCommandInput(sim: Sim, input: SimInput): void {
     if (sim.features.commandControl) command.onCommandInput(sim, input);
   },
+  onPostureInput(sim: Sim, side: number, posture: string): void {
+    if (sim.features.commandControl) command.onPosture(sim, side, posture);
+  },
   onRout(sim: Sim, u: Unit): void {
     if (sim.features.skirmishers) skirmish.onBreak(sim, u);
   },

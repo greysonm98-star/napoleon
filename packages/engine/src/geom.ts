@@ -66,11 +66,14 @@ function satSeparation(a: Unit, b: Unit): number {
   return best;
 }
 
-/** Gap in metres between two unit rectangles; 0 if they overlap. Exact when near, a close lower bound when far. */
+/** Beyond every range any rule uses, so the cheap bound is only ever returned for pairs that cannot interact. */
+const EXACT_WITHIN = 2500;
+
+/** Gap in metres between two unit rectangles; 0 if they overlap. Exact within EXACT_WITHIN metres. */
 export function rectGap(a: Unit, b: Unit): number {
   const sep = satSeparation(a, b);
   if (sep <= 0) return 0;
-  if (sep > 320) return sep;
+  if (sep > EXACT_WITHIN) return sep;
   let best = Infinity;
   for (let i = 0; i < 8; i += 2) {
     let d = pointRectDist(a.cx[i], a.cx[i + 1], b);

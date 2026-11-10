@@ -1,10 +1,79 @@
 {
-  "cellSize": { "value": 50, "unit": "m", "source": "assumption", "confidence": "assumption", "note": "Size of a smoke grid cell. Numerical, not historical." },
-  "updateInterval": { "value": 5, "unit": "s", "source": "assumption", "confidence": "assumption", "note": "Smoke drifts, thins and spreads in steps of this length. Numerical." },
-  "perMusket": { "value": 0.002, "unit": "density per musket fired", "source": "assumption", "confidence": "assumption", "note": "Density 1 in a cell is a bank that halves the effect of fire through it. A 500-musket volley adds about 1, spread along the battalion's front." },
-  "perGun": { "value": 0.15, "unit": "density per gun fired", "source": "assumption", "confidence": "assumption", "note": "A six-gun salvo adds about 0.9 along the battery's front. A field gun burned a charge of over a kilogram of powder against a musket's few grams, but the cloud rises and spreads." },
-  "decayPerSecond": { "value": 0.004, "unit": "fraction per s", "source": "assumption", "confidence": "assumption", "note": "Thinning in still air: half gone in about three minutes. Accounts of smoke hanging on windless days suggest minutes, not seconds." },
-  "diffusion": { "value": 0.04, "unit": "fraction per step to each neighbour", "source": "assumption", "confidence": "assumption", "note": "Spreading into neighbouring cells." },
-  "hitLoss": { "value": 1.0, "unit": "per unit of optical depth", "source": "assumption", "confidence": "assumption", "note": "Fire through smoke is multiplied by 1 / (1 + this x optical depth), where optical depth is density summed along the line of fire in units of one cell." },
-  "blockDepth": { "value": 4.0, "unit": "optical depth", "source": "assumption", "confidence": "assumption", "note": "Beyond this the target cannot be seen at all." }
+  "cellSize": {
+    "value": 50,
+    "unit": "m",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Size of a smoke grid cell. Numerical, not historical."
+  },
+  "updateInterval": {
+    "value": 5,
+    "unit": "s",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Smoke drifts, thins and spreads in steps of this length. Numerical."
+  },
+  "perMusket": {
+    "value": 0.002,
+    "unit": "density per musket fired",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Density 1 in a cell is a bank that halves the effect of fire through it. A 500-musket volley adds about 1, spread along the battalion's front."
+  },
+  "perGun": {
+    "value": 0.15,
+    "unit": "density per gun fired",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "A six-gun salvo adds about 0.9 along the battery's front. A field gun burned a charge of over a kilogram of powder against a musket's few grams, but the cloud rises and spreads."
+  },
+  "decayPerSecond": {
+    "value": 0.004,
+    "unit": "fraction per s",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Thinning in still air: half gone in about three minutes. Accounts of smoke hanging on windless days suggest minutes, not seconds."
+  },
+  "diffusion": {
+    "value": 0.04,
+    "unit": "fraction per step to each neighbour",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Spreading into neighbouring cells."
+  },
+  "hitLoss": {
+    "value": 1.0,
+    "unit": "per unit of optical depth",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Fire through smoke is multiplied by 1 / (1 + this x optical depth), where optical depth is density summed along the line of fire in units of one cell."
+  },
+  "blockDepth": {
+    "value": 4.0,
+    "unit": "optical depth",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Beyond this the target cannot be seen at all."
+  },
+  "muzzleOffset": {
+    "value": 5,
+    "unit": "m",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Smoke is laid, and fire is measured, from this far in front of the firing unit."
+  },
+  "muzzleShare": {
+    "value": 0.5,
+    "unit": "fraction",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Share of the density at the muzzle added to the optical depth of a shot, so a unit's own bank hampers it even at point-blank."
+  },
+  "recheckInterval": {
+    "value": 5,
+    "unit": "s",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "A sight line through smoke is re-tested this often. Numerical, not historical."
+  }
 }

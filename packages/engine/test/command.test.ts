@@ -78,22 +78,6 @@ describe('command and control', () => {
     expect(command.inCommand(sim, unit(sim, 'b1'))).toBe(true);
   });
 
-  it('a lost courier delays the order by the resend time', () => {
-    const base = freshData();
-    (base.command as Record<string, number>).courierLossChance = 0;
-    const lossy = freshData();
-    (lossy.command as Record<string, number>).courierLossChance = 1; // every first courier is lost; the repeat is a new draw
-    (lossy.command as Record<string, number>).resendTime = 200;
-    const t = (d: typeof base) => {
-      const sim = createSim(chain(1900), d, 3);
-      hold(sim, 'r1');
-      run(sim, 400);
-      return sim.events.filter((e) => e.type === 'courier_lost').length;
-    };
-    expect(t(base)).toBe(0);
-    expect(t(lossy)).toBeGreaterThan(0);
-  });
-
   it('cavalry held in reserve charges a disordered enemy only if its commander has initiative', () => {
     const go = (init: number) =>
       rate(30, (seed) => {

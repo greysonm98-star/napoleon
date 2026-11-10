@@ -64,8 +64,8 @@ export function onFired(sim: Sim, u: Unit, kind: 'musket' | 'roundshot' | 'canis
   const total = shots * (kind === 'musket' ? cfg.perMusket : cfg.perGun);
   // spread along the unit's front, a little ahead of it
   const k = Math.max(1, Math.round(u.w / st.cell));
-  const fx = u.x + u.c * (u.d / 2 + 5);
-  const fy = u.y + u.s * (u.d / 2 + 5);
+  const fx = u.x + u.c * (u.d / 2 + cfg.muzzleOffset);
+  const fy = u.y + u.s * (u.d / 2 + cfg.muzzleOffset);
   for (let i = 0; i < k; i++) {
     const lat = k === 1 ? 0 : (i / (k - 1) - 0.5) * u.w;
     deposit(st, fx - u.s * lat, fy + u.c * lat, total / k);
@@ -124,19 +124,23 @@ export function opticalDepth(sim: Sim, x1: number, y1: number, x2: number, y2: n
   let tau = 0;
   for (let i = 0; i <= nS; i++) {
     const f = i / nS;
-    tau += sample(st, x1 + dx * f, y1 + dy * f);
+    tau += sample(st, x1 + dx * f, y1 + dy * f) * (i === 0 || i === nS ? 0.5 : 1); // trapezoid rule
   }
-  return (tau * (D / nS)) / st.cell + sample(st, x1, y1) * 0.5; // the firer's own smoke counts even at point-blank
+  return (tau * (D / nS)) / st.cell;
 }
 
 export function hitFactor(sim: Sim, u: Unit, t: Unit): number {
-  return 1 / (1 + S(sim).hitLoss * opticalDepth(sim, u.x + u.c * (u.d / 2 + 5), u.y + u.s * (u.d / 2 + 5), t.x, t.y));
+  const cfg = S(sim);
+  const mx = u.x + u.c * (u.d / 2 + cfg.muzzleOffset);
+  const my = u.y + u.s * (u.d / 2 + cfg.muzzleOffset);
+  // the firer's own bank counts even at point-blank
+  return 1 / (1 + cfg.hitLoss * (opticalDepth(sim, mx, my, t.x, t.y) + sample(state(sim), mx, my) * cfg.muzzleShare));
 }
 
 export function canSee(sim: Sim, a: Unit, b: Unit): boolean {
   const st = state(sim);
   const i = a.idx < b.idx ? a.idx * sim.n + b.idx : b.idx * sim.n + a.idx;
-  if (sim.t - st.at[i] < 5 && st.seen[i] >= 0) return st.seen[i] === 1;
+  if (sim.t - st.at[i] < S(sim).recheckInterval && st.seen[i] >= 0) return st.seen[i] === 1;
   const ok = opticalDepth(sim, a.x, a.y, b.x, b.y) <= S(sim).blockDepth;
   st.seen[i] = ok ? 1 : 0;
   st.at[i] = sim.t;

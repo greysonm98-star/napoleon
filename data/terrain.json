@@ -115,7 +115,7 @@
         "unit": "m",
         "source": "assumption",
         "confidence": "assumption",
-        "note": "Ported unchanged from the prototype."
+        "note": "Height of walls and buildings that blocks line of sight when the elevation feature is on. Not in the prototype."
       }
     }
   },

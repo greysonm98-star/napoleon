@@ -1,41 +1,296 @@
 {
-  "courierSpeed": { "value": 5, "unit": "m/s", "source": "assumption", "confidence": "assumption", "note": "An aide riding across country, about 300 m/min. No source found." },
-  "courierLossChance": { "value": 0.05, "unit": "probability per message", "source": "assumption", "confidence": "assumption", "note": "Chance a courier is killed, lost or misdirected. A lost order is sent again after resendTime." },
-  "resendTime": { "value": 300, "unit": "s", "source": "assumption", "confidence": "assumption", "note": "Delay before the sender realises an order has not arrived and repeats it." },
-  "delayJitter": { "value": 0.25, "unit": "fraction", "source": "assumption", "confidence": "assumption", "note": "Staff delays vary by plus or minus this fraction." },
-  "staffDelayArmy": { "value": 240, "unit": "s", "source": "assumption", "confidence": "assumption", "note": "Time for an army or corps headquarters to write and dispatch an order. Accounts in Muir suggest minutes; the figure is a guess." },
-  "staffDelayCorps": { "value": 240, "unit": "s", "source": "assumption", "confidence": "assumption", "note": "As army." },
-  "staffDelayDivision": { "value": 150, "unit": "s", "source": "assumption", "confidence": "assumption", "note": "Time for a division commander to read an order and pass it on." },
-  "staffDelayBrigade": { "value": 60, "unit": "s", "source": "assumption", "confidence": "assumption", "note": "Time for a brigadier to set his battalions in motion." },
-  "radiusArmy": { "value": 1500, "unit": "m", "source": "assumption", "confidence": "assumption", "note": "Default command radius; a scenario may set its own per commander." },
-  "radiusCorps": { "value": 1200, "unit": "m", "source": "assumption", "confidence": "assumption", "note": "As above." },
-  "radiusDivision": { "value": 800, "unit": "m", "source": "assumption", "confidence": "assumption", "note": "As above." },
-  "radiusBrigade": { "value": 400, "unit": "m", "source": "assumption", "confidence": "assumption", "note": "Covers four battalions in line with intervals, about 750 m of front." },
-  "initiativeDefault": { "value": 0.5, "unit": "probability per check", "source": "assumption", "confidence": "assumption", "note": "Chance that a commander who sees a reason to act on his own does so at each check." },
-  "initiativeInterval": { "value": 60, "unit": "s", "source": "assumption", "confidence": "assumption", "note": "How often a commander reviews the situation." },
-  "commanderSpeed": { "value": 4, "unit": "m/s", "source": "assumption", "confidence": "assumption", "note": "A mounted commander keeping station on his formation." },
-  "brigadierBehind": { "value": 80, "unit": "m", "source": "assumption", "confidence": "assumption", "note": "A brigadier rides this far behind the centre of his formed units." },
-  "generalBehind": { "value": 200, "unit": "m", "source": "assumption", "confidence": "assumption", "note": "A division or corps commander rides this far behind the centre of his subordinates." },
-  "engageRadius": { "value": 500, "unit": "m", "source": "assumption", "confidence": "assumption", "note": "A unit marching on an objective turns to fight when formed enemy is this close." },
-  "arriveDistance": { "value": 30, "unit": "m", "source": "assumption", "confidence": "assumption", "note": "A unit within this distance of its ordered position has arrived." },
-  "supportDistance": { "value": 250, "unit": "m", "source": "assumption", "confidence": "assumption", "note": "A supporting formation keeps this far behind the one it supports." },
-  "withdrawDistance": { "value": 400, "unit": "m", "source": "assumption", "confidence": "assumption", "note": "Distance fallen back on a withdraw order that names no place." },
-  "restrainedLeash": { "value": 0.3, "unit": "multiplier", "source": "assumption", "confidence": "assumption", "note": "Cavalry held in reserve, on hold, moving or in support looks for targets only within this fraction of its usual distance." },
-  "outOfCommandRecovery": { "value": 0.5, "unit": "multiplier", "source": "assumption", "confidence": "assumption", "note": "Morale recovery of a formed unit outside every command radius in its chain." },
-  "rallyCommanderFactor": { "value": 2.0, "unit": "multiplier", "source": "assumption", "confidence": "assumption", "note": "Morale recovery of a routed unit inside the radius of a commander in its chain." },
-  "shakenMorale": { "value": 45, "unit": "morale", "source": "assumption", "confidence": "assumption", "note": "A formed unit below this counts as shaken when a commander reviews his formation." },
-  "stallFraction": { "value": 0.5, "unit": "fraction", "source": "assumption", "confidence": "assumption", "note": "An attacking commander may halt to regroup when more than this share of his formed units is shaken." },
-  "regroupTime": { "value": 300, "unit": "s", "source": "assumption", "confidence": "assumption", "note": "Length of such a halt before the attack resumes." },
-  "collapseFraction": { "value": 0.5, "unit": "fraction", "source": "assumption", "confidence": "assumption", "note": "A commander may pull back when this share of his units has routed or gone." },
-  "opportunityRangeInfantry": { "value": 150, "unit": "m", "source": "assumption", "confidence": "assumption", "note": "An infantry commander not ordered to attack may counter-attack a vulnerable enemy this close to his formation." },
-  "opportunityRangeCavalry": { "value": 500, "unit": "m", "source": "assumption", "confidence": "assumption", "note": "The same for a cavalry commander." },
-  "opportunityMorale": { "value": 55, "unit": "morale", "source": "prototype", "confidence": "assumption", "note": "An enemy below this, or changing formation, or in melee, counts as vulnerable. Same threshold the prototype uses for a bayonet charge." },
-  "counterattackTime": { "value": 480, "unit": "s", "source": "assumption", "confidence": "assumption", "note": "A counter-attack made on a commander's own initiative lasts this long, then his previous orders resume." },
-  "commanderRiskRange": { "value": 200, "unit": "m", "source": "assumption", "confidence": "assumption", "note": "A commander is at risk while formed enemy is within this distance of him." },
-  "commanderRiskPerSecond": { "value": 0.0002, "unit": "probability per s", "source": "assumption", "confidence": "assumption", "note": "About 1.2% a minute while at risk. General officers fell often in this period; the rate is a guess." },
-  "commanderDownShock": { "value": 6, "unit": "morale", "source": "assumption", "confidence": "assumption", "note": "Lost by formed units of his command within his radius, multiplied by steadiness." },
-  "successionTime": { "value": 180, "unit": "s", "source": "assumption", "confidence": "assumption", "note": "Time before the next senior officer takes over. Until then the formation is out of command." },
-  "successorInitiative": { "value": 0.7, "unit": "multiplier", "source": "assumption", "confidence": "assumption", "note": "A successor's initiative relative to the man he replaces." },
-  "successorRadius": { "value": 0.8, "unit": "multiplier", "source": "assumption", "confidence": "assumption", "note": "A successor's command radius relative to the man he replaces." },
-  "autoBrigadeSize": { "value": 4, "unit": "battalions", "source": "assumption", "confidence": "assumption", "note": "When a scenario gives no command structure, infantry is grouped into brigades of this many battalions." }
+  "courierSpeed": {
+    "value": 5,
+    "unit": "m/s",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "An aide riding across country, about 300 m/min. No source found."
+  },
+  "courierLossChance": {
+    "value": 0.05,
+    "unit": "probability per message",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Chance a courier is killed, lost or misdirected. A lost order is sent again after resendTime."
+  },
+  "resendTime": {
+    "value": 300,
+    "unit": "s",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Delay before the sender realises an order has not arrived and repeats it."
+  },
+  "delayJitter": {
+    "value": 0.25,
+    "unit": "fraction",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Staff delays vary by plus or minus this fraction."
+  },
+  "staffDelayArmy": {
+    "value": 240,
+    "unit": "s",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Time for an army or corps headquarters to write and dispatch an order. Accounts in Muir suggest minutes; the figure is a guess."
+  },
+  "staffDelayCorps": {
+    "value": 240,
+    "unit": "s",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "As army."
+  },
+  "staffDelayDivision": {
+    "value": 150,
+    "unit": "s",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Time for a division commander to read an order and pass it on."
+  },
+  "staffDelayBrigade": {
+    "value": 60,
+    "unit": "s",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Time for a brigadier to set his battalions in motion."
+  },
+  "radiusArmy": {
+    "value": 1500,
+    "unit": "m",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Default command radius; a scenario may set its own per commander."
+  },
+  "radiusCorps": {
+    "value": 1200,
+    "unit": "m",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "As above."
+  },
+  "radiusDivision": {
+    "value": 800,
+    "unit": "m",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "As above."
+  },
+  "radiusBrigade": {
+    "value": 400,
+    "unit": "m",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Covers four battalions in line with intervals, about 750 m of front."
+  },
+  "initiativeDefault": {
+    "value": 0.5,
+    "unit": "probability per check",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Chance that a commander who sees a reason to act on his own does so at each check."
+  },
+  "initiativeInterval": {
+    "value": 60,
+    "unit": "s",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "How often a commander reviews the situation."
+  },
+  "commanderSpeed": {
+    "value": 4,
+    "unit": "m/s",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "A mounted commander keeping station on his formation."
+  },
+  "brigadierBehind": {
+    "value": 80,
+    "unit": "m",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "A brigadier rides this far behind the centre of his formed units."
+  },
+  "generalBehind": {
+    "value": 200,
+    "unit": "m",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "A division or corps commander rides this far behind the centre of his subordinates."
+  },
+  "engageRadius": {
+    "value": 500,
+    "unit": "m",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "A unit marching on an objective turns to fight when formed enemy is this close."
+  },
+  "arriveDistance": {
+    "value": 30,
+    "unit": "m",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "A unit within this distance of its ordered position has arrived."
+  },
+  "supportDistance": {
+    "value": 250,
+    "unit": "m",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "A supporting formation keeps this far behind the one it supports."
+  },
+  "withdrawDistance": {
+    "value": 400,
+    "unit": "m",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Distance fallen back on a withdraw order that names no place."
+  },
+  "restrainedLeash": {
+    "value": 0.3,
+    "unit": "multiplier",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Cavalry held in reserve, on hold, moving or in support looks for targets only within this fraction of its usual distance."
+  },
+  "outOfCommandRecovery": {
+    "value": 0.5,
+    "unit": "multiplier",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Morale recovery of a formed unit outside every command radius in its chain."
+  },
+  "rallyCommanderFactor": {
+    "value": 2.0,
+    "unit": "multiplier",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Morale recovery of a routed unit inside the radius of a commander in its chain."
+  },
+  "shakenMorale": {
+    "value": 45,
+    "unit": "morale",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "A formed unit below this counts as shaken when a commander reviews his formation."
+  },
+  "stallFraction": {
+    "value": 0.5,
+    "unit": "fraction",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "An attacking commander may halt to regroup when more than this share of his formed units is shaken."
+  },
+  "regroupTime": {
+    "value": 300,
+    "unit": "s",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Length of such a halt before the attack resumes."
+  },
+  "collapseFraction": {
+    "value": 0.5,
+    "unit": "fraction",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "A commander may pull back when this share of his units has routed or gone."
+  },
+  "opportunityRangeInfantry": {
+    "value": 150,
+    "unit": "m",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "An infantry commander not ordered to attack may counter-attack a vulnerable enemy this close to his formation."
+  },
+  "opportunityRangeCavalry": {
+    "value": 500,
+    "unit": "m",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "The same for a cavalry commander."
+  },
+  "opportunityMorale": {
+    "value": 55,
+    "unit": "morale",
+    "source": "prototype",
+    "confidence": "assumption",
+    "note": "An enemy below this, or changing formation, or in melee, counts as vulnerable. Same threshold the prototype uses for a bayonet charge."
+  },
+  "counterattackTime": {
+    "value": 480,
+    "unit": "s",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "A counter-attack made on a commander's own initiative lasts this long, then his previous orders resume."
+  },
+  "commanderRiskRange": {
+    "value": 200,
+    "unit": "m",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "A commander is at risk while formed enemy is within this distance of him."
+  },
+  "commanderRiskPerSecond": {
+    "value": 0.0002,
+    "unit": "probability per s",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "About 1.2% a minute while at risk. General officers fell often in this period; the rate is a guess."
+  },
+  "commanderDownShock": {
+    "value": 6,
+    "unit": "morale",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Lost by formed units of his command within his radius, multiplied by steadiness."
+  },
+  "successionTime": {
+    "value": 180,
+    "unit": "s",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "Time before the next senior officer takes over. Until then the formation is out of command."
+  },
+  "successorInitiative": {
+    "value": 0.7,
+    "unit": "multiplier",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "A successor's initiative relative to the man he replaces."
+  },
+  "successorRadius": {
+    "value": 0.8,
+    "unit": "multiplier",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "A successor's command radius relative to the man he replaces."
+  },
+  "autoBrigadeSize": {
+    "value": 4,
+    "unit": "battalions",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "When a scenario gives no command structure, infantry is grouped into brigades of this many battalions."
+  },
+  "initiativeDelayFactor": {
+    "value": 0.5,
+    "unit": "fraction of staff delay",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "An order a commander gives on his own initiative takes this share of his usual staff delay: there is nothing to read first."
+  },
+  "brokenFraction": {
+    "value": 0.5,
+    "unit": "fraction",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "The 'formation broken' trigger fires when this share of a formation's units is routed or gone."
+  },
+  "autoHeadquartersBehind": {
+    "value": 300,
+    "unit": "m",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "When a scenario gives no command structure, the headquarters is placed this far behind the centre of the army."
+  }
 }

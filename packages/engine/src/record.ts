@@ -60,6 +60,8 @@ export interface Replay {
   seed: number;
   scenario: Scenario;
   inputs: SimInput[];
+  /** Coefficient changes applied on top of the data files for this run (from --set), so it can be re-run. */
+  dataOverrides?: { path: string; value: unknown }[];
   sampleInterval: number;
   /** Simulation time of each sample, seconds. Every per-sample array below is aligned with this. */
   times: number[];

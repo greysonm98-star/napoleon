@@ -179,6 +179,13 @@
       "source": "prototype",
       "confidence": "prototype",
       "note": "Share of a battalion's strength carrying a musket in the ranks; the rest are officers, sergeants, drummers and file-closers. The prototype's line fired with 0.9 of its men."
+    },
+    "openingStagger": {
+      "value": 10,
+      "unit": "s",
+      "source": "prototype",
+      "confidence": "prototype",
+      "note": "Units' first volleys and salvos are spread at random over this long, so that a whole line does not fire on the same second. The prototype staggered first volleys over 3 s (x7 = 21 s)."
     }
   },
   "guns": {
@@ -500,6 +507,13 @@
       "source": "prototype",
       "confidence": "prototype",
       "note": "Artillery salvo effect varies by plus or minus this fraction (prototype 0.7 + 0.6 x random)."
+    },
+    "reloadJitter": {
+      "value": 0.1,
+      "unit": "fraction",
+      "source": "prototype",
+      "confidence": "prototype",
+      "note": "Each gun reload varies by plus or minus this fraction, as the musket's does."
     }
   }
 }

@@ -70,7 +70,8 @@ export function think(sim: Sim, u: Unit): void {
       want = td > A.deployRange * (u.form === 'line' ? A.redeployFactor : 1) ? 'column' : 'line';
       u.order = makeOrder('attack', t.idx, 0, 0, t.arm === 'art' || t.morale < A.chargeMoraleAbsolute || t.morale < u.morale - A.chargeMoraleAdvantage || hooks.mustCharge(sim, u));
     }
-    if (want !== u.form && u.formT <= 0 && !u.melee) setFormation(sim, u, want);
+    // melee flags are cleared at the top of the tick, before this runs: last tick's state is the one to test
+    if (want !== u.form && u.formT <= 0 && !u.wasMelee) setFormation(sim, u, want);
     return;
   }
 

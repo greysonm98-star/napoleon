@@ -19,12 +19,14 @@ export interface FOrder {
   objY: number;
   target: string | null;
   formation: Formation | null;
-  /** Centroid of the addressed formation when the order first took effect; unit offsets are measured from it. */
+  /** Centroid of the addressed formation's formed units when the order first took effect. */
   cx: number;
   cy: number;
-  own: boolean;
-  until: number; // time at which a self-issued order lapses; Infinity otherwise
-  revert: FOrder | null;
+  /** Each unit's offset from that centroid at that moment, so the formation keeps its shape however late the order reaches it. */
+  offs: Map<number, [number, number]> | null;
+  /** Index of the commander who issued it on his own initiative, or -1 for an order from the top. */
+  issuer: number;
+  until: number; // time at which a temporary order lapses; Infinity otherwise
 }
 
 export interface CNode {
@@ -46,6 +48,10 @@ export interface CNode {
   initiative: number;
   staffDelay: number;
   order: FOrder | null;
+  /** What this formation was doing before a temporary order; resumed when that order lapses. */
+  prev: FOrder | null;
+  /** Highest id of an order from above accepted so far; older ones arriving late are discarded. */
+  lastSuperior: number;
   inbox: { order: FOrder; at: number; relay: boolean }[];
   nextInit: number;
 }
@@ -117,7 +123,7 @@ function autoCommand(sim: Sim, side: ScenarioSide, sideIdx: number, units: Expan
     children.push({ id, name: `${side.name} Cavalry Brigade ${wing < 0 ? 'A' : 'B'}`, level: 'brigade', commander: { name: `Cavalry Brigadier ${wing < 0 ? 'A' : 'B'}` } });
     for (const u of w) parents.set(u.id, id);
   }
-  const tree: CommandNode = { id: `${side.id}-hq`, name: `${side.name} Headquarters`, level: 'army', commander: { name: `${side.name} Commander`, at: [clamp(cx + s.rearX * 300, 20, sim.map.width - 20), clamp(cy + s.rearY * 300, 20, sim.map.height - 20)] }, children };
+  const tree: CommandNode = { id: `${side.id}-hq`, name: `${side.name} Headquarters`, level: 'army', commander: { name: `${side.name} Commander`, at: [clamp(cx + s.rearX * C(sim).autoHeadquartersBehind, 20, sim.map.width - 20), clamp(cy + s.rearY * C(sim).autoHeadquartersBehind, 20, sim.map.height - 20)] }, children };
   return { tree, parents };
 }
 
@@ -136,7 +142,7 @@ export function init(sim: Sim, expanded: ExpandedUnit[]): void {
       parents = a.parents;
     }
     const add = (n: CommandNode, parent: number): number => {
-      const node: CNode = { idx: st.nodes.length, id: n.id, name: n.commander?.name ?? n.name ?? n.id, level: n.level, side: sideIdx, parent, children: [], units: [], all: [], x: n.commander?.at?.[0] ?? NaN, y: n.commander?.at?.[1] ?? NaN, fixed: parent < 0 && !!n.commander?.at, alive: true, replacedAt: -1, radius: n.commander?.radius ?? levelDefault(sim, n.level, 'radius'), initiative: n.commander?.initiative ?? cfg.initiativeDefault, staffDelay: n.commander?.staffDelay ?? levelDefault(sim, n.level, 'staffDelay'), order: null, inbox: [], nextInit: 0 };
+      const node: CNode = { idx: st.nodes.length, id: n.id, name: n.commander?.name ?? n.name ?? n.id, level: n.level, side: sideIdx, parent, children: [], units: [], all: [], x: n.commander?.at?.[0] ?? NaN, y: n.commander?.at?.[1] ?? NaN, fixed: parent < 0 && !!n.commander?.at, alive: true, replacedAt: -1, radius: n.commander?.radius ?? levelDefault(sim, n.level, 'radius'), initiative: n.commander?.initiative ?? cfg.initiativeDefault, staffDelay: n.commander?.staffDelay ?? levelDefault(sim, n.level, 'staffDelay'), order: null, prev: null, lastSuperior: 0, inbox: [], nextInit: 0 };
       if (st.byId.has(node.id)) throw new Error(`duplicate command id '${node.id}'`);
       st.nodes.push(node);
       st.byId.set(node.id, node);
@@ -146,28 +152,43 @@ export function init(sim: Sim, expanded: ExpandedUnit[]): void {
     };
     const root = add(tree, -1);
     st.roots[sideIdx] = root;
-    // attach units; anything unassigned goes to the nearest leaf formation of its side
+    // attach units: those with a named formation first, then the rest to the nearest leaf formation that has members
+    for (const [uid, pid] of parents) {
+      const u = sim.byId.get(uid);
+      if (!u || u.side !== sideIdx) throw new Error(`side ${side.id}: formation '${pid}' lists unknown unit '${uid}'`);
+    }
     const leaves = st.nodes.filter((n) => n.side === sideIdx && !n.children.length && n.idx !== root);
-    for (const u of sim.units) {
-      if (u.side !== sideIdx) continue;
-      const pid = parents.get(u.id);
-      let node = pid ? st.byId.get(pid) : undefined;
-      if (pid && (!node || node.side !== sideIdx)) throw new Error(`unit ${u.id}: unknown parent formation '${pid}'`);
-      if (!node) {
-        let best = Infinity;
-        for (const lf of leaves) {
-          const ms = sim.units.filter((v) => st.unitNode[v.idx] === lf.idx);
-          for (const m of ms) {
-            const d = len(m.x - u.x, m.y - u.y);
-            if (d < best) (best = d), (node = lf);
-          }
-        }
-        node ??= st.nodes[root];
-      }
+    const attach = (u: Unit, node: CNode) => {
       st.unitNode[u.idx] = node.idx;
       node.units.push(u.idx);
       u.parent = node.id;
+    };
+    const loose: Unit[] = [];
+    for (const u of sim.units) {
+      if (u.side !== sideIdx) continue;
+      const pid = parents.get(u.id);
+      if (!pid) {
+        loose.push(u);
+        continue;
+      }
+      const node = st.byId.get(pid);
+      if (!node || node.side !== sideIdx) throw new Error(`unit ${u.id}: unknown parent formation '${pid}'`);
+      attach(u, node);
     }
+    for (const u of loose) {
+      let node: CNode | undefined;
+      let best = Infinity;
+      for (const lf of leaves) {
+        for (const i of lf.units) {
+          const m = sim.units[i];
+          if (loose.includes(m)) continue; // only formations with members of their own count
+          const d = len(m.x - u.x, m.y - u.y);
+          if (d < best) (best = d), (node = lf);
+        }
+      }
+      attach(u, node ?? st.nodes[root]);
+    }
+    for (const n of st.nodes) if (n.side === sideIdx) n.units.sort((a, b) => a - b);
     // descendants, bottom-up
     const collect = (i: number): number[] => {
       const n = st.nodes[i];
@@ -180,10 +201,18 @@ export function init(sim: Sim, expanded: ExpandedUnit[]): void {
     // written orders; with none, the side's posture becomes a standing order to the whole army
     const specs: OrderSpec[] = side.orders?.length ? side.orders : [{ at: 0, to: st.nodes[root].id, type: side.posture === 'defend' ? 'defend' : 'attack', formation: side.posture === 'attack_column' ? 'column' : 'line' }];
     for (const spec of specs) {
-      if (!st.byId.has(spec.to)) throw new Error(`side ${side.id}: order addressed to unknown formation '${spec.to}'`);
+      if (st.byId.get(spec.to)?.side !== sideIdx) throw new Error(`side ${side.id}: order addressed to unknown formation '${spec.to}'`);
       st.scripted.push({ side: sideIdx, spec, fired: false });
     }
   });
+  // triggers and supports may name a formation or unit of either side, so they are checked once both trees exist
+  for (const sc of st.scripted) {
+    const sp = sc.spec;
+    const who = `side ${sim.sides[sc.side].id}: order to '${sp.to}'`;
+    if (sp.target !== undefined && st.byId.get(sp.target)?.side !== sc.side) throw new Error(`${who} supports unknown formation '${sp.target}'`);
+    for (const id of [sp.when?.formationBroken, sp.when?.of]) if (id !== undefined && !st.byId.has(id)) throw new Error(`${who} is triggered by unknown formation '${id}'`);
+    if (sp.when?.unitRouted !== undefined && !sim.byId.has(sp.when.unitRouted)) throw new Error(`${who} is triggered by unknown unit '${sp.when.unitRouted}'`);
+  }
   // place commanders that were given no position
   for (let i = st.nodes.length - 1; i >= 0; i--) {
     const n = st.nodes[i];
@@ -196,15 +225,15 @@ export function init(sim: Sim, expanded: ExpandedUnit[]): void {
   for (const sc of st.scripted) {
     if (sc.spec.at === 0 && !sc.spec.when) {
       sc.fired = true;
-      activate(sim, st.byId.get(sc.spec.to)!, makeFOrder(sim, sc.spec, false), true);
+      activate(sim, st.byId.get(sc.spec.to)!, makeFOrder(sim, sc.spec, -1), true);
     }
   }
   (sim.ext.recorders ??= []) && (sim.ext.recorders as unknown[]).push(recorderHooks(sim));
 }
 
-function makeFOrder(sim: Sim, spec: Partial<OrderSpec> & { type: OrderSpec['type'] }, own: boolean): FOrder {
+function makeFOrder(sim: Sim, spec: Partial<OrderSpec> & { type: OrderSpec['type'] }, issuer: number): FOrder {
   const st = state(sim);
-  return { id: st.nextOrderId++, type: spec.type, objX: spec.objective ? spec.objective[0] : NaN, objY: spec.objective ? spec.objective[1] : NaN, target: spec.target ?? null, formation: spec.formation ?? null, cx: NaN, cy: NaN, own, until: Infinity, revert: null };
+  return { id: st.nextOrderId++, type: spec.type, objX: spec.objective ? spec.objective[0] : NaN, objY: spec.objective ? spec.objective[1] : NaN, target: spec.target ?? null, formation: spec.formation ?? null, cx: NaN, cy: NaN, offs: null, issuer, until: Infinity };
 }
 
 function centroid(sim: Sim, idxs: number[], formedOnly: boolean): [number, number, number] {
@@ -254,20 +283,49 @@ function station(sim: Sim, n: CNode): [number, number] {
 
 const describe = (o: FOrder): string => o.type + (o.formation ? ` in ${o.formation}` : '') + (o.objX === o.objX ? ` on (${Math.round(o.objX)}, ${Math.round(o.objY)})` : '') + (o.target ? ` ${o.target}` : '');
 
-/** An order takes effect at a formation: its own units adopt it when in command, and it is passed down. */
-function activate(sim: Sim, n: CNode, order: FOrder, instant: boolean): void {
+/**
+ * An order takes effect at a formation: its own units adopt it when in command, and it is passed down.
+ * `resume` marks a formation going back to what it was doing before a temporary order: that is not passed
+ * down (each subordinate resumes its own previous order) and is exempt from the stale-order check.
+ */
+function activate(sim: Sim, n: CNode, order: FOrder, instant: boolean, resume = false): void {
   const st = state(sim);
-  if (order.cx !== order.cx) {
-    const [cx, cy, k] = centroid(sim, n.all, false);
+  const own = order.issuer === n.idx;
+  if (!resume && order.until <= sim.t) return; // a temporary order that has already lapsed by the time it arrives
+  if (!resume) {
+    if (!own) {
+      // an order from above that was overtaken by a newer one is discarded
+      if (order.id < n.lastSuperior) {
+        if (!instant) emit(sim, { type: 'order_stale', side: n.side, formation: n.id, commander: n.name, order: describe(order) });
+        return;
+      }
+      n.lastSuperior = order.id;
+      // and it cancels anything older still waiting on this commander's table, his own ideas included
+      n.inbox = n.inbox.filter((m) => m.order.id > order.id && m.order.issuer !== n.idx);
+    }
+    if (order.until < Infinity) {
+      if (n.order && n.order.until === Infinity) n.prev = n.order;
+    } else n.prev = null;
+  }
+  if (!order.offs) {
+    let [cx, cy, k] = centroid(sim, n.all, true);
+    if (!k) [cx, cy, k] = centroid(sim, n.all, false);
     order.cx = k ? cx : n.x;
     order.cy = k ? cy : n.y;
+    order.offs = new Map();
+    for (const i of n.all) {
+      const u = sim.units[i];
+      if (u.status !== 'gone') order.offs.set(i, [u.x - order.cx, u.y - order.cy]);
+    }
   }
   n.order = order;
-  if (!instant) emit(sim, { type: 'order_active', side: n.side, formation: n.id, commander: n.name, order: describe(order), own: order.own, x: Math.round(n.x), y: Math.round(n.y) });
-  for (const c of n.children) {
-    const ch = st.nodes[c];
-    if (instant) activate(sim, ch, order, true);
-    else st.outbox.push({ at: sim.t, from: n.idx, to: ch.idx, order });
+  if (!instant) emit(sim, { type: 'order_active', side: n.side, formation: n.id, commander: n.name, order: describe(order), own, x: Math.round(n.x), y: Math.round(n.y) });
+  if (!resume) {
+    for (const c of n.children) {
+      const ch = st.nodes[c];
+      if (instant) activate(sim, ch, order, true);
+      else st.outbox.push({ at: sim.t, from: n.idx, to: ch.idx, order });
+    }
   }
   if (instant) for (const i of n.units) adopt(sim, sim.units[i], order);
 }
@@ -275,8 +333,9 @@ function activate(sim: Sim, n: CNode, order: FOrder, instant: boolean): void {
 function adopt(sim: Sim, u: Unit, order: FOrder): void {
   const st = state(sim);
   st.unitOrder[u.idx] = order;
-  st.offX[u.idx] = u.x - order.cx;
-  st.offY[u.idx] = u.y - order.cy;
+  const off = order.offs?.get(u.idx);
+  st.offX[u.idx] = off ? off[0] : u.x - order.cx;
+  st.offY[u.idx] = off ? off[1] : u.y - order.cy;
   u.posture = order.type === 'attack' ? (order.formation === 'column' ? 'attack_column' : 'attack_line') : 'defend';
   u.thinkT = 0;
 }
@@ -315,7 +374,7 @@ function issue(sim: Sim, side: number, spec: OrderSpec, direct: boolean): void {
   const st = state(sim);
   const to = st.byId.get(spec.to);
   if (!to || to.side !== side) return;
-  const order = makeFOrder(sim, spec, false);
+  const order = makeFOrder(sim, spec, -1);
   if (direct) {
     activate(sim, to, order, true);
     emit(sim, { type: 'order_active', side, formation: to.id, commander: to.name, order: describe(order), own: false, direct: true });
@@ -341,7 +400,7 @@ function triggered(sim: Sim, sc: Scripted): boolean {
       if (!n) return false;
       let broken = 0;
       for (const i of n.all) if (sim.units[i].status !== 'ok') broken++;
-      return n.all.length > 0 && broken / n.all.length >= 0.5;
+      return n.all.length > 0 && broken / n.all.length >= C(sim).brokenFraction;
     }
     if (w.enemyWithin !== undefined) {
       const n = st.byId.get(w.of ?? sp.to);
@@ -379,20 +438,18 @@ function initiative(sim: Sim, n: CNode): void {
   if (!formed) return;
   const roll = () => rnd(sim, STREAM.COMMAND, n.idx, 3) < n.initiative;
   const act = (order: FOrder, why: string, lasts: number) => {
-    order.own = true;
     order.until = sim.t + lasts;
-    order.revert = o.own ? o.revert : o;
-    n.inbox.push({ order, at: sim.t + n.staffDelay * 0.5, relay: false });
+    n.inbox.push({ order, at: sim.t + n.staffDelay * cfg.initiativeDelayFactor, relay: false });
     emit(sim, { type: 'initiative', side: n.side, formation: n.id, commander: n.name, action: describe(order), why, x: Math.round(n.x), y: Math.round(n.y) });
   };
   const s = sim.sides[n.side];
   const [cx, cy] = centroid(sim, n.all, true);
   if (broken / n.all.length >= cfg.collapseFraction && o.type !== 'withdraw') {
-    if (roll()) act(makeFOrder(sim, { type: 'withdraw', objective: [clamp(cx + s.rearX * cfg.withdrawDistance, 30, sim.map.width - 30), clamp(cy + s.rearY * cfg.withdrawDistance, 30, sim.map.height - 30)] }, true), 'half the formation has broken', Infinity);
+    if (roll()) act(makeFOrder(sim, { type: 'withdraw', objective: [clamp(cx + s.rearX * cfg.withdrawDistance, 30, sim.map.width - 30), clamp(cy + s.rearY * cfg.withdrawDistance, 30, sim.map.height - 30)] }, n.idx), 'half the formation has broken', Infinity);
     return;
   }
   if (o.type === 'attack') {
-    if (!o.own && shaken / formed > cfg.stallFraction && roll()) act(makeFOrder(sim, { type: 'hold' }, true), 'the attack has stalled; halting to regroup', cfg.regroupTime);
+    if (o.until === Infinity && shaken / formed > cfg.stallFraction && roll()) act(makeFOrder(sim, { type: 'hold' }, n.idx), 'the attack has stalled; halting to regroup', cfg.regroupTime);
     return;
   }
   if (o.type === 'withdraw') return;
@@ -429,13 +486,18 @@ function initiative(sim: Sim, n: CNode): void {
     }
     if (d < bd) (bd = d), (best = e);
   }
-  if (best && roll()) act(makeFOrder(sim, { type: 'attack', objective: [best.x, best.y], formation: 'line' }, true), `saw ${best.name} ${best.arm === 'cav' ? 'blown' : 'in disorder'} ${Math.round(bd)} m away`, cfg.counterattackTime);
+  if (best && roll()) act(makeFOrder(sim, { type: 'attack', objective: [best.x, best.y], formation: 'line' }, n.idx), `saw ${best.name} ${best.arm === 'cav' ? 'blown' : 'in disorder'} ${Math.round(bd)} m away`, cfg.counterattackTime);
 }
 
 export function update(sim: Sim): void {
   const st = state(sim);
   const cfg = C(sim);
   const dt = sim.dt;
+  // a quiet field is not a stalemate while orders are still to come or on their way
+  let pending = st.outbox.length + st.resend.length + st.couriers.length > 0;
+  for (const sc of st.scripted) if (!sc.fired && !sc.spec.when) pending = true;
+  for (const n of st.nodes) if (n.inbox.length) pending = true;
+  if (pending) sim.lastActivityT = sim.t;
   // scripted orders
   for (const sc of st.scripted) {
     if (sc.fired) continue;
@@ -451,6 +513,7 @@ export function update(sim: Sim): void {
   for (let i = st.outbox.length - 1; i >= 0; i--) {
     const m = st.outbox[i];
     st.outbox.splice(i, 1);
+    if (st.nodes[m.from].order !== m.order) continue; // superseded before it was passed on
     sendCourier(sim, st.nodes[m.from], st.nodes[m.to], m.order, true, true);
   }
   for (let i = st.resend.length - 1; i >= 0; i--) {
@@ -458,6 +521,7 @@ export function update(sim: Sim): void {
     if (sim.t < m.at) continue;
     if (!st.nodes[m.from].alive) continue;
     st.resend.splice(i, 1);
+    if (m.relay && st.nodes[m.from].order !== m.order) continue;
     sendCourier(sim, st.nodes[m.from], st.nodes[m.to], m.order, m.relay, true);
   }
   // couriers ride
@@ -501,18 +565,19 @@ export function update(sim: Sim): void {
       else (n.x += ((tx - n.x) / D) * sp), (n.y += ((ty - n.y) / D) * sp);
     }
     // inbox
-    for (let i = n.inbox.length - 1; i >= 0; i--) {
-      if (sim.t >= n.inbox[i].at) {
-        const m = n.inbox.splice(i, 1)[0];
-        // a newer order from above replaces a self-issued one
-        activate(sim, n, m.order, false);
+    if (n.inbox.length) {
+      const due = n.inbox.filter((m) => sim.t >= m.at).sort((a, b) => a.order.id - b.order.id);
+      if (due.length) {
+        n.inbox = n.inbox.filter((m) => sim.t < m.at);
+        for (const m of due) activate(sim, n, m.order, false); // oldest first, so the newest stands
       }
     }
-    // self-issued orders lapse
-    if (n.order && n.order.own && sim.t >= n.order.until && n.order.revert) {
-      const back = n.order.revert;
+    // temporary orders lapse: each formation goes back to what it was doing before
+    if (n.order && sim.t >= n.order.until && n.prev) {
+      const back = n.prev;
+      n.prev = null;
       emit(sim, { type: 'initiative', side: n.side, formation: n.id, commander: n.name, action: 'resumes ' + describe(back), why: 'time is up' });
-      activate(sim, n, back, false);
+      activate(sim, n, back, false, true);
     }
     if (!every5) continue;
     // units adopt the formation's order once in command
@@ -588,7 +653,7 @@ export function aiOverride(sim: Sim, u: Unit, nearest: Unit | null, dist: number
   if (o.type === 'reserve') {
     if (u.arm === 'inf' && nearest && dist < sim.data.weapons.musketry.lookRange) return false; // enemy is on top of us: stand and fight
     u.order = null;
-    if (u.arm === 'inf' && u.form !== 'column' && u.formT <= 0 && !u.melee) setFormation(sim, u, 'column');
+    if (u.arm === 'inf' && u.form !== 'column' && u.formT <= 0 && !u.wasMelee) setFormation(sim, u, 'column');
     return true;
   }
   const p = orderPoint(sim, u, o);
@@ -610,7 +675,7 @@ export function aiOverride(sim: Sim, u: Unit, nearest: Unit | null, dist: number
     }
   }
   u.order = makeOrder('move', -1, p[0], p[1], false);
-  if (u.arm === 'inf' && u.form !== 'column' && u.formT <= 0 && !u.melee) setFormation(sim, u, 'column');
+  if (u.arm === 'inf' && u.form !== 'column' && u.formT <= 0 && !u.wasMelee) setFormation(sim, u, 'column');
   return true;
 }
 
@@ -626,6 +691,12 @@ export function recoveryFactor(sim: Sim, u: Unit): number {
 
 export function rallyFactor(sim: Sim, u: Unit): number {
   return inCommand(sim, u) ? C(sim).rallyCommanderFactor : 1;
+}
+
+/** A change of a side's posture from outside becomes an order to its whole army, sent through the chain. */
+export function onPosture(sim: Sim, side: number, posture: string): void {
+  const st = state(sim);
+  issue(sim, side, { to: st.nodes[st.roots[side]].id, type: posture === 'defend' ? 'defend' : 'attack', formation: posture === 'attack_column' ? 'column' : 'line' }, false);
 }
 
 /** An order from the player to a formation. It travels like any other unless marked direct. */

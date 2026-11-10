@@ -63,6 +63,8 @@ export interface Unit {
   dispersed: number;
   detached: number;
   lossCarry: number;
+  /** Men lost to pursuit so far; prisoners are a fixed share of this running total. */
+  pursued: number;
 
   morale: number;
   form: Formation | null;

@@ -92,7 +92,7 @@ export function summarise(sim: Sim): RunResult {
       posture: s.posture,
       units: s.initUnits,
       startMen: s.initMen,
-      formedMen: sum((u) => (u.status === 'ok' ? u.men : 0)),
+      formedMen: sum((u) => (u.status === 'ok' ? u.men + u.detached : 0)),
       routedMen: sum((u) => (u.status === 'rout' ? u.men : 0)),
       casualties,
       captured,
@@ -126,7 +126,7 @@ export function summarise(sim: Sim): RunResult {
         if (u.status !== 'ok') continue;
         const dx = u.x - ob.at[0];
         const dy = u.y - ob.at[1];
-        if (dx * dx + dy * dy <= ob.radius * ob.radius) held[u.side] += u.men;
+        if (dx * dx + dy * dy <= ob.radius * ob.radius) held[u.side] += u.men + u.detached;
       }
       winner = sim.sides[held[1 - def] > held[def] ? 1 - def : def].id;
       decidedBy = 'objective';

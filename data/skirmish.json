@@ -68,5 +68,12 @@
     "source": "assumption",
     "confidence": "assumption",
     "note": "A screen that has come in does not go out again for this long. Stops screens flickering in and out at the edge of a threshold."
+  },
+  "maxFraction": {
+    "value": 0.6,
+    "unit": "fraction of men",
+    "source": "assumption",
+    "confidence": "assumption",
+    "note": "The most of a battalion that can be out as skirmishers; the rest stays formed as the reserve the screen falls back on."
   }
 }

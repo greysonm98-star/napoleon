@@ -21,8 +21,8 @@ export function rnd(sim: Sim, stream: number, a: number, b = 0): number {
 const MORALE_KEYS = ['startMorale', 'startMoraleSteady', 'steadyThreshold', 'routThreshold', 'destroyedFraction', 'casualtyShock', 'shockFireFront', 'shockFireFlank', 'shockColumnClose', 'columnCloseRange', 'shockRoundshot', 'shockCanister', 'shockMelee', 'artilleryCrewFactor', 'rippleRadius', 'rippleFriend', 'rippleEnemy', 'squareSteadyMorale', 'contactCavOnForming', 'contactCavFront', 'contactCavFlank', 'contactCavRear', 'contactCavOnShakenSquare', 'contactSquareRepulse', 'contactCavOnGuns', 'contactInfOnGuns', 'contactBayonet', 'recoveryRate', 'recoveryDelay', 'recoveryCapBase', 'routRecoveryRate', 'routRecoveryCap', 'rallyMorale', 'rallyMinStrength', 'rallyEnemyDistance', 'maxRallies', 'armyBreakFraction', 'aftermathDuration', 'cavRecoilRange', 'cavRecoilMorale', 'frontArc', 'flankArc', 'chainWindow'] as const;
 const MELEE_KEYS = ['contactDistance', 'lethality', 'moraleBase', 'armCavalry', 'armInfantry', 'armArtillery', 'infVsCavForming', 'infVsCavSquareSteady', 'infVsCavSquareShaken', 'infVsCavColumn', 'infVsCavLine', 'infForming', 'infColumn', 'infSquare', 'infLine', 'infFlankBonus', 'cavVsSquareSteady', 'cavVsSquareShaken', 'cavVsInfFront', 'cavVsInfFlank', 'cavVsInfRear', 'cavVsInfForming', 'cavVsArtillery', 'cavChargeBonus', 'chargeImpetusTime', 'pursuitCavalry', 'pursuitInfantry', 'capturedShare', 'blownTime', 'blownAfterCharge', 'bounceDistance', 'avoidTime', 'contactHoldFactor', 'recontactTime'] as const;
 const AI_KEYS = ['thinkInterval', 'squareProximity', 'squareHoldProximity', 'squareSafetyMargin', 'cavApproachSpeed', 'threatQualityBonus', 'deployRange', 'redeployFactor', 'engageRange', 'chargeMoraleAbsolute', 'chargeMoraleAdvantage', 'faceTolerance', 'moveFaceToleranceInfantry', 'moveFaceToleranceCavalry', 'separationFactor', 'separationPush', 'cavLeashDefend', 'cavLeashAttack', 'cavMinScore', 'cavScoreRouted', 'cavRoutChaseRange', 'cavScoreGuns', 'cavGunsSupportedPenalty', 'cavGunsSupportRadius', 'cavScoreCavBlown', 'cavScoreCavFresh', 'cavScoreShakenSquare', 'cavScoreForming', 'cavScoreFlank', 'cavScoreShaken', 'cavScoreUnderFire', 'cavUnderFireWindow', 'cavScoreFrontAttack', 'cavScoreFrontDefend', 'cavDistanceCostNear', 'cavDistanceCostRouted', 'cavDistanceCostFar', 'cavFormingMargin', 'cavFollowDistance', 'cavStandoff', 'cavHomeTolerance', 'artAdvanceFraction', 'artScoreSquare', 'artScoreColumn', 'artScoreLine', 'artScoreCavalry', 'artScoreArtillery', 'artDistanceScale', 'artCanisterPriority', 'artPreferredBonus'] as const;
-const MUSKETRY_KEYS = ['openFireRange', 'arcHalfAngle', 'moraleFloor', 'vsArtillery', 'vsColumn', 'artilleryTargetPenalty', 'lookRange', 'rankAndFileShare'] as const;
-const GUNNERY_KEYS = ['aimTolerance', 'unlimberTime', 'turnRate', 'canisterVsSquare', 'canisterVsColumn', 'canisterVsLine', 'canisterVsCavalry', 'canisterVsArtillery', 'strengthJitter'] as const;
+const MUSKETRY_KEYS = ['openFireRange', 'arcHalfAngle', 'moraleFloor', 'vsArtillery', 'vsColumn', 'artilleryTargetPenalty', 'lookRange', 'rankAndFileShare', 'openingStagger'] as const;
+const GUNNERY_KEYS = ['aimTolerance', 'unlimberTime', 'turnRate', 'canisterVsSquare', 'canisterVsColumn', 'canisterVsLine', 'canisterVsCavalry', 'canisterVsArtillery', 'strengthJitter', 'reloadJitter'] as const;
 const TERRAIN_KEYS = ['heightAdvantageMin', 'highGroundMelee', 'highGroundFire', 'roundshotUphill', 'slopeThreshold', 'slopeMove', 'mapMargin'] as const;
 
 export function checkData(data: Data): void {
@@ -147,7 +147,7 @@ function summariseCauses(sim: Sim, u: Unit): { causes: { cause: string; from?: s
     if (a) a.delta += r.delta;
     else agg.set(key, { cause: r.cause, from: r.from, delta: r.delta, parent: r.parent });
   }
-  const list = [...agg.values()].sort((a, b) => a.delta - b.delta || (a.cause < b.cause ? -1 : 1));
+  const list = [...agg.values()].sort((a, b) => a.delta - b.delta || (a.cause < b.cause ? -1 : a.cause > b.cause ? 1 : 0) || a.from - b.from);
   const byCause = new Map<string, number>();
   for (const a of list) byCause.set(a.cause, (byCause.get(a.cause) ?? 0) + a.delta);
   let top = '';
@@ -232,7 +232,8 @@ function remove(sim: Sim, u: Unit, reason: Unit['goneReason'], announce = true):
       u.everRouted = true;
     } else {
       flushLedger(sim, u);
-      id = emit(sim, { type: 'gone', unit: u.id, side: u.side, x: Math.round(u.x), y: Math.round(u.y), men: u.men, reason });
+      emit(sim, { type: 'gone', unit: u.id, side: u.side, x: Math.round(u.x), y: Math.round(u.y), men: u.men, reason });
+      // the shock to its neighbours still traces back to the rout that began it
     }
   }
   hooks.onRemove(sim, u);
@@ -385,7 +386,7 @@ function applyHits(sim: Sim): void {
   const cap = sim.data.melee.capturedShare;
   for (const h of sim.pending) {
     const u = sim.units[h.target];
-    if (u.status === 'gone' || h.loss <= 0) continue;
+    if (u.status === 'gone' || !(h.loss > 0) || h.loss === Infinity) continue;
     const total = u.lossCarry + h.loss;
     let n = Math.floor(total);
     u.lossCarry = total - n;
@@ -398,7 +399,11 @@ function applyHits(sim: Sim): void {
     if (n <= 0) continue;
     u.men -= n;
     if (h.pursuit) {
-      const c = Math.round(n * cap);
+      // prisoners are a share of the running total, so one man at a time still averages out
+      u.pursued += n;
+      let c = Math.round(u.pursued * cap) - u.captured;
+      if (c < 0) c = 0;
+      if (c > n) c = n;
       u.captured += c;
       u.casualties += n - c;
     } else {
@@ -659,8 +664,8 @@ function ranksAlongFire(u: Unit, fl: number, cap: number): number {
   let r: number;
   if (u.arm === 'inf') {
     const d = u.doc!;
-    if (u.form === 'square' || fl !== 0) r = cap;
-    else r = u.form === 'column' ? d.ranks * d.columnDivisions : d.ranks;
+    if (fl !== 0 && u.form !== 'square') r = cap;
+    else r = u.form === 'line' ? d.ranks : d.ranks * d.columnDivisions; // a square counts as deep as the battalion's column
   } else if (u.arm === 'cav') r = fl !== 0 ? cap : u.ut.ranks!;
   else r = 1;
   return r < cap ? r : cap;
@@ -773,7 +778,7 @@ function firePhase(sim: Sim): void {
       let loss = Math.floor(mean);
       if (rnd(sim, STREAM.GUN, u.idx, 1) < mean - loss) loss++;
       sim.pending.push({ target: t.idx, loss, k: can ? M.shockCanister : M.shockRoundshot, cause: can ? 'canister' : 'roundshot', from: u.idx, pursuit: false });
-      u.reload = (can ? gun.canisterReload : gun.roundshotReload) * hooks.reloadFactor(sim, u) * (0.9 + 0.2 * rnd(sim, STREAM.RELOAD, u.idx));
+      u.reload = (can ? gun.canisterReload : gun.roundshotReload) * hooks.reloadFactor(sim, u) * (1 - G.reloadJitter + 2 * G.reloadJitter * rnd(sim, STREAM.RELOAD, u.idx));
       sim.lastActivityT = sim.t;
       hooks.onFired(sim, u, can ? 'canister' : 'roundshot', guns, g);
       if (full) emit(sim, { type: 'fire', unit: u.id, side: u.side, target: t.id, kind: can ? 'canister' : 'roundshot', loss, range: Math.round(g) });
@@ -834,7 +839,7 @@ export function createSim(scenario: Scenario, data: Data, seed: number, opts: Si
     const u: Unit = {
       idx, id: e.id, name: e.name, side: e.side, typeId: e.type, arm: ut.arm, ut, doc, musket, gun, quality: e.quality, q, parent: e.parent,
       x: e.x, y: e.y, f: e.facing, w: 0, d: 0, c: 1, s: 0, cx: new Float64Array(8), elev: 0, feat: null, onSlope: false,
-      startMen: e.men, men: e.men, casualties: 0, captured: 0, dispersed: 0, detached: 0, lossCarry: 0,
+      startMen: e.men, men: e.men, casualties: 0, captured: 0, dispersed: 0, detached: 0, lossCarry: 0, pursued: 0,
       morale: q < M.steadyThreshold ? M.startMoraleSteady : M.startMorale,
       form: e.formation, formT: 0, status: 'ok', goneReason: '', goneT: -1,
       order: null, manual: false,
@@ -847,7 +852,7 @@ export function createSim(scenario: Scenario, data: Data, seed: number, opts: Si
     };
     if (sim.byId.has(u.id)) throw new Error(`duplicate unit id '${u.id}'`);
     // stagger first volleys a little, as the prototype did
-    u.reload = ut.arm === 'cav' ? 0 : 10 * (hash4(sim.seed ^ 0x5bd1e995, idx, 0, STREAM.DEPLOY) / 4294967296);
+    u.reload = ut.arm === 'cav' ? 0 : data.weapons.musketry.openingStagger * (hash4(sim.seed ^ 0x5bd1e995, idx, 0, STREAM.DEPLOY) / 4294967296);
     setDims(u);
     refreshGeom(u);
     refreshTerrain(sim, u);
@@ -875,7 +880,8 @@ export function execInput(sim: Sim, input: SimInput): void {
     const i = sim.sides.findIndex((s) => s.id === input.side);
     if (i < 0) return;
     sim.sides[i].posture = input.posture;
-    for (const u of sim.units) if (u.side === i && !sim.features.commandControl) u.posture = input.posture;
+    if (sim.features.commandControl) hooks.onPostureInput(sim, i, input.posture);
+    else for (const u of sim.units) if (u.side === i) u.posture = input.posture;
     emit(sim, { type: 'input', kind: 'posture', side: i, posture: input.posture });
     return;
   }
@@ -944,7 +950,7 @@ export function step(sim: Sim): void {
   // 3. break tests
   for (const u of units) {
     if (u.status === 'gone') continue;
-    if (u.men < u.startMen * M.destroyedFraction) {
+    if (u.men + u.detached < u.startMen * M.destroyedFraction) {
       remove(sim, u, u.status === 'rout' ? 'scattered' : 'destroyed');
       continue;
     }
@@ -969,7 +975,7 @@ export function step(sim: Sim): void {
   for (const u of units) {
     if (u.status !== 'ok') continue;
     if (!u.melee && sim.t - u.lastHitT > M.recoveryDelay) {
-      const cap = 100 * (M.recoveryCapBase + ((1 - M.recoveryCapBase) * u.men) / u.startMen);
+      const cap = 100 * (M.recoveryCapBase + ((1 - M.recoveryCapBase) * (u.men + u.detached)) / u.startMen);
       if (u.morale < cap) u.morale = Math.min(cap, u.morale + M.recoveryRate * hooks.recoveryFactor(sim, u) * dt);
     }
     if (u.morale > 100) u.morale = 100;
