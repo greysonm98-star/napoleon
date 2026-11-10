@@ -10,3 +10,6 @@ export { hooks } from './hooks.ts';
 export * as command from './features/command.ts';
 export * as smoke from './features/smoke.ts';
 export * as los from './features/los.ts';
+export * from './analysis/stats.ts';
+export * from './analysis/overrides.ts';
+export * from './analysis/batch.ts';
